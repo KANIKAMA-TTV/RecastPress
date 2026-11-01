@@ -1,20 +1,24 @@
 # v0.5 P0：RustからPHP WASIを直接実行する実験
 
-既存のWAT実験とは別に、実際のPHPインタプリタのWasmをRustで動かす。独立workspaceで実証し、本体の依存や既存仕様書は変更しない。2026-11-01、Windows x86_64で17項目と失敗後の正常要求6回を検証し、[実行証跡](evidence/native.json)へ保存した。製品P0の通過を示すものではない。
+既存のWAT実験とは別に、実際のPHPインタプリタのWasmをRustで動かす。独立workspaceで実証し、本体の依存や既存仕様書は変更しない。2026-11-01、Windows x86_64で21項目と失敗後の正常要求6回を検証し、[実行証跡](evidence/native.json)へ保存した。製品P0の通過を示すものではない。
 
 ## 実行
 
 ```text
+python scripts/wordpress_reference.py fetch
 python experiments/php-wasi-host-probe/prepare_fixture.py
 python experiments/php-wasi-host-probe/check.py --record
 ```
 
 準備時のみネットワークとcurlを使う。PHP成果物は[fixture.json](fixture.json)のURL・サイズ・SHA-256で固定し、Git対象外の`.reference/php-wasi-8.2.6`へ保存する。Rust側でも長さとハッシュを照合してからコンパイルする。検証自体はCargoのoffline・locked・releaseで実行し、Node.js・ネイティブPHP・外部DBを起動しない。Wasmは一度コンパイルし、各要求に新しいStoreを作る。
 
+WordPress 7.1.3の参照ソースは既存の取得手順を使う。[wordpress-fixture.json](wordpress-fixture.json)で、実行する`plugin.php`・`class-wp-hook.php`・`class-wp-filter-sentinel.php`の長さとSHA-256を固定し、Rust側で照合してから読取り専用で渡す。
+
 ## 検証するもの
 
 - 本物のPHP 8.2.6による基本処理、CGI入出力、binary本文、Cookie、include。
 - 同じ要求内のPHP object共有と、要求ごとのglobal・Cookie・Rust側cache状態の分離。
+- WordPress本体のfilter順序と追加引数、actionによるobject共有、nullとsentinel、要求ごとのhook状態の分離。
 - PHPが要求した時点でRustを呼び、cache更新・読取りと固定DB fixture結果をPHPへ返す往復。
 - 読取り専用の公開fixtureディレクトリだけを渡し、外部ファイル・書込み・親環境の参照を拒む。
 - fuel・epoch・Wasmメモリ・応答出力の上限、PHP fatal、未知RPCの失敗と、各失敗後の正常要求。
@@ -32,4 +36,4 @@ PHP成果物は[upstreamの2023年リリース](https://github.com/vmware-labs/w
 
 CGIのPHP fatalは終了コード255を使い、この版のWASI側では有効な終了コード範囲外としてエラーになる。これも失敗として回収し、正常応答へ変換しない。製品でのPHPエラー・HTTP status対応は追加の検証が必要となる。
 
-製品用PHPの再現可能なビルド、ABI、依存・配布確認、WP起動、実DB、実HTTP、三配備先は引き続き未達。これらを製品P0〜P1の受入条件から取り除かず、質問待ちで止めずに独立して検証できる項目から進める。
+製品用PHPの再現可能なビルド、ABI、依存・配布確認、WPの通常bootstrap、実DB、実HTTP、三配備先は引き続き未達。今回実行したWPコードはフックAPIの範囲であり、実際のテーマや第三者プラグインの互換性を保証しない。これらを製品P0〜P1の受入条件から取り除かず、質問待ちで止めずに独立して検証できる項目から進める。

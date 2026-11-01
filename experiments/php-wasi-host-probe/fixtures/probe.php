@@ -20,6 +20,16 @@ if ($mode === 'bad_rpc') { rp_rpc('UNKNOWN'); exit; }
 if ($mode !== 'basic') { exit(2); }
 
 $included = require __DIR__ . '/include.php';
+require '/wp-core/plugin.php';
+$wpInitiallyEmpty = has_filter('rp_wasi_filter') === false && did_action('rp_wasi_action') === 0;
+add_filter('rp_wasi_filter', static fn ($value, $suffix) => $value . $suffix, 10, 2);
+add_filter('rp_wasi_filter', static fn ($value) => $value . '|theme', 20);
+$wpFilter = apply_filters('rp_wasi_filter', 'post', '|plugin');
+$wpObject = (object) ['counter' => 0];
+add_action('rp_wasi_action', static function ($object) { $object->counter++; });
+do_action('rp_wasi_action', $wpObject);
+add_filter('rp_wasi_nullable', static fn ($value) => null);
+$wpNull = apply_filters('rp_wasi_nullable', new WP_Filter_Sentinel()) === null;
 $input = file_get_contents('php://input');
 $before = rp_rpc('CACHE_GET');
 rp_rpc('CACHE_SET 7');
@@ -43,4 +53,9 @@ echo json_encode([
     'outside_denied' => @file_get_contents('/site/../outside.txt') === false,
     'write_denied' => @file_put_contents(__DIR__ . '/blocked.txt', 'x') === false,
     'env_absent' => getenv('PATH') === false,
+    'wp_hooks_initially_empty' => $wpInitiallyEmpty,
+    'wp_filter' => $wpFilter,
+    'wp_action_counter' => $wpObject->counter,
+    'wp_action_calls' => did_action('rp_wasi_action'),
+    'wp_null_result' => $wpNull,
 ], JSON_THROW_ON_ERROR);

@@ -19,6 +19,51 @@ const FUEL: u64 = 200_000_000;
 const MEMORY: usize = 256 * 1024 * 1024;
 const OUTPUT: usize = file_bridge::OUTPUT_LIMIT;
 const BODY: &[u8] = b"rp\0\xff\r\nbody";
+const WORDPRESS_FIXTURE: &str = include_str!("../wordpress-fixture.json");
+
+fn wordpress_directory() -> std::path::PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.reference/wordpress-7.1.3/wp-includes")
+}
+
+fn verify_wordpress_sources() -> Result<()> {
+    use std::io::Read;
+    let fixture: serde_json::Value = serde_json::from_str(WORDPRESS_FIXTURE)?;
+    ensure!(
+        fixture["wordpress_version"] == "7.1.3",
+        "wrong WordPress fixture version"
+    );
+    for name in [
+        "plugin.php",
+        "class-wp-hook.php",
+        "class-wp-filter-sentinel.php",
+    ] {
+        let expected = &fixture["files"][name];
+        let size = expected["bytes"]
+            .as_u64()
+            .context("missing WP source length")?;
+        ensure!(size <= 1024 * 1024, "WP source is too large");
+        let file = std::fs::File::open(wordpress_directory().join(name))
+            .context("prepare the pinned WordPress reference first")?;
+        ensure!(
+            file.metadata()?.len() == size,
+            "wrong WP source length: {name}"
+        );
+        let mut bytes = Vec::new();
+        file.take(size + 1).read_to_end(&mut bytes)?;
+        ensure!(
+            bytes.len() as u64 == size,
+            "WP source changed while reading"
+        );
+        ensure!(
+            format!("{:x}", Sha256::digest(&bytes))
+                == expected["sha256"]
+                    .as_str()
+                    .context("missing WP source hash")?,
+            "wrong WP source hash: {name}"
+        );
+    }
+    Ok(())
+}
 
 struct State {
     wasi: WasiP1Ctx,
@@ -181,6 +226,12 @@ fn run(
         .stderr(stderr.clone());
     builder.preopened_dir(&fixtures, "/site", DirPerms::READ, FilePerms::READ)?;
     builder.preopened_dir(
+        wordpress_directory(),
+        "/wp-core",
+        DirPerms::READ,
+        FilePerms::READ,
+    )?;
+    builder.preopened_dir(
         bridge.directory(),
         "/rp-p0-rpc",
         DirPerms::READ,
@@ -282,6 +333,22 @@ fn check_basic(engine: &Engine, module: &Module, nonce: u64) -> Result<()> {
         "capability boundary failed"
     );
     run.bridge.check_calls(4)?;
+    ensure!(
+        value["wp_hooks_initially_empty"] == true,
+        "WP hooks leaked between requests"
+    );
+    ensure!(
+        value["wp_filter"] == "post|plugin|theme",
+        "WP filter ordering or arguments failed"
+    );
+    ensure!(
+        value["wp_action_counter"] == 1 && value["wp_action_calls"] == 1,
+        "WP action/shared object failed"
+    );
+    ensure!(
+        value["wp_null_result"] == true,
+        "WP null/sentinel semantics failed"
+    );
     Ok(())
 }
 
@@ -291,6 +358,7 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         "fixed-fixture probe accepts only --trace"
     );
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    verify_wordpress_sources()?;
     let artifact = root.join(".reference/php-wasi-8.2.6/php-cgi-8.2.6-slim.wasm");
     let file =
         std::fs::File::open(&artifact).context("prepare the pinned PHP WASI fixture first")?;
@@ -351,6 +419,10 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         "read_only_preopen",
         "outside_file_denied",
         "no_inherited_environment",
+        "wp_filter_chain",
+        "wp_actions_shared_object",
+        "wp_null_sentinel",
+        "wp_request_hook_cleanup",
     ];
     for (mode, fuel, timeout, trap) in [
         ("fuel", FUEL, Duration::from_secs(5), Some(Trap::OutOfFuel)),
@@ -411,13 +483,14 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         checks.push(mode);
     }
     Ok(serde_json::json!({
-        "format_version":1,"milestone":"v0.5-P0-experiment","php_version":"8.2.6",
+        "format_version":2,"milestone":"v0.5-P0-experiment","php_version":"8.2.6",
         "process_pid": std::process::id(),
         "artifact_sha256":FIXTURE_SHA256,"wasmtime_version":"36.0.19",
         "cranelift_opt_level":"none",
         "checks":checks,"recovery_requests":6,"memory_limit_bytes":MEMORY,
         "stdout_limit_bytes":OUTPUT,"fuel_per_request":FUEL,
-        "product_ready":false,"wordpress_executed":false,"real_database_connected":false,
+        "product_ready":false,"wordpress_bootstrapped":false,"real_database_connected":false,
+        "wordpress_hook_version":"7.1.3","wordpress_hooks_executed":true,
         "bridge":"fixed-fixture stdout commands/read-only reply file; not the product ABI"
     }))
 }

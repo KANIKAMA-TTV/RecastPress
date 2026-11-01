@@ -1,0 +1,18 @@
+{
+  "wordpress_version": "7.1.3",
+  "archive_sha256": "d2a09acb6a15e3b9c471d72557753c266d6f41a79ed19bfe04cbfe49e283b2a5",
+  "files": {
+    "plugin.php": {
+      "bytes": 37123,
+      "sha256": "d70b9e18d34ab3fe46e15548a5e8e089ea5920832f06a4d89a9d64b2f7938b0d"
+    },
+    "class-wp-hook.php": {
+      "bytes": 17584,
+      "sha256": "b839c0e5672246bca8db1ab781ec8835f7732f253c375a237cbf6ec536e8d12e"
+    },
+    "class-wp-filter-sentinel.php": {
+      "bytes": 760,
+      "sha256": "68c9c675d3805a343835728d98a0efedf0df9833cb904bebf909c7e0fda5c61c"
+    }
+  }
+}

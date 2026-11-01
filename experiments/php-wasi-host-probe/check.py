@@ -24,6 +24,7 @@ CHECKS = [
     'real_php_wasi', 'binary_input', 'cgi_output', 'include_read', 'shared_request_state',
     'live_rust_cache_callback', 'live_rust_db_fixture_callback', 'fresh_request_state',
     'read_only_preopen', 'outside_file_denied', 'no_inherited_environment',
+    'wp_filter_chain', 'wp_actions_shared_object', 'wp_null_sentinel', 'wp_request_hook_cleanup',
     'fuel', 'epoch', 'fatal', 'output', 'memory', 'bad_rpc',
 ]
 
@@ -82,14 +83,15 @@ def validate_result(pid, completed):
     require(type(wire) is bytes and len(wire) <= 4096 and wire.endswith(b'\n') and wire.count(b'\n') == 1 and wire.startswith(PREFIX), 'invalid native probe response')
     value = parse_json(wire[len(PREFIX):])
     expected = {
-        'format_version': 1, 'milestone': 'v0.5-P0-experiment', 'php_version': '8.2.6',
+        'format_version': 2, 'milestone': 'v0.5-P0-experiment', 'php_version': '8.2.6',
         'process_pid': pid,
         'artifact_sha256': '4fd2e8c42ae529ba72f88a0f1e46de1fc69a4b4f01e01fedd65ca966b8ffe6fa',
         'wasmtime_version': '36.0.19', 'checks': CHECKS, 'recovery_requests': 6,
         'cranelift_opt_level': 'none',
         'memory_limit_bytes': 256 * 1024 * 1024, 'stdout_limit_bytes': 64 * 1024,
         'fuel_per_request': 200_000_000, 'product_ready': False,
-        'wordpress_executed': False, 'real_database_connected': False,
+        'wordpress_bootstrapped': False, 'real_database_connected': False,
+        'wordpress_hook_version': '7.1.3', 'wordpress_hooks_executed': True,
         'bridge': 'fixed-fixture stdout commands/read-only reply file; not the product ABI',
     }
     require(type(value) is dict and set(value) == set(expected), 'unexpected result fields')
@@ -115,7 +117,7 @@ def main():
         native = validate_result(pid, completed)
     finally:
         owned_probe.reap_owned_probes()
-    inputs = [HERE / name for name in ['Cargo.toml', 'Cargo.lock', 'fixture.json', 'prepare_fixture.py', 'check.py', 'outside.txt']]
+    inputs = [HERE / name for name in ['Cargo.toml', 'Cargo.lock', 'fixture.json', 'wordpress-fixture.json', 'prepare_fixture.py', 'check.py', 'outside.txt']]
     inputs += sorted((HERE / 'src').glob('*.rs')) + sorted((HERE / 'fixtures').glob('*.php'))
     inputs += [ROOT / 'scripts' / 'owned_probe.py', ROOT / 'scripts' / 'dependency_inventory.py']
     observation = {
@@ -126,6 +128,7 @@ def main():
         'native_artifact': artifact.relative_to(ROOT).as_posix(),
         'native_artifact_sha256': digest(artifact),
         'result': native,
+        'wordpress_reference': json.loads((HERE / 'wordpress-fixture.json').read_text(encoding='utf-8')),
         'limitations': [
             'P0 experiment, not P0 product acceptance or an engine/license adoption decision.',
             'Old PHP 8.2.6 upstream WASI fixture; not the planned production PHP build.',
