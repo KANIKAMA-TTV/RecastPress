@@ -86,3 +86,11 @@ Wasmer 7.2系の固定sourceでは `FsError::PermissionDenied` は `Errno::Perm`
 - **全EPERMをEACCESへ置換:** open以外も含むerrnoの意味を一律に変える。host APIが拒否理由を区別できるか、どの操作にどのerrnoを返すかを別途設計する。
 
 受入には、通常IOが引き続き成功し、readonlyのPHP照会・実書込拒否・不変な実byte・errnoが同時に整合する証拠が必要である。既存の全体failureを変更するのは、その修正と再検証が完了してからとする。
+
+## 追試: 固定コーパスでの2差分の解消
+
+source `edc6b645aead72b00eb482994a58e69957879118`の[専用3patch候補](../php-wasix-managed-access-probe/README.ja.md)を実装し、[CI 41337652464](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41337652464)でCranelift/LLVMともnative runtime6ケース×fresh3要求が通過した。Rustの副作用のない権限照会をPHP組込みへ接続し、元openがEPERMで失敗して同じpath/modeのRust照会が明示拒否を返した場合だけEACCESに対応させた。warning文の置換・比較除外・native期待値の変更はしていない。
+
+各要求の照会は5回（allow3・deny2）で、応答25Bを全読了し、missing/invalid/IOエラーは0。通常12Bを書込・読出しでき、readonlyは17B不変、`is_writable=false`、実書込拒否、warningは`Permission denied`に揃った。Fiber6ケース×fresh3要求とLinux37単体テストも通過。[Cranelift](../php-wasix-managed-access-probe/evidence/ci-41337652464-cranelift/provenance.json)と[LLVM](../php-wasix-managed-access-probe/evidence/ci-41337652464-llvm/provenance.json)に元Git照合と生JSONを保存する。
+
+この結果は新しい3patch候補の固定ケースについての観測であり、本書前半の2patch候補のfailureはそのまま保持する。内部transportの製品ABI採用、全WP・実DB・全権限操作・全資源回収・配布条件・配備先の受入は別gateのままである。

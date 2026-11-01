@@ -30,6 +30,14 @@ LLVMは実行checkerに`--llvm`を付ける。runtime比較の前に既存のWP�
 
 `cgi_check.py`は同じ3patch生成物で、既存のGET/Cookie・POST/raw body・404/2 Cookie/7B binaryの3要求を比較する。通常のCGI検証と同じ実行・検証処理を使い、固定生成物のloaderだけを替える。Fiber/権限照会の実行をこの3要求で証明したとは扱わない。
 
-実装時点でWindowsのRust36単体テストと閉じたbuild定義の検証が通過。PHP patchを含む実ビルドとguest比較は次のLinux CIで確認する。既存の2差分を記録したfailureは保持する。
+## 初回の実ビルド・実行結果
+
+source `edc6b645aead72b00eb482994a58e69957879118`の[CI 41337652464](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41337652464)は両backendで成功した。PHPの3patch build、最終assembly命令検査、Linux37単体テスト、Fiber6ケース×fresh3要求、runtime6ケース×fresh3要求が通過した。[Craneliftの原記録と元Git照合](evidence/ci-41337652464-cranelift/provenance.json)、[LLVMの原記録と元Git照合](evidence/ci-41337652464-llvm/provenance.json)を保存する。Windows36単体テストは別のローカル観測である。
+
+両backendのruntime各要求では、権限照会5回（allow3・deny2）、input140B、応答25Bを全読了し、missing/invalid/IOエラーは0だった。通常12Bの書込・読出し、readonly17Bの不変、`is_writable=false`、実書込拒否、`Permission denied`のwarningが同時にnativeと一致した。権限照会のunderlying VirtualFileはopen/close各5、終了時active0。scratchは別に4handleをcloseしopen0だった。全WASI資源の回収証明ではない。
+
+生成Wasmは両jobとも39,150,496Bだが、hashは別でありbit再現性は未証明。各jobのbuilderと実行checkerは同jobの実byteを照合した。native期待値・warning・PHP JSONは変更せず、元の2patch候補の2差分とfailureも保持する。
+
+GET/POST/Cookie/binaryの追加`cgi_check.py`はこの初回CIには含まれない。既存3要求の共通検証を通す次のCIで確認する。
 
 全WP bootstrap、wpdb・実DB、HTTP listener、全資源回収、stack guard/free/reuse、配布条件、3配備先の受入は未完了。
