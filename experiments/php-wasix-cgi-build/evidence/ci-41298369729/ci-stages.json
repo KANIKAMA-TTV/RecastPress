@@ -1,0 +1,25 @@
+{
+  "format_version": 1,
+  "scope": "CGI build only; no guest execution or product adoption",
+  "guest_executed": false,
+  "product_runtime_selected": false,
+  "redistributed_binaries": false,
+  "source_commit": "071c9443ba56b2b5dd27032567ed3e7a9c8d0045",
+  "run_id": "41298369729",
+  "run_attempt": "1",
+  "stages": {
+    "php_source": "success",
+    "deps_source": "success",
+    "parser_source": "success",
+    "dependencies": "success",
+    "definitions": "success",
+    "tools": "success",
+    "build": "failure"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-cgi-build.yml": "69ddecdd9f5c0564fa6beb8582e52cc142dc9dbe3fe9d3c792e5ab4f2b2f332e",
+    "experiments/php-wasix-cgi-build/build.py": "888ed9559d1c045a3731479cf196160fd7364d619bfcaede82dd5cd5a698ce98",
+    "experiments/php-wasix-cgi-build/prepare.py": "3b20b15eced0898b979ff77ed7b4a84676dba4b0de5e55214826ea641f41d71b",
+    "experiments/php-wasix-cgi-build/manifest.json": "295282feeac5a0bd83d02ab693e7cf6e83db9d9f272a56c9094398f5ce4a26fc"
+  }
+}

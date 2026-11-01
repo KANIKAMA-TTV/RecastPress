@@ -1,4 +1,4 @@
-"""Build one official CGI candidate with the pinned prepared host toolchain.
+"""Build fixed PHP CGI source with the declared WASI prefork exclusion patch.
 
 The target Wasm is inspected for its header and hashed, never executed here.
 Host native PHP is a recorded stub-generation tool, not a runtime fallback.
@@ -14,6 +14,7 @@ import subprocess
 import time
 
 import prepare
+import patch_source
 
 HERE, ROOT, WORK = prepare.HERE, prepare.ROOT, prepare.WORK
 require, digest = prepare.require, prepare.digest
@@ -88,6 +89,26 @@ def verify_tools(manifest):
     return digest(receipt_path)
 
 
+def apply_source_patches(php, manifest, report, environment, record=False):
+    report['phase'] = 'source_patch'
+    head = checked_output(['git', 'rev-parse', 'HEAD'], php, environment)
+    require(head == manifest['sources']['php']['commit'], 'source commit changed before patch application')
+    dirty = checked_output(['git', 'status', '--porcelain', '--untracked-files=no'], php, environment)
+    require(not dirty, 'tracked PHP source is not clean immediately before patch application')
+    report['source_patches'] = []
+    for identity in manifest['source_patches']:
+        row = {name: identity[name] for name in ('path', 'sha256', 'source_commit', 'target',
+                                                'before_bytes', 'before_sha256', 'after_sha256')}
+        row.update({'clean_tracked_source_before_patch': True, 'applied': False})
+        report['source_patches'].append(row)
+        if record:
+            prepare.write_report('build.json', report)
+        patch_source.apply_to_checkout(php, identity, row)
+    report['configure_difference']['php_source_patch'] = True
+    report['configure_difference']['source_patch_scope'] = 'WASI FastCGI prefork exclusion only'
+    report['wasi_prefork_support'] = 'explicitly-disabled-by-source-patch'
+
+
 def stub_headers(php):
     result = {}
     for path in sorted(php.rglob('*_arginfo.h')):
@@ -127,7 +148,8 @@ def main():
     args = parser.parse_args()
     report = {
         'format_version': 1, 'observed_at_utc': datetime.now(timezone.utc).isoformat(),
-        'scope': 'official CGI build only; guest not executed', 'outcome': 'not_run', 'phase': 'verification',
+        'scope': 'official CGI source with explicit WASI prefork exclusion; guest not executed',
+        'outcome': 'not_run', 'phase': 'verification',
         'guest_executed': False, 'product_runtime_selected': False, 'native_runtime_fallback_used': False,
         'cgi_request_compatibility_verified': False, 'fiber_compatibility_verified': False,
         'module_validation_performed': False, 'redistributed_binaries': False, 'build_steps': [],
@@ -166,12 +188,14 @@ def main():
         environment.update({'PHP_WASIX_DEPS': str(deps),
                             'WASIX_EXTRA_CONFIGURE_FLAGS': manifest['build']['extra_configure_flags']})
         scripts = ['wasix-configure-eh-64.sh', 'wasix-configure-eh.sh', 'wasix-build-eh.sh',
-                   'sapi/cgi/config9.m4', 'sapi/cgi/Makefile.frag', 'build/gen_stub.php', 'main/php_version.h']
+                   'sapi/cgi/config9.m4', 'sapi/cgi/Makefile.frag', 'sapi/cgi/cgi_main.c',
+                   'build/gen_stub.php', 'main/php_version.h']
         report['source_control_files'] = {name: digest(php / name) for name in scripts}
         require('#define PHP_VERSION "8.5.12"' in (php / 'main/php_version.h').read_text(encoding='utf-8'),
                 'unexpected declared PHP source version')
         report['configure_difference'] = {'extra_flags': '--enable-cgi', 'php_source_patch': False,
                                            'cli_disabled': False, 'make_target': 'cgi', 'make_jobs': 2}
+        apply_source_patches(php, manifest, report, environment, args.record)
         run_step(report, 'configure', ['bash', manifest['build']['configure_script']], php, environment, args.record)
         run_step(report, 'make_cgi', ['make', '-j2', 'PHP=' + str(host_php), 'cgi'], php, environment, args.record)
         raw = php / manifest['build']['raw_output']

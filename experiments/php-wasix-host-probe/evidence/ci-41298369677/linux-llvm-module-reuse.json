@@ -1,0 +1,261 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T10:44:14.297716+00:00",
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "backend": "llvm",
+  "scope": "one compiled PHP module, three fresh sequential requests",
+  "outcome": "module_reuse_passed",
+  "reuse_passed": true,
+  "production_compatible": false,
+  "native_comparison_performed": false,
+  "wordpress_executed": false,
+  "memory_limit_verified": false,
+  "real_db": false,
+  "outer_build_timeout_seconds": 1200,
+  "outer_execution_timeout_seconds": 300,
+  "compile_counter_scope": "explicit PHP Module::new call site, not internal backend instrumentation",
+  "build_exit_code": 0,
+  "native_artifact": "target/php-wasix-host-probe/release/recastpress-php-wasix-host-probe",
+  "native_artifact_sha256": "a55005a9af2b6a719e8cae5cc63530b8b5a993f1d7abf46ae0c93e23c1fea5ba",
+  "owned_process_pid": 10318,
+  "exit_code": 0,
+  "stderr_sha256": "87ff4aa6e6b1dc8eba4e933d87160c8a8ff4a4bf081104a1703427918b6117db",
+  "observed_phases": [
+    "module_compile",
+    "module_reuse_request_1",
+    "module_reuse_request_2",
+    "module_reuse_request_3"
+  ],
+  "stderr_excerpt": "PHP_WASIX_PHASE=module_compile\nPHP_WASIX_PHASE=module_reuse_request_1\nPHP_WASIX_PHASE=module_reuse_request_2\nPHP_WASIX_PHASE=module_reuse_request_3\n",
+  "native_result": {
+    "artifact": {
+      "expected_bytes": 39727549,
+      "expected_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "observed_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "path": ".reference/php-wasix-8.5.12/php.wasm",
+      "verified": true
+    },
+    "compile_elapsed_ms": 83476,
+    "engine": "wasmer-7.2.0/llvm",
+    "exception_support": {
+      "execution_verdict": "not-exercised",
+      "msvc_source_verdict": "negative-unimplemented-panic-stubs"
+    },
+    "exceptions_executed": false,
+    "full_php_compatibility_verified": false,
+    "host": {
+      "arch": "x86_64",
+      "os": "linux"
+    },
+    "integer_width_matches_native": null,
+    "isolation": {
+      "configured_guest_max_threads": 1,
+      "deadline_owner": "required-external-owned-child-supervisor",
+      "guest_fixture_files": [],
+      "home_mapped": false,
+      "host_directories_mapped": false,
+      "host_environment_forwarded": false,
+      "http_client": false,
+      "in_process_deadline_enforced": false,
+      "memory_limit_enforced": false,
+      "networking": "UnsupportedVirtualNetworking",
+      "scratch_directory_supplied": false,
+      "stderr_limit_bytes": 65536,
+      "stdin": "closed-pipe",
+      "stdout_limit_bytes": 65536,
+      "wordpress_directory_supplied": false
+    },
+    "limitations": [
+      "A basic version result does not verify thrown exceptions or full PHP compatibility.",
+      "Wasmer 7.2.0 MSVC exception runtime entry points are unimplemented and may panic.",
+      "Memory, CPU and execution deadline enforcement are not established by this probe.",
+      "PHP integer width is observed separately from wasm32 linear-memory width."
+    ],
+    "module_reuse_verified": true,
+    "native_comparison_performed": false,
+    "observed_php_int_size": 8,
+    "ok": true,
+    "phase": "module_reuse_verified",
+    "process_pid": 10318,
+    "real_db": false,
+    "request_isolation_verified": true,
+    "requests": [
+      {
+        "configured_engine_identity": "EngineId(0)",
+        "guest_environment_supplied": [
+          {
+            "key": "RP_MODULE_REUSE_REQUEST_1",
+            "value": "recastpress-v0.5-module-reuse-request-1"
+          }
+        ],
+        "home_mapped": false,
+        "host_directories_mapped": false,
+        "host_environment_forwarded": false,
+        "http_client": false,
+        "isolation_verified": true,
+        "module_compile_invocations": 0,
+        "module_delivery": "Module.clone",
+        "networking": "UnsupportedVirtualNetworking",
+        "php": {
+          "echo": "recastpress-v0.5-module-reuse",
+          "globals_after": "recastpress-v0.5-module-reuse-request-1",
+          "globals_before_present": false,
+          "globals_before_value": null,
+          "php_int_size": 8,
+          "php_version": "8.5.12",
+          "request_marker_count": 1,
+          "request_markers": {
+            "RP_MODULE_REUSE_REQUEST_1": "recastpress-v0.5-module-reuse-request-1",
+            "RP_MODULE_REUSE_REQUEST_2": false,
+            "RP_MODULE_REUSE_REQUEST_3": false
+          }
+        },
+        "php_completed": true,
+        "php_execution_elapsed_ms": 55,
+        "request_number": 1,
+        "runtime_shutdown_returned": true,
+        "runtime_shutdown_wait_limit_ms": 2000,
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_eof": true,
+        "stderr_limit_bytes": 65536,
+        "stderr_overflow": false,
+        "stdin": "closed-pipe",
+        "stdout": "{\"php_version\":\"8.5.12\",\"php_int_size\":8,\"request_markers\":{\"RP_MODULE_REUSE_REQUEST_1\":\"recastpress-v0.5-module-reuse-request-1\",\"RP_MODULE_REUSE_REQUEST_2\":false,\"RP_MODULE_REUSE_REQUEST_3\":false},\"request_marker_count\":1,\"globals_before_present\":false,\"globals_before_value\":null,\"globals_after\":\"recastpress-v0.5-module-reuse-request-1\",\"echo\":\"recastpress-v0.5-module-reuse\"}",
+        "stdout_bytes": 380,
+        "stdout_eof": true,
+        "stdout_limit_bytes": 65536,
+        "stdout_overflow": false
+      },
+      {
+        "configured_engine_identity": "EngineId(0)",
+        "guest_environment_supplied": [
+          {
+            "key": "RP_MODULE_REUSE_REQUEST_2",
+            "value": "recastpress-v0.5-module-reuse-request-2"
+          }
+        ],
+        "home_mapped": false,
+        "host_directories_mapped": false,
+        "host_environment_forwarded": false,
+        "http_client": false,
+        "isolation_verified": true,
+        "module_compile_invocations": 0,
+        "module_delivery": "Module.clone",
+        "networking": "UnsupportedVirtualNetworking",
+        "php": {
+          "echo": "recastpress-v0.5-module-reuse",
+          "globals_after": "recastpress-v0.5-module-reuse-request-2",
+          "globals_before_present": false,
+          "globals_before_value": null,
+          "php_int_size": 8,
+          "php_version": "8.5.12",
+          "request_marker_count": 1,
+          "request_markers": {
+            "RP_MODULE_REUSE_REQUEST_1": false,
+            "RP_MODULE_REUSE_REQUEST_2": "recastpress-v0.5-module-reuse-request-2",
+            "RP_MODULE_REUSE_REQUEST_3": false
+          }
+        },
+        "php_completed": true,
+        "php_execution_elapsed_ms": 53,
+        "request_number": 2,
+        "runtime_shutdown_returned": true,
+        "runtime_shutdown_wait_limit_ms": 2000,
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_eof": true,
+        "stderr_limit_bytes": 65536,
+        "stderr_overflow": false,
+        "stdin": "closed-pipe",
+        "stdout": "{\"php_version\":\"8.5.12\",\"php_int_size\":8,\"request_markers\":{\"RP_MODULE_REUSE_REQUEST_1\":false,\"RP_MODULE_REUSE_REQUEST_2\":\"recastpress-v0.5-module-reuse-request-2\",\"RP_MODULE_REUSE_REQUEST_3\":false},\"request_marker_count\":1,\"globals_before_present\":false,\"globals_before_value\":null,\"globals_after\":\"recastpress-v0.5-module-reuse-request-2\",\"echo\":\"recastpress-v0.5-module-reuse\"}",
+        "stdout_bytes": 380,
+        "stdout_eof": true,
+        "stdout_limit_bytes": 65536,
+        "stdout_overflow": false
+      },
+      {
+        "configured_engine_identity": "EngineId(0)",
+        "guest_environment_supplied": [
+          {
+            "key": "RP_MODULE_REUSE_REQUEST_3",
+            "value": "recastpress-v0.5-module-reuse-request-3"
+          }
+        ],
+        "home_mapped": false,
+        "host_directories_mapped": false,
+        "host_environment_forwarded": false,
+        "http_client": false,
+        "isolation_verified": true,
+        "module_compile_invocations": 0,
+        "module_delivery": "Module.clone",
+        "networking": "UnsupportedVirtualNetworking",
+        "php": {
+          "echo": "recastpress-v0.5-module-reuse",
+          "globals_after": "recastpress-v0.5-module-reuse-request-3",
+          "globals_before_present": false,
+          "globals_before_value": null,
+          "php_int_size": 8,
+          "php_version": "8.5.12",
+          "request_marker_count": 1,
+          "request_markers": {
+            "RP_MODULE_REUSE_REQUEST_1": false,
+            "RP_MODULE_REUSE_REQUEST_2": false,
+            "RP_MODULE_REUSE_REQUEST_3": "recastpress-v0.5-module-reuse-request-3"
+          }
+        },
+        "php_completed": true,
+        "php_execution_elapsed_ms": 51,
+        "request_number": 3,
+        "runtime_shutdown_returned": true,
+        "runtime_shutdown_wait_limit_ms": 2000,
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_eof": true,
+        "stderr_limit_bytes": 65536,
+        "stderr_overflow": false,
+        "stdin": "closed-pipe",
+        "stdout": "{\"php_version\":\"8.5.12\",\"php_int_size\":8,\"request_markers\":{\"RP_MODULE_REUSE_REQUEST_1\":false,\"RP_MODULE_REUSE_REQUEST_2\":false,\"RP_MODULE_REUSE_REQUEST_3\":\"recastpress-v0.5-module-reuse-request-3\"},\"request_marker_count\":1,\"globals_before_present\":false,\"globals_before_value\":null,\"globals_after\":\"recastpress-v0.5-module-reuse-request-3\",\"echo\":\"recastpress-v0.5-module-reuse\"}",
+        "stdout_bytes": 380,
+        "stdout_eof": true,
+        "stdout_limit_bytes": 65536,
+        "stdout_overflow": false
+      }
+    ],
+    "reuse": {
+      "completed_requests": 3,
+      "configured_engine_identity": "EngineId(0)",
+      "counter_scope": "explicit PHP Module::new call site; internal backend operations are not instrumented",
+      "module_clone_count": 3,
+      "module_delivery": "Module.clone",
+      "php_module_compile_invocations": 1,
+      "request_environment_policy": "fresh Tokio runtime, PluggableRuntime and WasiRunner per request",
+      "request_path_module_compile_calls": 0,
+      "requested_requests": 3,
+      "source_statement": "Module::new occurs once before the loop; the request path receives a Module clone and never loads Wasm bytes"
+    },
+    "schema": "recastpress.php-wasix-module-reuse.v0.5",
+    "scope": "one-compiled-PHP-module-three-sequential-fresh-environments",
+    "source": {
+      "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+      "kind": "official-github-actions-artifact",
+      "repository": "https://github.com/wasix-org/php"
+    },
+    "wasmer_wasix": "0.702.0",
+    "wordpress_executed": false
+  },
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "d637bf1fd62187a87a0d54429b30ad0730d1e043d64c82a62df991c5947919ac",
+    "experiments/php-wasix-host-probe/Cargo.lock": "c2587744c3d6da007efdb3bd0c746b3f43ed2195949e3a14d1fcae430832b32f",
+    "experiments/php-wasix-host-probe/check.py": "3eb13e197b67a27f0e6a1de8ecf04b134007b41ecbf48557d9467a48df6d0f70",
+    "experiments/php-wasix-host-probe/reuse_check.py": "a3e044a799dff9fd30d63ed7cd1720edd711b2ad51534e4d432a87c0eaec2f56",
+    "experiments/php-wasix-host-probe/src/language_contract.rs": "ccdee5b0ae8b95507796bbe29695341ac7f03555258952bff7b336d4061a50f0",
+    "experiments/php-wasix-host-probe/src/main.rs": "98880fca3e69bc504ae6e46b60ca033b4122128d17030ade410a2b057365acd3",
+    "experiments/php-wasix-host-probe/src/module_reuse.rs": "8616b0033cee1a969a28b0ac90fcf7e0f9ff90c2be8e7efa201fd49f7f8c30a4",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",
+    "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080"
+  }
+}

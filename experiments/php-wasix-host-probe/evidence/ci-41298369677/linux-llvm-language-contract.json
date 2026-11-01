@@ -1,0 +1,401 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T10:45:38.394808+00:00",
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "backend": "llvm",
+  "scope": "fixed language contract only",
+  "outcome": "comparison_failed",
+  "compared_cases": [
+    "basic",
+    "exceptions",
+    "fiber"
+  ],
+  "uncompared_cases": [
+    "wordpress_hooks",
+    "scratch_io",
+    "readonly_io"
+  ],
+  "comparison_passed": false,
+  "wordpress_executed": false,
+  "filesystem_contract_compared": false,
+  "native_php_executed_by_this_helper": false,
+  "production_compatible": false,
+  "memory_limit_verified": false,
+  "outer_build_timeout_seconds": 1200,
+  "outer_execution_timeout_seconds": 300,
+  "native_reference": {
+    "receipt": "experiments/php-runtime-candidate-probe/evidence/native-contract.json",
+    "receipt_sha256": "10265c9acf7935f09678911d43e3093c62bbcec868d0b236fed3714d8be7b0b2",
+    "platform": {
+      "system": "Windows",
+      "machine": "AMD64"
+    },
+    "role": "native PHP comparison reference only; not a production fallback",
+    "php_executable_sha256": "02273af2cb60375c95d1a4d9244fd1bb8abad898e63055235a06ee36af0380ef",
+    "php_core_dll_sha256": "7af6c47fee46995865a3ac3aaa04915b19547e3ffd7072b6242b0f7a027d5754"
+  },
+  "expected_language_cases": {
+    "basic": {
+      "status": "ok",
+      "value": {
+        "arithmetic": 17,
+        "binary_hex": "00ff52500d0ae697a5e69cace8aa9e",
+        "binary_bytes": 15,
+        "unicode_bytes": 9,
+        "substring": "\u65e5",
+        "json_roundtrip": {
+          "text": "\u65e5\u672c\u8a9e",
+          "items": [
+            false,
+            null,
+            7
+          ],
+          "binary_base64": "AP9SUA0K5pel5pys6Kqe"
+        },
+        "wide_integer": 2147483649,
+        "wide_integer_type": "int",
+        "max_integer_decimal": "9223372036854775807"
+      },
+      "warnings": []
+    },
+    "exceptions": {
+      "status": "ok",
+      "value": {
+        "trace": [
+          "outer_try",
+          "inner_try",
+          "inner_catch",
+          "inner_finally",
+          "outer_catch",
+          "outer_finally"
+        ],
+        "previous_class": "RuntimeException",
+        "previous_message": "inner failure"
+      },
+      "warnings": []
+    },
+    "fiber": {
+      "status": "ok",
+      "value": {
+        "start_value": "paused:seed",
+        "suspended": true,
+        "premature_return_error": "FiberError",
+        "resume_value": null,
+        "terminated": true,
+        "return_value": "returned:next",
+        "trace": [
+          "start:seed",
+          "resume:next"
+        ]
+      },
+      "warnings": []
+    }
+  },
+  "build_exit_code": 0,
+  "native_artifact": "target/php-wasix-host-probe/release/recastpress-php-wasix-host-probe",
+  "native_artifact_sha256": "a55005a9af2b6a719e8cae5cc63530b8b5a993f1d7abf46ae0c93e23c1fea5ba",
+  "owned_process_pid": 10366,
+  "exit_code": 1,
+  "stderr_sha256": "659e52e993ba10b527c66aa967c7e67ca8a3e60fe300453bc55f7400ff7caaae",
+  "observed_phases": [
+    "module_compile",
+    "fixed_php_execution"
+  ],
+  "stderr_excerpt": "PHP_WASIX_PHASE=module_compile\nPHP_WASIX_PHASE=fixed_php_execution\n",
+  "native_result": {
+    "artifact": {
+      "expected_bytes": 39727549,
+      "expected_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "observed_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "path": ".reference/php-wasix-8.5.12/php.wasm",
+      "verified": true
+    },
+    "comparison_scope": [
+      "basic",
+      "exceptions",
+      "fiber"
+    ],
+    "compile_elapsed_ms": 84812,
+    "engine": "wasmer-7.2.0/llvm",
+    "error": "language case fiber did not execute successfully",
+    "exception_support": {
+      "execution_verdict": "not-yet-observed",
+      "msvc_source_verdict": "negative-unimplemented-panic-stubs"
+    },
+    "exceptions_executed": true,
+    "fiber_executed": false,
+    "filesystem_contract_compared": false,
+    "fixture": {
+      "bytes": 6728,
+      "expected_sha256": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080",
+      "guest_path": "/fixture/runtime_contract.php",
+      "observed_sha256": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080",
+      "source": "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php",
+      "storage": "compile-time-byte-snapshot-in-readonly-memory-filesystem",
+      "verified": true
+    },
+    "full_php_compatibility_verified": false,
+    "host": {
+      "arch": "x86_64",
+      "os": "linux"
+    },
+    "integer_width_matches_native": null,
+    "isolation": {
+      "configured_guest_max_threads": 1,
+      "deadline_owner": "required-external-owned-child-supervisor",
+      "guest_environment_supplied": [],
+      "guest_fixture_files": [
+        "/fixture/runtime_contract.php"
+      ],
+      "guest_readonly_mounts": [
+        "/fixture"
+      ],
+      "home_mapped": false,
+      "host_directories_mapped": false,
+      "host_environment_forwarded": false,
+      "http_client": false,
+      "in_process_deadline_enforced": false,
+      "memory_limit_enforced": false,
+      "networking": "UnsupportedVirtualNetworking",
+      "other_virtual_root_writes_forbidden": false,
+      "scratch_directory_supplied": false,
+      "stderr_limit_bytes": 65536,
+      "stdin": "closed-pipe",
+      "stdout_limit_bytes": 65536,
+      "wordpress_directory_supplied": false
+    },
+    "language_case_observations": [
+      "basic",
+      "exceptions",
+      "fiber"
+    ],
+    "limitations": [
+      "Only basic, exceptions and fiber are compared by language_check.py against the native receipt.",
+      "The unchanged fixture reports missing-directory errors for its three unprovided filesystem cases; these cases are not compared.",
+      "No WordPress source or scratch directory is supplied, and no WordPress code is executed.",
+      "The host observation alone does not establish a native comparison or full PHP compatibility.",
+      "Memory, CPU and execution deadline enforcement remain the outer supervisor's responsibility."
+    ],
+    "native_comparison_performed": false,
+    "ok": false,
+    "phase": "language_observation_verification",
+    "php": {
+      "cases": {
+        "basic": {
+          "status": "ok",
+          "value": {
+            "arithmetic": 17,
+            "binary_bytes": 15,
+            "binary_hex": "00ff52500d0ae697a5e69cace8aa9e",
+            "json_roundtrip": {
+              "binary_base64": "AP9SUA0K5pel5pys6Kqe",
+              "items": [
+                false,
+                null,
+                7
+              ],
+              "text": "\u65e5\u672c\u8a9e"
+            },
+            "max_integer_decimal": "9223372036854775807",
+            "substring": "\u65e5",
+            "unicode_bytes": 9,
+            "wide_integer": 2147483649,
+            "wide_integer_type": "int"
+          },
+          "warnings": []
+        },
+        "exceptions": {
+          "status": "ok",
+          "value": {
+            "previous_class": "RuntimeException",
+            "previous_message": "inner failure",
+            "trace": [
+              "outer_try",
+              "inner_try",
+              "inner_catch",
+              "inner_finally",
+              "outer_catch",
+              "outer_finally"
+            ]
+          },
+          "warnings": []
+        },
+        "fiber": {
+          "error": {
+            "class": "FiberError",
+            "message": "Cannot resume a fiber that is not suspended"
+          },
+          "status": "error",
+          "warnings": []
+        },
+        "readonly_io": {
+          "error": {
+            "class": "RuntimeException",
+            "message": "missing fixture directory: RP_SCRATCH"
+          },
+          "status": "error",
+          "warnings": []
+        },
+        "scratch_io": {
+          "error": {
+            "class": "RuntimeException",
+            "message": "missing fixture directory: RP_SCRATCH"
+          },
+          "status": "error",
+          "warnings": []
+        },
+        "wordpress_hooks": {
+          "error": {
+            "class": "RuntimeException",
+            "message": "missing fixture directory: RP_WP_ROOT"
+          },
+          "status": "error",
+          "warnings": []
+        }
+      },
+      "format_version": 1,
+      "runtime": {
+        "int_size": 8,
+        "sapi": "cli",
+        "version": "8.5.12",
+        "version_id": 80512
+      },
+      "unexpected_output_hex": ""
+    },
+    "php_execution_elapsed_ms": 49,
+    "process_pid": 10366,
+    "real_db": false,
+    "schema": "recastpress.php-wasix-language-contract.v0.5",
+    "scope": "fixed-fixture-basic-exceptions-fiber-only-no-product-integration",
+    "source": {
+      "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+      "kind": "official-github-actions-artifact",
+      "repository": "https://github.com/wasix-org/php"
+    },
+    "stderr": "",
+    "stderr_bytes": 0,
+    "stderr_overflow": false,
+    "stdout": "{\"format_version\":1,\"runtime\":{\"version\":\"8.5.12\",\"version_id\":80512,\"int_size\":8,\"sapi\":\"cli\"},\"cases\":{\"basic\":{\"status\":\"ok\",\"value\":{\"arithmetic\":17,\"binary_hex\":\"00ff52500d0ae697a5e69cace8aa9e\",\"binary_bytes\":15,\"unicode_bytes\":9,\"substring\":\"\u65e5\",\"json_roundtrip\":{\"text\":\"\u65e5\u672c\u8a9e\",\"items\":[false,null,7],\"binary_base64\":\"AP9SUA0K5pel5pys6Kqe\"},\"wide_integer\":2147483649,\"wide_integer_type\":\"int\",\"max_integer_decimal\":\"9223372036854775807\"},\"warnings\":[]},\"exceptions\":{\"status\":\"ok\",\"value\":{\"trace\":[\"outer_try\",\"inner_try\",\"inner_catch\",\"inner_finally\",\"outer_catch\",\"outer_finally\"],\"previous_class\":\"RuntimeException\",\"previous_message\":\"inner failure\"},\"warnings\":[]},\"fiber\":{\"status\":\"error\",\"error\":{\"class\":\"FiberError\",\"message\":\"Cannot resume a fiber that is not suspended\"},\"warnings\":[]},\"wordpress_hooks\":{\"status\":\"error\",\"error\":{\"class\":\"RuntimeException\",\"message\":\"missing fixture directory: RP_WP_ROOT\"},\"warnings\":[]},\"scratch_io\":{\"status\":\"error\",\"error\":{\"class\":\"RuntimeException\",\"message\":\"missing fixture directory: RP_SCRATCH\"},\"warnings\":[]},\"readonly_io\":{\"status\":\"error\",\"error\":{\"class\":\"RuntimeException\",\"message\":\"missing fixture directory: RP_SCRATCH\"},\"warnings\":[]}},\"unexpected_output_hex\":\"\"}\n",
+    "stdout_bytes": 1245,
+    "stdout_overflow": false,
+    "uncompared_cases": [
+      "wordpress_hooks",
+      "scratch_io",
+      "readonly_io"
+    ],
+    "wasmer_wasix": "0.702.0",
+    "wordpress_executed": false
+  },
+  "observation": {
+    "cases": {
+      "basic": {
+        "status": "ok",
+        "value": {
+          "arithmetic": 17,
+          "binary_bytes": 15,
+          "binary_hex": "00ff52500d0ae697a5e69cace8aa9e",
+          "json_roundtrip": {
+            "binary_base64": "AP9SUA0K5pel5pys6Kqe",
+            "items": [
+              false,
+              null,
+              7
+            ],
+            "text": "\u65e5\u672c\u8a9e"
+          },
+          "max_integer_decimal": "9223372036854775807",
+          "substring": "\u65e5",
+          "unicode_bytes": 9,
+          "wide_integer": 2147483649,
+          "wide_integer_type": "int"
+        },
+        "warnings": []
+      },
+      "exceptions": {
+        "status": "ok",
+        "value": {
+          "previous_class": "RuntimeException",
+          "previous_message": "inner failure",
+          "trace": [
+            "outer_try",
+            "inner_try",
+            "inner_catch",
+            "inner_finally",
+            "outer_catch",
+            "outer_finally"
+          ]
+        },
+        "warnings": []
+      },
+      "fiber": {
+        "error": {
+          "class": "FiberError",
+          "message": "Cannot resume a fiber that is not suspended"
+        },
+        "status": "error",
+        "warnings": []
+      },
+      "readonly_io": {
+        "error": {
+          "class": "RuntimeException",
+          "message": "missing fixture directory: RP_SCRATCH"
+        },
+        "status": "error",
+        "warnings": []
+      },
+      "scratch_io": {
+        "error": {
+          "class": "RuntimeException",
+          "message": "missing fixture directory: RP_SCRATCH"
+        },
+        "status": "error",
+        "warnings": []
+      },
+      "wordpress_hooks": {
+        "error": {
+          "class": "RuntimeException",
+          "message": "missing fixture directory: RP_WP_ROOT"
+        },
+        "status": "error",
+        "warnings": []
+      }
+    },
+    "format_version": 1,
+    "runtime": {
+      "int_size": 8,
+      "sapi": "cli",
+      "version": "8.5.12",
+      "version_id": 80512
+    },
+    "unexpected_output_hex": ""
+  },
+  "case_results": {
+    "basic": {
+      "equal_to_native": true
+    },
+    "exceptions": {
+      "equal_to_native": true
+    },
+    "fiber": {
+      "equal_to_native": false,
+      "difference": "contract fields mismatch: fiber"
+    }
+  },
+  "diagnostics": "host language contract validation failed: language case fiber did not execute successfully",
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "d637bf1fd62187a87a0d54429b30ad0730d1e043d64c82a62df991c5947919ac",
+    "experiments/php-wasix-host-probe/Cargo.lock": "c2587744c3d6da007efdb3bd0c746b3f43ed2195949e3a14d1fcae430832b32f",
+    "experiments/php-wasix-host-probe/check.py": "3eb13e197b67a27f0e6a1de8ecf04b134007b41ecbf48557d9467a48df6d0f70",
+    "experiments/php-wasix-host-probe/language_check.py": "6ce6ecf8cdd088414d719da48b109ee86b846e1cb6ef21249e94df064ebf0a55",
+    "experiments/php-wasix-host-probe/src/language_contract.rs": "ccdee5b0ae8b95507796bbe29695341ac7f03555258952bff7b336d4061a50f0",
+    "experiments/php-wasix-host-probe/src/main.rs": "98880fca3e69bc504ae6e46b60ca033b4122128d17030ade410a2b057365acd3",
+    "experiments/php-wasix-host-probe/src/module_reuse.rs": "8616b0033cee1a969a28b0ac90fcf7e0f9ff90c2be8e7efa201fd49f7f8c30a4",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",
+    "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080",
+    "experiments/php-runtime-candidate-probe/evidence/native-contract.json": "10265c9acf7935f09678911d43e3093c62bbcec868d0b236fed3714d8be7b0b2",
+    "experiments/php-runtime-candidate-probe/artifact.json": "a5a8a3aefbc6f0bd094558756ac75f0ac4208adb35ce03317d134049b7856175"
+  }
+}

@@ -1,0 +1,28 @@
+--- a/sapi/cgi/cgi_main.c
++++ b/sapi/cgi/cgi_main.c
+@@ -2000,7 +2000,15 @@
+ 			fcgi_set_mgmt_var("FCGI_MAX_REQS",  sizeof("FCGI_MAX_REQS")-1,  "1", sizeof("1")-1);
+ 		}
+ 
+-#ifndef PHP_WIN32
++#if defined(__wasi__)
++		/* WASI has no prefork backend; retain the single-process path. */
++		if (children) {
++			fprintf(stderr, "FastCGI prefork is not supported on WASI\n");
++			return FAILURE;
++		}
++		parent = 0;
++		zend_signal_init();
++#elif !defined(PHP_WIN32)
+ 		if (children) {
+ 			int running = 0;
+ 			pid_t pid;
+@@ -2223,7 +2231,7 @@
+ 		} else {
+ 			parent = 0;
+ 		}
+-#endif /* PHP_WIN32 */
++#endif /* WASI / Unix / Windows process management */
+ 	}
+ 
+ 	zend_first_try {

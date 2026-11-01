@@ -4,6 +4,8 @@
 //! A version-only result does not establish exception, WordPress, or DB support.
 
 mod language_contract;
+#[cfg(test)]
+mod memory_limits;
 mod module_reuse;
 
 use std::fs::File;

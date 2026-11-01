@@ -1,0 +1,8 @@
+{
+  "format_version": 1,
+  "llvm_toolchain_manifest_sha256": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388",
+  "archive_bytes": 741670068,
+  "archive_sha256": "5fb1c687c5e895d517a23e7aabea9ec3557e3a3e33f8a8d3a8d21395157b3906",
+  "llvm_config_version": "22.1.8",
+  "php_executed_by_this_step": false
+}

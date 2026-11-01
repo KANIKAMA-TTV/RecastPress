@@ -61,6 +61,18 @@ def load_manifest():
     for source in manifest['sources'].values():
         require(re.fullmatch('[0-9a-f]{40}', source['commit']), 'unfixed source commit')
         owned_path(source['directory'])
+    require(len(manifest['source_patches']) == 1, 'expected one explicit CGI source patch')
+    for patch in manifest['source_patches']:
+        require(patch['source_commit'] == manifest['sources']['php']['commit']
+                and patch['target'] == 'sapi/cgi/cgi_main.c', 'source patch does not bind the fixed CGI source')
+        relative_parts(patch['target'])
+        path = HERE.joinpath(*relative_parts(patch['path']))
+        require(path.resolve().is_relative_to(HERE.resolve()) and not path.is_symlink(), 'source patch escaped experiment')
+        require(digest(path) == patch['sha256'], 'source patch manifest SHA-256 mismatch')
+        require(type(patch['before_bytes']) is int and patch['before_bytes'] > 0, 'invalid source patch input size')
+        require(re.fullmatch('[0-9a-f]{40}', patch['before_git_blob_sha1']), 'invalid source blob identity')
+        for field in ['sha256', 'before_sha256', 'after_sha256']:
+            require(re.fullmatch('[0-9a-f]{64}', patch[field]), 'invalid source patch identity')
     assets = manifest['assets']
     require(len(assets) == 4 and {asset['name'] for asset in assets} == {'wasixcc', 'sysroot', 'llvm', 'binaryen'},
             'exactly four fixed tool archives are required')
@@ -205,7 +217,8 @@ def write_report(name, report):
 
 
 def input_hashes():
-    paths = sorted(HERE.glob('*.py')) + [MANIFEST, HERE / 'README.ja.md', ROOT / '.github/workflows/php-wasix-cgi-build.yml']
+    paths = sorted(HERE.glob('*.py')) + sorted(HERE.glob('patches/*.patch'))
+    paths += [MANIFEST, HERE / 'README.ja.md', ROOT / '.github/workflows/php-wasix-cgi-build.yml']
     return {path.relative_to(ROOT).as_posix(): digest(path) for path in paths if path.is_file()}
 
 

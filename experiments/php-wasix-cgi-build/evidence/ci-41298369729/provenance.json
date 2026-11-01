@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "071c9443ba56b2b5dd27032567ed3e7a9c8d0045",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41298369729",
+  "artifact_id": 13080108223,
+  "artifact_zip_bytes": 12816,
+  "artifact_zip_sha256": "8f852304dd0190d8c41ad01c69565c3d6dc14024db9f485590ffb86f064c4feb",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "63d9e89380c2693f781b1a73735a22197d623a6078ab82e96cc759a9176ca8ff",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "6ce6ecf8cdd088414d719da48b109ee86b846e1cb6ef21249e94df064ebf0a55",
+    "experiments/php-wasix-host-probe/reuse_check.py": "a3e044a799dff9fd30d63ed7cd1720edd711b2ad51534e4d432a87c0eaec2f56",
+    "experiments/php-wasix-host-probe/check.py": "3eb13e197b67a27f0e6a1de8ecf04b134007b41ecbf48557d9467a48df6d0f70"
+  },
+  "imported_files": {
+    "ci-stages.json": "e0c57f3372c1a43458a9ddf76773d2eeb898fbb91cadcb1e307b8e5b3c71039d",
+    "build.json": "5c0f9d91e41daf5a013517b2c1b7ac0c4f21e69fb2437ed5ef84abd37ac769e3",
+    "toolchain.json": "adace818857b2c4641e14ad54f2f577797d17a27b82477c7793f96c6187fc9f8"
+  },
+  "observations": {
+    "tool_preparation_passed": true,
+    "configure_passed": true,
+    "cgi_build_passed": false,
+    "cgi_guest_executed": false,
+    "failure_phase": "make_cgi",
+    "failure_diagnostics": "fixed build step failed: make_cgi"
+  }
+}

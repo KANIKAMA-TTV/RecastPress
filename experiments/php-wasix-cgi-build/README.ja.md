@@ -12,7 +12,13 @@ Rustで直接ホストするCGI候補を作れるか確認する、v0.5の独立
 
 ## 公式手順との差分
 
-[公式configure](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/wasix-configure-eh.sh)を`wasix-configure-eh-64.sh`経由でそのまま使い、末尾の`WASIX_EXTRA_CONFIGURE_FLAGS`へ`--enable-cgi`だけを追加する。PHP core/SAPIソースは変更しない。CLIのconfigure設定も残すが、ビルド対象は`make -j2 cgi`だけとする。
+[公式configure](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/wasix-configure-eh.sh)を`wasix-configure-eh-64.sh`経由でそのまま使い、末尾の`WASIX_EXTRA_CONFIGURE_FLAGS`へ`--enable-cgi`だけを追加する。CLIのconfigure設定も残すが、ビルド対象は`make -j2 cgi`だけとする。
+
+[初回run 41298369729](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41298369729)ではツール検証・configureが成功し、`cgi_main.c:2035`のprefork用`fork()`が未宣言でコンパイルに失敗した。[保存済みの元証跡](evidence/ci-41298369729/provenance.json)は未修正ソースの失敗として維持する。`PHP_FCGI_CHILDREN=0`は実行時の条件なので、このコンパイル対象を除去できない。固定CGI configureにはpreforkだけを無効化する設定もない。
+
+以後は[明示パッチ](patches/0001-wasi-disable-cgi-prefork.patch)で、WASI専用の単一process分岐を追加する。WASIのFastCGI modeで正の`PHP_FCGI_CHILDREN`を指定した場合はエラーを出して失敗し、preforkを利用可能と扱わない。childrenが0なら既存と同じ`parent=0`とsignal初期化へ進む。CGIの単一要求経路、native Unix/Windowsのprefork実装には変更を加えない。fork宣言・成功stub・警告抑制は追加しない。
+
+変更するPHPソースは`sapi/cgi/cgi_main.c`だけ。[patch_source.py](patch_source.py)は固定commitと適用直前のtracked worktree clean確認後に、パッチSHA、元ファイルのサイズ・Git blob ID・SHA-256を照合する。標準の`git apply --check --whitespace=nowarn`で確認してから`git apply --whitespace=nowarn`で適用し、indexは更新しない。各呼出しはshellを使わず30秒の期限を設ける。Gitがoffsetを受理しても、適用後のファイル全体SHA-256が固定値と一致しなければビルドを停止する。再適用も元SHAの不一致で拒否する。manifestと新しいbuild証跡にsource/patch/対象前後の対応と`php_source_patch=true`を記録する。このパッチによる再ビルドと実際のprefork拒否は別途検証が必要。
 
 `sapi/cgi/php-cgi`へリンクした後、[公式optimizer手順](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/wasix-build-eh.sh)と同じflagsで`php-cgi.wasm`を生成する。公式の`--no-validation`も維持するため、Wasmヘッダ検査とハッシュだけでmodule validation済みとは扱わない。CGIのconfigure/link、最終Wasm ABI、Rustでの実行は新規に実証が必要。
 

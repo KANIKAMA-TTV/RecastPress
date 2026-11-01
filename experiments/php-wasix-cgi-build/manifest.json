@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "scope": "independent official PHP 8.5.12 WASIX CGI build only",
+  "scope": "independent PHP 8.5.12 WASIX CGI build with explicit prefork exclusion",
   "php_version": "8.5.12",
   "guest_executed": false,
   "product_runtime_selected": false,
@@ -26,6 +26,19 @@
       "purpose": "preseed gen_stub.php parser; no unverified automatic parser archive download"
     }
   },
+  "source_patches": [
+    {
+      "path": "patches/0001-wasi-disable-cgi-prefork.patch",
+      "sha256": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+      "source_commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+      "target": "sapi/cgi/cgi_main.c",
+      "before_bytes": 74873,
+      "before_git_blob_sha1": "6db96a43ac97bcaefe8e4c22686435a7d4bf39c7",
+      "before_sha256": "e33b16fc29faec5dd8b9b3b7bdd7747832a83c48525b6b336ef8d263fd8c07e6",
+      "after_sha256": "f5fe5e6e4534397cb5b8dbf538bdff32ae988659c7400fe555b703554c210832",
+      "scope": "exclude WASI FastCGI prefork; reject positive PHP_FCGI_CHILDREN in FastCGI mode; retain the single-process path"
+    }
+  ],
   "assets": [
     {
       "name": "wasixcc",

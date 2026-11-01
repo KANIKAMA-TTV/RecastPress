@@ -77,7 +77,7 @@ jobs:
         id: tools
         run: python3 experiments/php-wasix-cgi-build/prepare.py --record
 
-      - name: Build the official CGI candidate without executing guest PHP
+      - name: Build the explicit-patch CGI candidate without executing guest PHP
         id: build
         run: python3 experiments/php-wasix-cgi-build/build.py --record
 
@@ -104,6 +104,7 @@ jobs:
           evidence.mkdir(parents=True, exist_ok=True)
           inputs = [root / '.github/workflows/php-wasix-cgi-build.yml']
           inputs += sorted(experiment.glob('*.py')) + sorted(experiment.glob('*.json'))
+          inputs += sorted(experiment.glob('patches/*.patch'))
           report = {
               'format_version': 1,
               'scope': 'CGI build only; no guest execution or product adoption',

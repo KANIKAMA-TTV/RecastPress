@@ -57,7 +57,17 @@ python experiments/php-wasix-host-probe/reuse_check.py --llvm --record
 
 固定`--module-reuse`モードは、ループ外でPHPの`Module::new`を1回だけ呼び、`Module.clone`を3つの要求へ渡す。要求ごとにTokio runtime・WASIX runtime・WasiRunnerを新設し、GLOBALSの初期状態、3つの異なる環境キーのうち該当する1つだけが見えること、stdout/stderrの上限・EOF・終了を観測する。host directory・home・環境継承・networkは渡さない。
 
-compile回数はコード内の明示した呼出し点の計数で、backend内部の全操作の計測ではない。runtimeの`shutdown_timeout`から戻ることを、全thread停止や全RSS返却の証明にしない。プロセス全体は外側checkerが監督する。Windowsでrelease buildと引数拒否を確認し、Linuxの正実行は別途取得する。
+compile回数はコード内の明示した呼出し点の計数で、backend内部の全操作の計測ではない。runtimeの`shutdown_timeout`から戻ることを、全thread停止や全RSS返却の証明にしない。プロセス全体は外側checkerが監督する。Windowsのrelease buildと引数拒否に続き、Linuxで以下の正実行を取得した。
+
+[CI run 41298369677](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41298369677)の[再利用実測](evidence/ci-41298369677/linux-llvm-module-reuse.json)では、compile呼出し1回・clone3回・新規要求3回が成功した。compileは83,476ms、各`run_wasm`は55/53/51msで、GLOBALS・個別環境値・EOFを照合した。同じrunの言語契約は基本値・例外一致／Fiber不一致のままであり、[全体判定](evidence/ci-41298369677/provenance.json)はfailureとして保存する。再利用の成立をWP bootstrapや製品性能へ広げない。
+
+## imported shared memory上限の単体実証
+
+test専用[memory_limits.rs](src/memory_limits.rs)は、公開`VirtualTaskManager::task_wasm`で`CreateMemoryOfType`を変更してからTokio managerへ渡す。`build_memory`のoverrideだけには依存しない。対象は`env::memory`を1つだけimportする既知のshared memoryで、既存memory attach・内部定義・linker groupは受け付けない。
+
+[Windowsの実測](evidence/memory-policy-windows.json)で、小さい固定WATを本物のWasiRunnerから実行した。初期403 pagesから1024 pagesへのgrowは成功し、capありの追加1 pageは−1、対照のcapなしでは1025 pagesになった。recycle callbackで実memoryのmaximumも1024／65536と照合した。初期値超過と既存／別経路の拒否を含む3件、既存FS2件、計5 unitが成功した。Cargoのtest artifactとソース・compile時PHP fixture・実行バイナリをSHAで結合した。
+
+1024 pages=64MiBは試験値である。PHP経路にはまだ適用せず、`php_memory_limit_verified=false`を維持する。静的仮想予約・compiler・RSS・複数memory合計の上限ではなく、全guest／fork／直接instantiateの制御とも異なる。Watはdev依存だけに追加する。
 
 ## 実験の制御範囲
 

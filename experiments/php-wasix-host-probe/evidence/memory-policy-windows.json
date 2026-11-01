@@ -1,0 +1,131 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T10:59:28.605139+00:00",
+  "scope": "test-only imported shared linear memory policy with real WasiRunner",
+  "platform": {
+    "system": "Windows",
+    "machine": "AMD64"
+  },
+  "backend": "wasmer-7.2.0/cranelift",
+  "guest_execution": "small fixed WAT only",
+  "php_guest_executed": false,
+  "php_memory_guard_integrated": false,
+  "php_memory_limit_verified": false,
+  "product_adopted": false,
+  "rss_limit_verified": false,
+  "compiler_memory_limit_verified": false,
+  "aggregate_memory_limit_verified": false,
+  "arbitrary_guests_supported": false,
+  "all_unit_tests_passed": true,
+  "test_process_reaped": true,
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "0bde64d68d8c86030bf6cb3136b73962f3adbaa1434cb2b1b0dc9806951e7951",
+    "experiments/php-wasix-host-probe/Cargo.lock": "65fd2dafaea4c73706b9c70a0b0188f0b7627d7d545de0b684bc86dfe32cbbb5",
+    "experiments/php-wasix-host-probe/src/language_contract.rs": "ccdee5b0ae8b95507796bbe29695341ac7f03555258952bff7b336d4061a50f0",
+    "experiments/php-wasix-host-probe/src/main.rs": "1483a0576e53d8154a376716bc86db847353a616f889726165ebc2aaddf586f7",
+    "experiments/php-wasix-host-probe/src/memory_limits.rs": "9b53cb0ef2fa6feaa8975706225aae6b631db79bf9183e17a835c1fd9d4180d6",
+    "experiments/php-wasix-host-probe/src/module_reuse.rs": "8616b0033cee1a969a28b0ac90fcf7e0f9ff90c2be8e7efa201fd49f7f8c30a4",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",
+    "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080"
+  },
+  "build_process_pid": 4768,
+  "build_exit_code": 0,
+  "build_stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.25s\n",
+  "test_artifact": {
+    "path": "target/php-wasix-host-probe/debug/deps/recastpress_php_wasix_host_probe-98c39080cc00ddc6.exe",
+    "bytes": 50489344,
+    "sha256": "3689d77cf85e74c3bcc537efaa21ccc0d54f8bc5e142dba89319283781acc111",
+    "cargo_reason": "compiler-artifact",
+    "target_name": "recastpress-php-wasix-host-probe",
+    "target_kind": [
+      "bin"
+    ],
+    "manifest": "experiments/php-wasix-host-probe/Cargo.toml",
+    "source": "experiments/php-wasix-host-probe/src/main.rs",
+    "profile": {
+      "opt_level": "0",
+      "debuginfo": 2,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": true
+    },
+    "features": [
+      "cranelift",
+      "default"
+    ],
+    "fresh": true
+  },
+  "cargo_test_json_stdout_sha256": "cb2a5a137db6ba77aabcac73375ad0507b3445bcca7f1029b51e7b0bb93530ae",
+  "owned_test_process_pid": 20508,
+  "test_exit_code": 0,
+  "test_elapsed_seconds": 0.17314259998966008,
+  "test_stdout": "\nrunning 5 tests\ntest language_contract::tests::namespace_changes_and_mutating_open_modes_are_denied ... ok\ntest memory_limits::policy_rejects_initial_excess_and_existing_or_unknown_memory_paths ... ok\ntest language_contract::tests::verified_source_is_the_only_readable_entry_and_handles_are_immutable ... ok\ntest memory_limits::runner_clamps_imported_shared_memory_and_rejects_growth_past_1024_pages ... ok\ntest memory_limits::runner_without_cap_allows_the_same_extra_page ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n",
+  "test_stderr": "",
+  "test_stdout_sha256": "0818250a83b5aaea87b57c03efad21e2d16e45799f6503a4d647930bc267600d",
+  "test_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_and_binary_unchanged_during_run": true,
+  "passed_test_names": [
+    "language_contract::tests::namespace_changes_and_mutating_open_modes_are_denied",
+    "language_contract::tests::verified_source_is_the_only_readable_entry_and_handles_are_immutable",
+    "memory_limits::policy_rejects_initial_excess_and_existing_or_unknown_memory_paths",
+    "memory_limits::runner_clamps_imported_shared_memory_and_rejects_growth_past_1024_pages",
+    "memory_limits::runner_without_cap_allows_the_same_extra_page"
+  ],
+  "memory_tests": [
+    {
+      "name": "memory_limits::runner_clamps_imported_shared_memory_and_rejects_growth_past_1024_pages",
+      "passed": true,
+      "actual_values_verified_by": "passed equality assertions on recycle callback observations",
+      "observation_words_u32": [
+        403,
+        403,
+        1024,
+        4294967295,
+        1024
+      ],
+      "observation_word_names": [
+        "initial_pages",
+        "first_grow_previous_pages",
+        "pages_after_first_grow",
+        "second_grow_previous_pages_or_failure",
+        "final_pages"
+      ],
+      "extra_grow_result_i32": -1,
+      "actual_memory_maximum_pages": 1024,
+      "actual_memory_shared": true,
+      "actual_final_pages": 1024
+    },
+    {
+      "name": "memory_limits::runner_without_cap_allows_the_same_extra_page",
+      "passed": true,
+      "actual_values_verified_by": "passed equality assertions on recycle callback observations",
+      "observation_words_u32": [
+        403,
+        403,
+        1024,
+        1024,
+        1025
+      ],
+      "extra_grow_result_i32": 1024,
+      "actual_memory_maximum_pages": 65536,
+      "actual_memory_shared": true,
+      "actual_final_pages": 1025
+    },
+    {
+      "name": "memory_limits::policy_rejects_initial_excess_and_existing_or_unknown_memory_paths",
+      "passed": true,
+      "actual_values_verified_by": "passed error-variant assertions",
+      "minimum_above_cap": {
+        "minimum_pages": 403,
+        "cap_pages": 128,
+        "error": "MemoryCreateFailed(MinimumMemoryTooLarge)"
+      },
+      "create_memory_path": "Unsupported",
+      "existing_attach_memory_path": "Unsupported",
+      "linker_group_path": "rejected by policy wildcard; not independently instantiated by this test"
+    }
+  ],
+  "wat_source_sha256": "2a70e02e43595e88b72fab016c7c3eb619775ec17d53005942a74872feadfc3f",
+  "linear_memory_import_maximum_verified_for_fixed_wat": true,
+  "re_recording_reason": "Include the compile-time PHP fixture in the source snapshot; re-execute the identical Cargo-selected binary."
+}
