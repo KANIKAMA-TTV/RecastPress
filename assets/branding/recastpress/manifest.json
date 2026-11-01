@@ -1,0 +1,361 @@
+{
+  "brand": "RecastPress",
+  "colour": "#79332B",
+  "files": [
+    {
+      "file": "recastpress.svg",
+      "kind": "svg",
+      "bytes": 24344,
+      "sha256": "5c1f6bacc9cb961e47404e15e739b8c226dd570ffc1dee73ff1bda188651c0e0",
+      "background": "transparent",
+      "viewBox": "0 0 1000 1000"
+    },
+    {
+      "file": "recastpress-white-bg.svg",
+      "kind": "svg",
+      "bytes": 24390,
+      "sha256": "e2208146b168ea236561201461da7dfdcc2cc286f5df2934b7d6669dea7bb567",
+      "background": "#FFFFFF",
+      "viewBox": "0 0 1000 1000"
+    },
+    {
+      "file": "png/transparent/recastpress-16.png",
+      "kind": "png",
+      "bytes": 851,
+      "sha256": "b2cbb933efdde27ae758cbe1f66fc2ed2083e50400b10dfa126b620d5b942f4f",
+      "width": 16,
+      "height": 16,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-16.png",
+      "kind": "png",
+      "bytes": 698,
+      "sha256": "d3d1fa20c2336d46b2403e547061c3abacc81974bf6b16699f214d18b70f38ab",
+      "width": 16,
+      "height": 16,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-20.png",
+      "kind": "png",
+      "bytes": 1043,
+      "sha256": "b52d8c9b8c3fa6b845aa0a18f4486df45f6615c71387acfe3e28d985f8992735",
+      "width": 20,
+      "height": 20,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-20.png",
+      "kind": "png",
+      "bytes": 884,
+      "sha256": "74c0ce75d9fae0b7a111febea660947b89b8a8ea4fb31c56ab3aa13e2cb7664a",
+      "width": 20,
+      "height": 20,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-24.png",
+      "kind": "png",
+      "bytes": 1344,
+      "sha256": "2cb2acf9984f0e3292d436fea9a56f8fb5861882d402956e3b81c3552f98f026",
+      "width": 24,
+      "height": 24,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-24.png",
+      "kind": "png",
+      "bytes": 1163,
+      "sha256": "f3c0892395b1c9a8cbf6e40ff68bda00150feda0b19545c47c8d8633009017cd",
+      "width": 24,
+      "height": 24,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-32.png",
+      "kind": "png",
+      "bytes": 1937,
+      "sha256": "e70bed2247a4b9b56d52b20028873de518680cb067d3454c857022dbbecab1ec",
+      "width": 32,
+      "height": 32,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-32.png",
+      "kind": "png",
+      "bytes": 1676,
+      "sha256": "c6dfed698b6e671d90a06065663f3c80cc4ce9ae5d983f68f61a318ff489d6e3",
+      "width": 32,
+      "height": 32,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-40.png",
+      "kind": "png",
+      "bytes": 2484,
+      "sha256": "2bac5c5546f89f88a03379c83d6dcf44b70a5e8fea12996881c3490390f12954",
+      "width": 40,
+      "height": 40,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-40.png",
+      "kind": "png",
+      "bytes": 2203,
+      "sha256": "002eaa26eb361c17283c852338dfa1cd7cdbae8f4a244643d38912714e48cd7a",
+      "width": 40,
+      "height": 40,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-48.png",
+      "kind": "png",
+      "bytes": 3122,
+      "sha256": "7b6d839975dd0b72abf0f17ad8ab1f4bcea13b058508673b6e6d6400c81d925d",
+      "width": 48,
+      "height": 48,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-48.png",
+      "kind": "png",
+      "bytes": 2767,
+      "sha256": "1dee998275c8891b4017384723757088182f3cf458c90eed9a37c09d9de39465",
+      "width": 48,
+      "height": 48,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-64.png",
+      "kind": "png",
+      "bytes": 4236,
+      "sha256": "eccd97c14b31154fd4ceb5a738fe1cb6ad33873b0e15af0386b7cc94e171c58b",
+      "width": 64,
+      "height": 64,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-64.png",
+      "kind": "png",
+      "bytes": 3789,
+      "sha256": "c980faebae679eead374ad05bbfcf01aa83eff2237666435eb1ab1a5fe24f378",
+      "width": 64,
+      "height": 64,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-96.png",
+      "kind": "png",
+      "bytes": 6563,
+      "sha256": "bc947b6f674e76d2565c4c454e5fde196b25c68a77d4a342771358a032b4e3bf",
+      "width": 96,
+      "height": 96,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-96.png",
+      "kind": "png",
+      "bytes": 5825,
+      "sha256": "5758f847f276b45f5d791dafb557b4ac26c9ed8f5b843166f4d55d211749d91b",
+      "width": 96,
+      "height": 96,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-128.png",
+      "kind": "png",
+      "bytes": 8654,
+      "sha256": "17026a8434163fdc7512186a1dd8b64454c986ffaa0e40ca55f9dbb2e11c4b1d",
+      "width": 128,
+      "height": 128,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-128.png",
+      "kind": "png",
+      "bytes": 7672,
+      "sha256": "6182e3af169b7281f4a1ca372161ceb1ce9e7c76f3004c1479d2ee8dd4085b2a",
+      "width": 128,
+      "height": 128,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-180.png",
+      "kind": "png",
+      "bytes": 12348,
+      "sha256": "361f80cc6948984fa38ca996c78509f5b83752915d208f1038525e5af4deaa02",
+      "width": 180,
+      "height": 180,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-180.png",
+      "kind": "png",
+      "bytes": 11027,
+      "sha256": "698efd0f7dbe650f08c0d3d19e267629333b82b2cc6aab650e04aadafb908ffd",
+      "width": 180,
+      "height": 180,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-192.png",
+      "kind": "png",
+      "bytes": 13235,
+      "sha256": "f17f4a6e0a77bb841cb9fd29ab1a617a58e44348ecb67cb7b9e70178b3c07de2",
+      "width": 192,
+      "height": 192,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-192.png",
+      "kind": "png",
+      "bytes": 11817,
+      "sha256": "d30f2450336e326dad4e55deb1577d8b454cf47260dff426004498feff01bf0b",
+      "width": 192,
+      "height": 192,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-256.png",
+      "kind": "png",
+      "bytes": 17762,
+      "sha256": "c9db67e7bb1dbce88923d8829422cfde769bef8b1d17ef5ac79dd2dea419e33e",
+      "width": 256,
+      "height": 256,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-256.png",
+      "kind": "png",
+      "bytes": 15884,
+      "sha256": "990b3a3e0a865401b7ba684e48e55d4d312b670cfa54e36789e2cedf703a2bac",
+      "width": 256,
+      "height": 256,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-384.png",
+      "kind": "png",
+      "bytes": 26456,
+      "sha256": "431bb06fdb7b3a8927011a00c4064dd74bdb1221909940ddc4f7d0330fb03bb0",
+      "width": 384,
+      "height": 384,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-384.png",
+      "kind": "png",
+      "bytes": 23217,
+      "sha256": "12fd1d5c2aa6447d6c5757795b4e82903d2d7a54429afe5c470b197c3a220799",
+      "width": 384,
+      "height": 384,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-512.png",
+      "kind": "png",
+      "bytes": 36013,
+      "sha256": "dde9d58996e6b1ee1e0e48f9575dc0b41fecc17321ed01d41460b250f387bec0",
+      "width": 512,
+      "height": 512,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-512.png",
+      "kind": "png",
+      "bytes": 31693,
+      "sha256": "af71299f9862abbb50820541320862d62572718612395b14473462d0951e84cb",
+      "width": 512,
+      "height": 512,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-1024.png",
+      "kind": "png",
+      "bytes": 76989,
+      "sha256": "e3540b545838846e5464c671d75754891ea8c9786245590f980f7bab958cbecf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-1024.png",
+      "kind": "png",
+      "bytes": 67996,
+      "sha256": "3701d5c51b23eeb9ce8763e36135ac97768bf9a6677bc9c8bce1994d92942682",
+      "width": 1024,
+      "height": 1024,
+      "background": "white"
+    },
+    {
+      "file": "png/transparent/recastpress-2048.png",
+      "kind": "png",
+      "bytes": 167283,
+      "sha256": "63f91051d5d1c0df819f3f3b06b429c14392c7226139a6da6cbcaf570b31acba",
+      "width": 2048,
+      "height": 2048,
+      "background": "transparent"
+    },
+    {
+      "file": "png/white/recastpress-2048.png",
+      "kind": "png",
+      "bytes": 147237,
+      "sha256": "920f0f6dbe1deb84884d51f53dbacffab09a313f9cb3ecb2473403d08a4eab19",
+      "width": 2048,
+      "height": 2048,
+      "background": "white"
+    },
+    {
+      "file": "web/favicon.svg",
+      "kind": "svg",
+      "bytes": 24344,
+      "sha256": "5c1f6bacc9cb961e47404e15e739b8c226dd570ffc1dee73ff1bda188651c0e0",
+      "background": "transparent"
+    },
+    {
+      "file": "web/apple-touch-icon.png",
+      "kind": "png",
+      "bytes": 11027,
+      "sha256": "698efd0f7dbe650f08c0d3d19e267629333b82b2cc6aab650e04aadafb908ffd",
+      "width": 180,
+      "height": 180
+    },
+    {
+      "file": "web/icon-192.png",
+      "kind": "png",
+      "bytes": 13235,
+      "sha256": "f17f4a6e0a77bb841cb9fd29ab1a617a58e44348ecb67cb7b9e70178b3c07de2",
+      "width": 192,
+      "height": 192
+    },
+    {
+      "file": "web/icon-512.png",
+      "kind": "png",
+      "bytes": 36013,
+      "sha256": "dde9d58996e6b1ee1e0e48f9575dc0b41fecc17321ed01d41460b250f387bec0",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "web/favicon.ico",
+      "kind": "ico",
+      "bytes": 29354,
+      "sha256": "c69f6f33b9d1a35de8368da25f61fcd7e47c61e8b59466fefb65ec06b98b62a2",
+      "sizes": [
+        16,
+        24,
+        32,
+        48,
+        64,
+        256
+      ]
+    },
+    {
+      "file": "web/site.webmanifest",
+      "kind": "manifest",
+      "bytes": 372,
+      "sha256": "97bdb671b7dc2d9a27fa6a422653e285cf2bb54bc3b8cd2b2ae5e6f20a0ac829"
+    }
+  ]
+}

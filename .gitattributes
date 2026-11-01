@@ -1,0 +1,3 @@
+# Preserve exact bytes used by source-bound evidence and asset manifests.
+# Line-ending normalization, when needed, must be an explicit change.
+* -text

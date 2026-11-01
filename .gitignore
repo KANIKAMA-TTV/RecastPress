@@ -1,0 +1,8 @@
+/target/
+**/target/
+/.reference/
+__pycache__/
+.env
+.env.*
+!.env.example
+!.env.sample

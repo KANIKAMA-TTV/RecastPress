@@ -1,0 +1,60 @@
+{
+  "name": "RecastPress",
+  "status": "adopted",
+  "adopted": "2026-10-26",
+  "selectedCandidate": "03-D1",
+  "selectedName": "ブリックレッド・暗め",
+  "primary": {
+    "hex": "#79332B",
+    "rgb": [
+      121,
+      51,
+      43
+    ]
+  },
+  "foreground": {
+    "hex": "#FFFFFF",
+    "rgb": [
+      255,
+      255,
+      255
+    ]
+  },
+  "svg": "recastpress.svg",
+  "svgWhiteBackground": "recastpress-white-bg.svg",
+  "pngSizes": [
+    16,
+    20,
+    24,
+    32,
+    40,
+    48,
+    64,
+    96,
+    128,
+    180,
+    192,
+    256,
+    384,
+    512,
+    1024,
+    2048
+  ],
+  "source": "docs/branding/recastpress-logo-concept-v16.svg",
+  "geometry": "concept-v16",
+  "originalColourCandidate": "docs/branding/warm-dark-study-v3/03-D1-brick-red.svg",
+  "canvas": {
+    "viewBox": [
+      0,
+      0,
+      1000,
+      1000
+    ],
+    "badgeCenter": [
+      500,
+      500
+    ],
+    "badgeRadius": 450,
+    "margin": 50
+  }
+}
