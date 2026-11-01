@@ -1,0 +1,23 @@
+{
+  "format_version": 1,
+  "purpose": "Independent Linux LLVM P0 candidate; not a product toolchain decision",
+  "llvm_version_prefix": "22.1",
+  "host_target": "x86_64-unknown-linux-gnu",
+  "rust_toolchain": "1.94.0",
+  "source_repository": "https://github.com/wasmerio/llvm-custom-builds",
+  "release_tag": "22.x",
+  "asset_id": 468024438,
+  "asset_metadata_url": "https://api.github.com/repos/wasmerio/llvm-custom-builds/releases/assets/468024438",
+  "archive_url": "https://github.com/wasmerio/llvm-custom-builds/releases/download/22.x/llvm-linux-amd64.tar.xz",
+  "archive_filename": "llvm-linux-amd64.tar.xz",
+  "archive_bytes": 741670068,
+  "archive_sha256": "5fb1c687c5e895d517a23e7aabea9ec3557e3a3e33f8a8d3a8d21395157b3906",
+  "extract_directory": ".reference/llvm-22.1-linux-amd64",
+  "required_llvm_config": "bin/llvm-config",
+  "strip_components": 0,
+  "reference_ci_repository": "https://github.com/wasmerio/wasmer",
+  "reference_ci_commit": "93bd021012baafda53df2030db3ce1758dc1e336",
+  "reference_ci_path": ".github/workflows/build.yml",
+  "reference_ci_url": "https://github.com/wasmerio/wasmer/blob/93bd021012baafda53df2030db3ce1758dc1e336/.github/workflows/build.yml",
+  "redistributed": false
+}

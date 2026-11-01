@@ -1,0 +1,30 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T09:29:49.279602+00:00",
+  "platform": {
+    "system": "Windows",
+    "machine": "AMD64"
+  },
+  "backend": "cranelift",
+  "outcome": "process_failed_without_result",
+  "php_version_verified": false,
+  "production_compatible": false,
+  "memory_limit_verified": false,
+  "outer_execution_timeout_seconds": 300,
+  "native_artifact": "target/php-wasix-host-probe/release/recastpress-php-wasix-host-probe.exe",
+  "native_artifact_sha256": "a505ae53d8656b757195cba94cc70fa6e712da7815c649ef0cfe3edf2366eb37",
+  "owned_process_pid": 4692,
+  "exit_code": 101,
+  "stderr_sha256": "305129e1cde631417e71bd3ee20bf7a4b9f45a3bca5f5ca82c53e63304e182f1",
+  "stderr_excerpt": "PHP_WASIX_PHASE=module_compile\n\nthread '<unnamed>' (5960) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread '<unnamed>' (25872) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (28312) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (2824) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (1748) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (27408) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (20688) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (1724) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (24180) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (27184) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (13388) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n\nthread '<unnamed>' (25716) panicked at <cargo-cache>/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/machinst/lower.rs:1107:74:\nindex out of bounds: the len is 0 but the index is 0\n",
+  "observed_phases": [
+    "module_compile"
+  ],
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "dfb668bf4d2267c6f97b74834b81980951abffb0e823fe7cf56f7f3c2b93d56a",
+    "experiments/php-wasix-host-probe/Cargo.lock": "c2587744c3d6da007efdb3bd0c746b3f43ed2195949e3a14d1fcae430832b32f",
+    "experiments/php-wasix-host-probe/check.py": "ad2970f1f1018a4be52ab6086b87648c55069f43100843ccaedb351c7b7bd3b6",
+    "experiments/php-wasix-host-probe/src/main.rs": "fc2802627350ed0fbb8ca8b8091340269ff8f33838b44898c1645de45c3f3567",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  }
+}

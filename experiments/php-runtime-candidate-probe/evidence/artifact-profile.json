@@ -1,0 +1,407 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T09:23:56.943748+00:00",
+  "scope": "artifact identity and structure only; no engine or PHP execution",
+  "platform": {
+    "system": "Windows",
+    "machine": "AMD64"
+  },
+  "input_files": {
+    "experiments/php-runtime-candidate-probe/Cargo.toml": "1edc4dca11b7b99640b45705500d96aff2a2e0426e3996c77a83fde904ec257a",
+    "experiments/php-runtime-candidate-probe/Cargo.lock": "174475ba1da03a4659925f8f0e8033a8a7ed32141d26d2191272441a0a548c57",
+    "experiments/php-runtime-candidate-probe/artifact.json": "a5a8a3aefbc6f0bd094558756ac75f0ac4208adb35ce03317d134049b7856175",
+    "experiments/php-runtime-candidate-probe/prepare_fixture.py": "d57c67bbaf76dd501cd95ad997042297a8fe66c7bc372752ab19e39c70498778",
+    "experiments/php-runtime-candidate-probe/check.py": "5c1dbc4752c41c1d879e29019d1b3c18d45d128769b57336d127567949d4aa1b",
+    "experiments/php-runtime-candidate-probe/src/main.rs": "6aa08bc43d3a07dc8a0d5543cb5e8f675eacfb25d1c1a18df40dfa437b9a6683",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "inspector_artifact": "target/php-runtime-candidate-probe/release/recastpress-php-runtime-candidate-probe.exe",
+  "inspector_artifact_sha256": "c28af70794eb507fcc4c0cc09905acbc86d77dc2f4386574495c0c00b774668e",
+  "observation": {
+    "artifact_bytes": 39727549,
+    "artifact_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+    "declared_php_version": "8.5.12",
+    "defined_functions": 35282,
+    "engine_validated": false,
+    "exception_operators": {
+      "throw": 146,
+      "throw_ref": 6176,
+      "try_table": 8331
+    },
+    "exception_tags": 2,
+    "existing_wasip1_host_drop_in": false,
+    "export_count": 15858,
+    "export_sample": [
+      {
+        "kind": "Func",
+        "name": "__wasm_call_ctors"
+      },
+      {
+        "kind": "Global",
+        "name": "__stack_pointer"
+      },
+      {
+        "kind": "Global",
+        "name": "__tls_base"
+      },
+      {
+        "kind": "Global",
+        "name": "__tls_size"
+      },
+      {
+        "kind": "Global",
+        "name": "__tls_align"
+      },
+      {
+        "kind": "Func",
+        "name": "__wasm_init_tls"
+      },
+      {
+        "kind": "Tag",
+        "name": "__c_longjmp"
+      },
+      {
+        "kind": "Func",
+        "name": "__wasm_signal"
+      },
+      {
+        "kind": "Func",
+        "name": "__wasm_sigaction"
+      },
+      {
+        "kind": "Func",
+        "name": "wasi_thread_start"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__211__call_onceERVmPvPFvS2_E"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__214error_categoryD2Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__214error_categoryD0Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNKSt3__214error_category23default_error_conditionEi"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNKSt3__214error_category10equivalentEiRKNS_15error_conditionE"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNKSt3__214error_category10equivalentERKNS_10error_codeEi"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTVNSt3__214error_categoryE"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTINSt3__214error_categoryE"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__214error_categoryD1Ev"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTSNSt3__214error_categoryE"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZSt18uncaught_exceptionv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZSt19uncaught_exceptionsv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt13exception_ptrD2Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt13exception_ptrC2ERKS_"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt13exception_ptraSERKS_"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt13exception_ptr31__from_native_exception_pointerEPv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt16nested_exceptionC2Ev"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTVSt16nested_exception"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZSt17current_exceptionv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt16nested_exceptionD2Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt13exception_ptrD1Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt16nested_exceptionD0Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt16nested_exceptionD1Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNKSt16nested_exception14rethrow_nestedEv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt13exception_ptrC1ERKS_"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZSt17rethrow_exceptionSt13exception_ptr"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTISt16nested_exception"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTSSt16nested_exception"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt16nested_exceptionC1Ev"
+      },
+      {
+        "kind": "Tag",
+        "name": "__cpp_exception"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__212bad_weak_ptrD2Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__212bad_weak_ptrD0Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__212bad_weak_ptrD1Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNKSt3__212bad_weak_ptr4whatEv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__214__shared_countD2Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__214__shared_countD0Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__219__shared_weak_countD0Ev"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__219__shared_weak_count14__release_weakEv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__219__shared_weak_count4lockEv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNKSt3__219__shared_weak_count13__get_deleterERKSt9type_info"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__28__sp_mut4lockEv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__28__sp_mut6unlockEv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__212__get_sp_mutEPKv"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__25alignEmmRPvRm"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTVNSt3__214__shared_countE"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTINSt3__214__shared_countE"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__214__shared_countD1Ev"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTSNSt3__214__shared_countE"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTVNSt3__219__shared_weak_countE"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTINSt3__219__shared_weak_countE"
+      },
+      {
+        "kind": "Func",
+        "name": "_ZNSt3__219__shared_weak_countD1Ev"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTSNSt3__219__shared_weak_countE"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTVNSt3__212bad_weak_ptrE"
+      },
+      {
+        "kind": "Global",
+        "name": "_ZTINSt3__212bad_weak_ptrE"
+      }
+    ],
+    "format_version": 1,
+    "imports": {
+      "env": [
+        "memory"
+      ],
+      "wasi": [
+        "thread-spawn"
+      ],
+      "wasi_snapshot_preview1": [
+        "args_get",
+        "args_sizes_get",
+        "clock_time_get",
+        "environ_get",
+        "environ_sizes_get",
+        "fd_allocate",
+        "fd_close",
+        "fd_datasync",
+        "fd_fdstat_get",
+        "fd_fdstat_set_flags",
+        "fd_filestat_get",
+        "fd_filestat_set_size",
+        "fd_pread",
+        "fd_prestat_dir_name",
+        "fd_prestat_get",
+        "fd_pwrite",
+        "fd_read",
+        "fd_readdir",
+        "fd_seek",
+        "fd_sync",
+        "fd_tell",
+        "fd_write",
+        "path_create_directory",
+        "path_filestat_get",
+        "path_filestat_set_times",
+        "path_link",
+        "path_readlink",
+        "path_remove_directory",
+        "path_rename",
+        "path_symlink",
+        "path_unlink_file",
+        "poll_oneoff",
+        "random_get",
+        "sched_yield",
+        "sock_recv",
+        "sock_send",
+        "sock_shutdown"
+      ],
+      "wasix_32v1": [
+        "callback_signal",
+        "chdir",
+        "fd_dup",
+        "fd_dup2",
+        "fd_fdflags_get",
+        "fd_fdflags_set",
+        "fd_pipe",
+        "futex_wait",
+        "futex_wake",
+        "futex_wake_all",
+        "getcwd",
+        "path_open2",
+        "proc_exit2",
+        "proc_id",
+        "proc_join",
+        "proc_parent",
+        "proc_raise_interval",
+        "proc_signal",
+        "proc_signals_get",
+        "proc_signals_sizes_get",
+        "proc_snapshot",
+        "proc_spawn3",
+        "resolve",
+        "sock_accept_v2",
+        "sock_addr_local",
+        "sock_addr_peer",
+        "sock_bind",
+        "sock_connect",
+        "sock_get_opt_size",
+        "sock_listen",
+        "sock_open",
+        "sock_pair",
+        "sock_recv_from",
+        "sock_send_file",
+        "sock_send_to",
+        "sock_set_opt_flag",
+        "sock_set_opt_size",
+        "sock_set_opt_time",
+        "thread_exit",
+        "thread_parallelism",
+        "thread_signal",
+        "tty_get",
+        "tty_set"
+      ]
+    },
+    "legacy_exception_operators": 0,
+    "memories": [
+      {
+        "import_module": "env",
+        "import_name": "memory",
+        "initial_pages": 403,
+        "maximum_pages": 65536,
+        "memory64": false,
+        "shared": true
+      }
+    ],
+    "memory_export": false,
+    "operators": 9767520,
+    "php_executed": false,
+    "process_pid": 25156,
+    "product_ready": false,
+    "profile": "php_8_5_12_wasix_actions_artifact",
+    "source_commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+    "start_export": true,
+    "wasix_imports": true,
+    "workflow_run_id": 39649844632
+  }
+}

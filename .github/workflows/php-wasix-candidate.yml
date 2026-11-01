@@ -1,0 +1,216 @@
+name: PHP WASIX Linux LLVM candidate
+
+"on":
+  push:
+    branches: ["dev/v0.5"]
+    paths:
+      - "experiments/php-runtime-candidate-probe/**"
+      - "experiments/php-wasix-host-probe/**"
+      - ".github/workflows/php-wasix-candidate.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: php-wasix-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  version-only:
+    name: Rust-hosted PHP 8.5.12, Linux LLVM
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_TARGET_DIR: target/php-wasix-host-probe
+      RUSTUP_TOOLCHAIN: "1.94.0"
+    steps:
+      - name: Check out the candidate source
+        # actions/checkout v4.2.2, verified through the official Git tag ref.
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Install Linux build dependencies
+        id: dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            cmake ninja-build pkg-config libzstd-dev zlib1g-dev \
+            libxml2-dev libncurses-dev libffi-dev
+
+      - name: Install the fixed Rust toolchain
+        id: rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.94.0 --profile minimal --no-self-update
+          rustc +1.94.0 --version
+          cargo +1.94.0 --version
+
+      - name: Fetch the fixed upstream PHP Actions artifact
+        id: php
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p .reference/php-wasix-8.5.12
+          PHP_ARTIFACT_URL="$(python3 - <<'PY'
+          import json
+          from urllib.parse import urlsplit
+          with open('experiments/php-runtime-candidate-probe/artifact.json', encoding='utf-8') as source:
+              identity = json.load(source)
+          url = identity['artifact_api_url']
+          parsed = urlsplit(url)
+          expected = f"/repos/wasix-org/php/actions/artifacts/{identity['artifact_id']}/zip"
+          if (parsed.scheme != 'https' or parsed.netloc != 'api.github.com'
+                  or parsed.path != expected or parsed.query or parsed.fragment):
+              raise SystemExit('Refusing to send the job token to an unexpected artifact endpoint')
+          print(url)
+          PY
+          )"
+          # curl drops Authorization on cross-host redirects. Do not add
+          # --location-trusted or place GH_TOKEN in a URL or diagnostic output.
+          if ! curl --fail --silent --show-error --location \
+            --proto '=https' --proto-redir '=https' \
+            --connect-timeout 30 --max-time 180 --retry 3 --retry-max-time 300 \
+            --max-filesize 10202404 \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --output .reference/php-wasix-8.5.12/php-wasix-64.zip "$PHP_ARTIFACT_URL"; then
+            printf '%s\n' '::error::Upstream PHP artifact download failed. A 403 can mean this repository token cannot read the upstream Actions artifact. No mirror or alternate source was used.'
+            exit 1
+          fi
+          python3 experiments/php-runtime-candidate-probe/prepare_fixture.py
+
+      - name: Fetch locked Rust dependencies
+        id: cargo
+        run: |
+          set -euo pipefail
+          cargo +1.94.0 fetch --locked --manifest-path experiments/php-wasix-host-probe/Cargo.toml
+
+      - name: Download and verify the fixed host LLVM
+        id: llvm
+        run: |
+          set -euo pipefail
+          mkdir -p .reference
+          LLVM_URL="$(python3 -c 'import json; print(json.load(open("experiments/php-wasix-host-probe/llvm-toolchain.json"))["archive_url"])')"
+          LLVM_ARCHIVE=".reference/llvm-linux-amd64.tar.xz"
+          curl --fail --silent --show-error --location \
+            --proto '=https' --proto-redir '=https' \
+            --connect-timeout 30 --max-time 600 --retry 3 --retry-max-time 900 \
+            --max-filesize 741670068 --output "$LLVM_ARCHIVE" "$LLVM_URL"
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import tarfile
+
+          root = Path.cwd().resolve()
+          manifest = root / 'experiments/php-wasix-host-probe/llvm-toolchain.json'
+          identity = json.loads(manifest.read_text(encoding='utf-8'))
+          archive = root / '.reference' / identity['archive_filename']
+          if archive.stat().st_size != identity['archive_bytes']:
+              raise SystemExit('LLVM archive length mismatch; refusing to extract')
+          checksum = hashlib.sha256()
+          with archive.open('rb') as stream:
+              for block in iter(lambda: stream.read(1024 * 1024), b''):
+                  checksum.update(block)
+          if checksum.hexdigest() != identity['archive_sha256']:
+              raise SystemExit('LLVM archive SHA-256 mismatch; refusing to extract')
+          prefix = (root / identity['extract_directory']).resolve()
+          if not prefix.is_relative_to(root / '.reference'):
+              raise SystemExit('LLVM extraction target escaped .reference')
+          if identity['strip_components'] != 0:
+              raise SystemExit('Unexpected LLVM archive layout')
+          prefix.mkdir(exist_ok=False)
+          # Wasmer's official build.yml extracts directly into LLVM_DIR; bin/
+          # is at this root. Python's data filter rejects escaping archive paths.
+          with tarfile.open(archive, 'r:xz') as source:
+              source.extractall(prefix, filter='data')
+          llvm_config = prefix / identity['required_llvm_config']
+          if not llvm_config.resolve().is_relative_to(prefix) or not llvm_config.is_file():
+              raise SystemExit('Verified LLVM archive lacks bin/llvm-config')
+          version = subprocess.check_output([str(llvm_config), '--version'], text=True, timeout=10).strip()
+          expected = identity['llvm_version_prefix']
+          if version != expected and not version.startswith(expected + '.'):
+              raise SystemExit('LLVM version does not match the fixed 22.1 family')
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as output:
+              output.write(f'LLVM_SYS_221_PREFIX={prefix}\n')
+              output.write(f'LD_LIBRARY_PATH={prefix / "lib"}\n')
+          with open(os.environ['GITHUB_PATH'], 'a', encoding='utf-8') as output:
+              output.write(str(prefix / 'bin') + '\n')
+          evidence = root / 'experiments/php-wasix-host-probe/evidence'
+          evidence.mkdir(exist_ok=True)
+          (evidence / 'llvm-toolchain-verification.json').write_text(json.dumps({
+              'format_version': 1,
+              'llvm_toolchain_manifest_sha256': hashlib.sha256(manifest.read_bytes()).hexdigest(),
+              'archive_bytes': archive.stat().st_size,
+              'archive_sha256': checksum.hexdigest(),
+              'llvm_config_version': version,
+              'php_executed_by_this_step': False,
+          }, indent=2) + '\n', encoding='utf-8', newline='\n')
+          print(f'Pinned host LLVM verified: {version}')
+          PY
+
+      - name: Execute the independent LLVM version-only host probe
+        id: probe
+        run: |
+          set -euo pipefail
+          python3 experiments/php-wasix-host-probe/check.py --llvm --record
+
+      - name: Record CI stage outcomes
+        if: ${{ always() }}
+        env:
+          STAGE_DEPENDENCIES: ${{ steps.dependencies.outcome }}
+          STAGE_RUST: ${{ steps.rust.outcome }}
+          STAGE_CARGO: ${{ steps.cargo.outcome }}
+          STAGE_LLVM: ${{ steps.llvm.outcome }}
+          STAGE_PHP: ${{ steps.php.outcome }}
+          STAGE_PROBE: ${{ steps.probe.outcome }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          import os
+
+          root = Path.cwd()
+          evidence = root / 'experiments/php-wasix-host-probe/evidence'
+          evidence.mkdir(parents=True, exist_ok=True)
+          inputs = ['.github/workflows/php-wasix-candidate.yml',
+                    'experiments/php-wasix-host-probe/llvm-toolchain.json',
+                    'experiments/php-runtime-candidate-probe/artifact.json']
+          report = {
+              'format_version': 1,
+              'scope': 'independent Linux LLVM version-only P0 candidate',
+              'source_commit': os.environ['GITHUB_SHA'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
+                         for name in ['DEPENDENCIES', 'RUST', 'PHP', 'CARGO', 'LLVM', 'PROBE']},
+              'input_files': {name: hashlib.sha256((root / name).read_bytes()).hexdigest()
+                              for name in inputs if (root / name).is_file()},
+              'wordpress_bootstrapped': False,
+              'product_runtime_selected': False,
+          }
+          (evidence / 'ci-stages.json').write_text(json.dumps(report, indent=2) + '\n',
+                                                encoding='utf-8', newline='\n')
+          PY
+
+      - name: Upload evidence only
+        if: ${{ always() }}
+        # actions/upload-artifact v4.6.2, verified through its official Git ref.
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: php-wasix-linux-llvm-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: experiments/php-wasix-host-probe/evidence/
+          if-no-files-found: warn
+          retention-days: 14

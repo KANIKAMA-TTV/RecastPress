@@ -1,0 +1,16 @@
+{
+  "declared_php_version": "8.5.12",
+  "source_repository": "https://github.com/wasix-org/php",
+  "source_commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+  "workflow_run_id": 39649844632,
+  "workflow_run_url": "https://github.com/wasix-org/php/actions/runs/39649844632",
+  "artifact_id": 12371010145,
+  "artifact_name": "php-wasix-64",
+  "artifact_api_url": "https://api.github.com/repos/wasix-org/php/actions/artifacts/12371010145/zip",
+  "zip_bytes": 10202404,
+  "zip_sha256": "7596001e48be840a3d0cf4f6ad33b0535c46a44e7537267fe9da908996ff4f39",
+  "wasm_filename": "php.wasm",
+  "wasm_bytes": 39727549,
+  "wasm_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+  "redistributed": false
+}

@@ -1,0 +1,18 @@
+[package]
+name = "recastpress-php-runtime-candidate-probe"
+version = "0.5.0"
+edition = "2024"
+rust-version = "1.94"
+license = "GPL-2.0-or-later"
+publish = false
+
+[workspace]
+
+[dependencies]
+anyhow = "1.0"
+sha2 = "=0.10.9"
+serde_json = "1.0"
+wasmparser = { version = "=0.262.0", default-features = false, features = ["std", "features", "simd"] }
+
+[lints.rust]
+unsafe_code = "forbid"
