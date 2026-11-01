@@ -1,0 +1,107 @@
+{
+  "binary": {
+    "bytes": 23737856,
+    "hashed_before_spawn": true,
+    "path": "target/php-wasix-eh-compile-probe/debug/recastpress-php-wasix-eh-compile-probe.exe",
+    "sha256": "7c0ad9fa68469c52d33a8f63d6804e09c2472a1b78e90771c87ed6903e087926"
+  },
+  "capture_cleanup_deadline_seconds": 2,
+  "captured_stream_limit_bytes": 65536,
+  "cases": [
+    {
+      "case": "non-eh",
+      "child_report": {
+        "case": "non-eh",
+        "compiler_threads": 1,
+        "engine": "wasmer-7.2.0/cranelift",
+        "guest_executed": false,
+        "guest_instantiated": false,
+        "kind": "compiled",
+        "phase": "module_compile",
+        "wasm_bytes": 72,
+        "wasm_sha256": "39af95924c6425ddd6e91ebe297598ba57e58bb5b66206966b3e262b3d9219b1",
+        "wat_sha256": "6211ad9266c6769484e30de441dd34db0e6b8b230ab215a1a45890248ebaaac7"
+      },
+      "elapsed_ms": 29,
+      "exit_code": 0,
+      "exit_success": true,
+      "kill_attempted": false,
+      "kill_error": null,
+      "kind": "compiled",
+      "process_pid": 2824,
+      "reaped": true,
+      "stderr": "",
+      "stderr_capture_error": null,
+      "stderr_reader_finished": true,
+      "stdout": "{\"case\":\"non-eh\",\"compiler_threads\":1,\"engine\":\"wasmer-7.2.0/cranelift\",\"guest_executed\":false,\"guest_instantiated\":false,\"kind\":\"compiled\",\"phase\":\"module_compile\",\"wasm_bytes\":72,\"wasm_sha256\":\"39af95924c6425ddd6e91ebe297598ba57e58bb5b66206966b3e262b3d9219b1\",\"wat_sha256\":\"6211ad9266c6769484e30de441dd34db0e6b8b230ab215a1a45890248ebaaac7\"}\n",
+      "stdout_capture_error": null,
+      "stdout_reader_finished": true,
+      "timed_out": false,
+      "wait_error": null,
+      "wat_sha256": "6211ad9266c6769484e30de441dd34db0e6b8b230ab215a1a45890248ebaaac7"
+    },
+    {
+      "case": "try-table-call",
+      "child_report": null,
+      "elapsed_ms": 22,
+      "exit_code": 101,
+      "exit_success": false,
+      "kill_attempted": false,
+      "kill_error": null,
+      "kind": "rust-panic",
+      "process_pid": 24332,
+      "reaped": true,
+      "stderr": "\nthread '<unnamed>' (28008) panicked at <user-home>/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cranelift-codegen-0.133.0/src/isa/x64/abi.rs:903:34:\nunimplemented clobbers for exn abi of WindowsFastcall\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "stderr_capture_error": null,
+      "stderr_reader_finished": true,
+      "stdout": "",
+      "stdout_capture_error": null,
+      "stdout_reader_finished": true,
+      "timed_out": false,
+      "wait_error": null,
+      "wat_sha256": "2a5382847ca99df86aa3121e0f1a3af16de15945ef1516adcfa9000161f90699"
+    }
+  ],
+  "compiler_settings": {
+    "exceptions": "backend-default",
+    "optimization": "default-speed",
+    "threads": 1
+  },
+  "dependencies": {
+    "cranelift-codegen": "0.133.0",
+    "wasmer": "7.2.0",
+    "wasmer-compiler-cranelift": "7.2.0"
+  },
+  "diagnostic_complete": true,
+  "guest_executed": false,
+  "guest_instantiated": false,
+  "host": {
+    "arch": "x86_64",
+    "environment": "msvc",
+    "os": "windows"
+  },
+  "interpretation": "Compiled means only backend compilation completed; CompileError and panic remain negative backend outcomes. No guest, PHP, WASIX runtime, WordPress or product compatibility was tested.",
+  "owned_child_deadline_seconds": 10,
+  "owned_child_reap_deadline_seconds": 2,
+  "php_executed": false,
+  "product_compatibility_verified": false,
+  "run_unix_seconds": 1793526821,
+  "schema": "recastpress.php-wasix-eh-compile-diagnostic.v0.5",
+  "scope": "compile-only-backend-diagnostic",
+  "source_evidence": {
+    "cranelift_git_commit": "423be7a4e4d30bb377c836d317521d1eb874e157",
+    "cranelift_minimal_panic_site": "https://github.com/bytecodealliance/wasmtime/blob/423be7a4e4d30bb377c836d317521d1eb874e157/cranelift/codegen/src/isa/x64/abi.rs#L888-L904",
+    "cranelift_original_php_panic_index": "https://github.com/bytecodealliance/wasmtime/blob/423be7a4e4d30bb377c836d317521d1eb874e157/cranelift/codegen/src/machinst/lower.rs#L1105-L1108",
+    "cranelift_payload_registers": "https://github.com/bytecodealliance/wasmtime/blob/423be7a4e4d30bb377c836d317521d1eb874e157/cranelift/codegen/src/isa/x64/abi.rs#L979-L986",
+    "cranelift_payload_types": "https://github.com/bytecodealliance/wasmtime/blob/423be7a4e4d30bb377c836d317521d1eb874e157/cranelift/codegen/src/isa/call_conv.rs#L118-L128",
+    "wasmer_git_commit": "93bd021012baafda53df2030db3ce1758dc1e336",
+    "wasmer_payload_arguments": "https://github.com/wasmerio/wasmer/blob/93bd021012baafda53df2030db3ce1758dc1e336/lib/compiler-cranelift/src/func_environ.rs#L1215-L1229"
+  },
+  "source_sha256": {
+    "Cargo.lock": "8617c9e0690aad8bf813231b21d791c94413a1d8dc21a61a8426e7a184245441",
+    "Cargo.toml": "71f6e48ce6d732e720e26ea9cacfeb165f9955e13edfade4240ab2b6d3a1195e",
+    "fixtures/non-eh.wat": "6211ad9266c6769484e30de441dd34db0e6b8b230ab215a1a45890248ebaaac7",
+    "fixtures/try-table-call.wat": "2a5382847ca99df86aa3121e0f1a3af16de15945ef1516adcfa9000161f90699",
+    "src/main.rs": "25cb055edb8b56225a24c9977765284b740a9149379b17620f7763912af9d266"
+  }
+}

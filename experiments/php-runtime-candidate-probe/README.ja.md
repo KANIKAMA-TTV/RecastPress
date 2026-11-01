@@ -31,4 +31,4 @@ native PHPは比較用であり、RustホストからPHPを動かせなかった
 
 ## 次の実行比較
 
-[WASIXホスト実験](../php-wasix-host-probe/README.ja.md)は、この実物をWasmer 7.2.0から実行する。Windows Craneliftでの失敗と、Linux LLVMでの検証を分ける。成功・未実行・失敗を一つの合格表示にまとめず、本体MSRV・既存仕様書・既存WASIp1実験を変更しない。
+[WASIXホスト実験](../php-wasix-host-probe/README.ja.md)で、この実物をWasmer 7.2.0から実行した。Windows Craneliftはmodule compileで失敗、Linux LLVMは固定version・echoに成功し、整数幅8Bもnativeと一致した。例外・Fiber・WP等の比較はこの基本実行には含まれない。成功・未実行・失敗を一つの合格表示にまとめず、本体MSRV・既存仕様書・既存WASIp1実験を変更しない。

@@ -134,12 +134,22 @@ def main():
                         report['diagnostics'] = str(error)
                 else:
                     report['outcome'] = 'process_failed_without_result'
-            except subprocess.TimeoutExpired:
+            except subprocess.TimeoutExpired as error:
                 report['outcome'] = 'execution_timeout'
+                if error.stderr:
+                    report['stderr_excerpt'] = diagnostic(error.stderr, 4096)
+                    report['observed_phases'] = [line.split('=', 1)[1]
+                                                for line in error.stderr.decode('utf-8', errors='replace').splitlines()
+                                                if line.startswith('PHP_WASIX_PHASE=')]
+    except subprocess.TimeoutExpired as error:
+        report['outcome'] = 'build_timeout'
+        if error.stderr:
+            report['diagnostics'] = diagnostic(error.stderr, 8192)
     finally:
         owned_probe.reap_owned_probes()
     inputs = [HERE / name for name in ['Cargo.toml', 'Cargo.lock', 'check.py']]
-    inputs += sorted((HERE / 'src').glob('*.rs')) + [ROOT / 'scripts/owned_probe.py']
+    inputs += sorted((HERE / 'src').glob('*.rs')) + [ROOT / 'scripts/owned_probe.py',
+              ROOT / 'experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php']
     report['input_files'] = {path.relative_to(ROOT).as_posix(): digest(path) for path in inputs}
     if args.record:
         directory = HERE / 'evidence'

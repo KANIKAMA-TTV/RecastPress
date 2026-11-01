@@ -1,0 +1,19 @@
+{
+  "format_version": 1,
+  "source_commit": "5fd037742b27f0b3b7b9096f92ea58ef091a4f2e",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41293870063",
+  "artifact_id": 13078243713,
+  "artifact_zip_bytes": 4064,
+  "artifact_zip_sha256": "3ec26e180a51007a88fcb55e79cb73ef0e7c21a3c49e8d8330b3c6549791d65d",
+  "original_git_source_hashes_verified": true,
+  "native_binary_acquired_by_importer": false,
+  "product_runtime_selected": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625"
+  },
+  "imported_files": {
+    "ci-stages.json": "d2a7ac377bbfb0b458d60e49c1340d051e9e0d3a13e595bb21905e15b1b445d7",
+    "linux-llvm.json": "dc2f362223e3e145e5172391a8ad95168e991c62e0627fc54d896560331b535b",
+    "llvm-toolchain-verification.json": "0f0015f15d38178ddd94c91afd58053a31b1848193681bd52ea92f1cdd0f13a7"
+  }
+}

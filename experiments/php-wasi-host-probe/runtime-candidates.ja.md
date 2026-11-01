@@ -1,6 +1,6 @@
 # 製品用PHP実行基盤の比較材料
 
-調査日：2026-11-01。一次ソースの読取り調査であり、以下の候補はビルド・実行していない。製品採用、配布条件、Windows対応の確定を示さない。Node.jsなしでRustから直接ホストする方針と、比較用PHP 8.5.12・WP 7.1.3を維持して、独立したP0実験を用意するためのメモ。
+調査日：2026-11-01。以下は調査開始時点の一次ソース読取りメモであり、当時は候補をビルド・実行していなかった。同日後続の実測は末尾の追補と個別実験へ分ける。製品採用、配布条件、Windows対応の確定を示さない。Node.jsなしでRustから直接ホストする方針と、比較用PHP 8.5.12・WP 7.1.3を維持する。
 
 ## 現在の実証との区別
 
@@ -23,3 +23,11 @@ WASIX PHPの公式CIは、wasixcc v0.4.4、sysroot v2026-07-03.1、LLVM 21.1.206
 [Wasmer 7.2.0](https://github.com/wasmerio/wasmer/blob/v7.2.0/Cargo.toml)のMSRVは1.93であり、現在のworkspace MSRV 1.94を保つ比較の開始点にできる。Wasmer 7.5.0は1.96、[Wasmtime 50.0.1](https://github.com/bytecodealliance/wasmtime/tree/c307ec81de02852d815e9849f7c89d955c03c30d)は1.97.0を必要とする。後者は正式EHを提供するが、現engineの単純差替えとして扱わない。
 
 次の独立実験は、Wasmer 7.2.0とWASIX PHP 8.5.12の組合せを第一比較候補とし、Windowsでの実行、PHPの異常回収、Fiber、権限照会、要求I/Oと専用RPCを確かめる。WASIX側にも[条件付きFiber失敗](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/Zend/zend_fibers.c)があり、版が新しいことだけで互換性を認定しない。製品採用前には、実際の依存とビルドの監査、通常PHPとの比較を行う。
+
+## 同日追補：成果物とRustホストの実測
+
+[実物検査](../php-runtime-candidate-probe/README.ja.md)で、公式runの`php-wasix-64`をZIP・WasmのSHAで固定した。CIの中間設定はlegacy EHだが、build scriptが`--emit-exnref`を適用し、最終バイナリは標準EHだった。WASIX拡張とshared imported memoryを持ち、現WASIp1ホストへの直接差替えはできない。
+
+[Rust WASIXホスト](../php-wasix-host-probe/README.ja.md)のWindows Craneliftはmodule compileでpanicし、PHPを実行できなかった。Linux LLVMはRust 1.94.0でビルドし、PHP 8.5.12の固定出力と整数幅8Bを観測した。nativeの6ケース比較基準は別に保存したが、このLinux基本実行が例外・Fiber等の一致まで示すわけではない。
+
+初回正式配備先はLinux Docker Compose・Railway・Lightsail Linuxであり、Windows nativeは元の初回対応範囲に含まれない。Windows不具合の診断と、Linux上でのP0成立実証を区別する。CLI版からWPの要求SAPIへつなぐ入口、権限照会、要求I/O・RPC・回収・配布監査を引き続き検証する。

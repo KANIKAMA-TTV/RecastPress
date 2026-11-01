@@ -1,0 +1,102 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T09:37:58.931410+00:00",
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "backend": "llvm",
+  "outcome": "version_only_passed",
+  "php_version_verified": true,
+  "production_compatible": false,
+  "memory_limit_verified": false,
+  "outer_execution_timeout_seconds": 300,
+  "native_artifact": "target/php-wasix-host-probe/release/recastpress-php-wasix-host-probe",
+  "native_artifact_sha256": "8e9e9080a46982589a3e0c56b73a255c7b217b3204d5c4932b18d1123f9ca8ab",
+  "owned_process_pid": 10452,
+  "exit_code": 0,
+  "stderr_sha256": "659e52e993ba10b527c66aa967c7e67ca8a3e60fe300453bc55f7400ff7caaae",
+  "stderr_excerpt": "PHP_WASIX_PHASE=module_compile\nPHP_WASIX_PHASE=fixed_php_execution\n",
+  "observed_phases": [
+    "module_compile",
+    "fixed_php_execution"
+  ],
+  "native_result": {
+    "artifact": {
+      "expected_bytes": 39727549,
+      "expected_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "observed_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "path": ".reference/php-wasix-8.5.12/php.wasm",
+      "verified": true
+    },
+    "engine": "wasmer-7.2.0/llvm",
+    "exception_support": {
+      "execution_verdict": "not-exercised",
+      "msvc_source_verdict": "negative-unimplemented-panic-stubs"
+    },
+    "exceptions_executed": false,
+    "full_php_compatibility_verified": false,
+    "host": {
+      "arch": "x86_64",
+      "os": "linux"
+    },
+    "integer_width_matches_native": null,
+    "isolation": {
+      "configured_guest_max_threads": 1,
+      "deadline_owner": "required-external-owned-child-supervisor",
+      "home_mapped": false,
+      "host_directories_mapped": false,
+      "host_environment_forwarded": false,
+      "http_client": false,
+      "in_process_deadline_enforced": false,
+      "memory_limit_enforced": false,
+      "networking": "UnsupportedVirtualNetworking",
+      "stderr_limit_bytes": 65536,
+      "stdin": "closed-pipe",
+      "stdout_limit_bytes": 65536
+    },
+    "limitations": [
+      "A basic version result does not verify thrown exceptions or full PHP compatibility.",
+      "Wasmer 7.2.0 MSVC exception runtime entry points are unimplemented and may panic.",
+      "Memory, CPU and execution deadline enforcement are not established by this probe.",
+      "PHP integer width is observed separately from wasm32 linear-memory width."
+    ],
+    "ok": true,
+    "phase": "version_only_verified",
+    "php": {
+      "echo": "recastpress-v0.5-wasix-version-only",
+      "php_int_size": 8,
+      "php_version": "8.5.12"
+    },
+    "process_pid": 10452,
+    "real_db": false,
+    "schema": "recastpress.php-wasix-version-only.v0.5",
+    "scope": "fixed-version-only-no-user-code-no-product-integration",
+    "source": {
+      "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+      "kind": "official-github-actions-artifact",
+      "repository": "https://github.com/wasix-org/php"
+    },
+    "stderr": "",
+    "stderr_bytes": 0,
+    "stderr_overflow": false,
+    "stdout": "{\"php_version\":\"8.5.12\",\"php_int_size\":8,\"echo\":\"recastpress-v0.5-wasix-version-only\"}",
+    "stdout_bytes": 86,
+    "stdout_overflow": false,
+    "wasmer_wasix": "0.702.0",
+    "wordpress_executed": false
+  },
+  "integer_width_comparison": {
+    "native_bytes": 8,
+    "wasm_bytes": 8,
+    "equal": true,
+    "reference_sha256": "10265c9acf7935f09678911d43e3093c62bbcec868d0b236fed3714d8be7b0b2"
+  },
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "dfb668bf4d2267c6f97b74834b81980951abffb0e823fe7cf56f7f3c2b93d56a",
+    "experiments/php-wasix-host-probe/Cargo.lock": "c2587744c3d6da007efdb3bd0c746b3f43ed2195949e3a14d1fcae430832b32f",
+    "experiments/php-wasix-host-probe/check.py": "ad2970f1f1018a4be52ab6086b87648c55069f43100843ccaedb351c7b7bd3b6",
+    "experiments/php-wasix-host-probe/src/main.rs": "fc2802627350ed0fbb8ca8b8091340269ff8f33838b44898c1645de45c3f3567",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  }
+}

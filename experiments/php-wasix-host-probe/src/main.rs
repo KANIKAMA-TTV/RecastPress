@@ -1,7 +1,9 @@
 #![forbid(unsafe_code)]
 
-//! Closed, version-only P0 candidate. Run under an owned-child supervisor.
-//! A successful result does not establish exception, WordPress, or DB support.
+//! Closed P0 candidates. Run under an owned-child supervisor.
+//! A version-only result does not establish exception, WordPress, or DB support.
+
+mod language_contract;
 
 use std::fs::File;
 use std::io::{self, Read, SeekFrom, Write};
@@ -33,6 +35,12 @@ const OUTPUT_LIMIT: usize = 64 * 1024;
 const ECHO_VALUE: &str = "recastpress-v0.5-wasix-version-only";
 const PHP_PROGRAM: &str = "echo json_encode(['php_version'=>PHP_VERSION,'php_int_size'=>PHP_INT_SIZE,'echo'=>'recastpress-v0.5-wasix-version-only'], JSON_THROW_ON_ERROR);";
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ProbeMode {
+    VersionOnly,
+    LanguageContract,
+}
+
 #[cfg(feature = "llvm")]
 const ENGINE_NAME: &str = "wasmer-7.2.0/llvm";
 #[cfg(all(not(feature = "llvm"), feature = "cranelift"))]
@@ -42,6 +50,13 @@ const ENGINE_NAME: &str = "wasmer-7.2.0/cranelift";
 compile_error!("Enable either the cranelift or llvm feature");
 
 fn main() -> ExitCode {
+    // The single extra selector never accepts PHP source, a script path, an
+    // environment mapping, or arbitrary PHP arguments from the caller.
+    let mode = if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--language-contract"] {
+        ProbeMode::LanguageContract
+    } else {
+        ProbeMode::VersionOnly
+    };
     let mut report = json!({
         "schema": "recastpress.php-wasix-version-only.v0.5",
         "ok": false,
@@ -93,10 +108,20 @@ fn main() -> ExitCode {
         ]
     });
 
-    let passed = match run(&mut report) {
+    if mode == ProbeMode::LanguageContract {
+        language_contract::describe(&mut report);
+    }
+
+    let passed = match run(&mut report, mode) {
         Ok(()) => {
             report["ok"] = json!(true);
-            report["phase"] = json!("version_only_verified");
+            report["phase"] = json!(if mode == ProbeMode::VersionOnly {
+                "version_only_verified"
+            } else {
+                // Observation is not a native comparison. language_check.py
+                // compares all fields of the three cases against the receipt.
+                "language_contract_observed"
+            });
             true
         }
         Err(error) => {
@@ -121,11 +146,15 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(report: &mut Value) -> Result<()> {
+fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
     ensure!(
-        std::env::args_os().len() == 1,
-        "this fixed probe accepts no arguments"
+        (mode == ProbeMode::VersionOnly && std::env::args_os().len() == 1)
+            || (mode == ProbeMode::LanguageContract && std::env::args_os().len() == 2),
+        "this fixed probe accepts only --language-contract or no arguments"
     );
+    if mode == ProbeMode::LanguageContract {
+        language_contract::verify_fixture(report)?;
+    }
     report["phase"] = json!("artifact_verification");
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../..")
@@ -146,12 +175,15 @@ fn run(report: &mut Value) -> Result<()> {
     ensure!(digest == ARTIFACT_SHA256, "artifact SHA-256 mismatch");
     report["artifact"]["verified"] = json!(true);
 
-    let (stdout, stderr) = execute(bytes, report)?;
+    let (stdout, stderr) = execute(bytes, report, mode)?;
     ensure!(stderr.is_empty(), "PHP wrote unexpected stderr");
     report["phase"] = json!("php_json_verification");
     let php: Value =
         serde_json::from_slice(&stdout).context("decode PHP stdout as one JSON value")?;
     report["php"] = php.clone();
+    if mode == ProbeMode::LanguageContract {
+        return language_contract::validate_observation(&php, report);
+    }
     ensure!(php["php_version"] == "8.5.12", "unexpected PHP_VERSION");
     ensure!(php["echo"] == ECHO_VALUE, "fixed PHP echo result mismatch");
     // The official -64 variant can use a 64-bit zend_long in a wasm32 module.
@@ -176,7 +208,7 @@ fn make_engine() -> Engine {
     }
 }
 
-fn execute(bytes: Vec<u8>, report: &mut Value) -> Result<(Vec<u8>, Vec<u8>)> {
+fn execute(bytes: Vec<u8>, report: &mut Value, mode: ProbeMode) -> Result<(Vec<u8>, Vec<u8>)> {
     let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
@@ -201,12 +233,12 @@ fn execute(bytes: Vec<u8>, report: &mut Value) -> Result<(Vec<u8>, Vec<u8>)> {
         let module_hash = *data.hash();
         report["phase"] = json!("module_compile");
         eprintln!("PHP_WASIX_PHASE=module_compile");
-        let module = runtime
-            .load_hashed_module_sync(data, None)
-            .context("compile verified formal-EH PHP module")?;
+        let compilation_started = Instant::now();
+        let compiled = runtime.load_hashed_module_sync(data, None);
+        report["compile_elapsed_ms"] = json!(compilation_started.elapsed().as_millis());
+        let module = compiled.context("compile verified formal-EH PHP module")?;
         let mut runner = WasiRunner::new();
         runner
-            .with_args(["-n", "-r", PHP_PROGRAM])
             .with_forward_host_env(false)
             .with_home_mapped(false)
             .with_asynchronous_threading(false)
@@ -219,6 +251,14 @@ fn execute(bytes: Vec<u8>, report: &mut Value) -> Result<(Vec<u8>, Vec<u8>)> {
                 stderr_sender,
                 stderr_overflow.clone(),
             )));
+        match mode {
+            ProbeMode::VersionOnly => {
+                runner.with_args(["-n", "-r", PHP_PROGRAM]);
+            }
+            ProbeMode::LanguageContract => {
+                language_contract::configure(&mut runner);
+            }
+        }
         let capabilities = runner.capabilities_mut();
         capabilities.insecure_allow_all = false;
         capabilities.threading.max_threads = Some(1);
@@ -228,12 +268,16 @@ fn execute(bytes: Vec<u8>, report: &mut Value) -> Result<(Vec<u8>, Vec<u8>)> {
         // The Runner supplies imported env::memory and initializes WASIX from
         // that memory. Manual WasiFunctionEnv::initialize would incorrectly
         // require an exported memory for this official artifact.
+        let execution_started = Instant::now();
         let result = runner.run_wasm(
             RuntimeOrEngine::Runtime(Arc::new(runtime)),
             "php",
             module,
             module_hash,
         );
+        // This span includes WASIX/PHP startup and request shutdown inside
+        // run_wasm. It excludes module compilation and outer runtime cleanup.
+        report["php_execution_elapsed_ms"] = json!(execution_started.elapsed().as_millis());
         drop(runner);
         result.context("execute fixed version-only PHP program")
     })();
