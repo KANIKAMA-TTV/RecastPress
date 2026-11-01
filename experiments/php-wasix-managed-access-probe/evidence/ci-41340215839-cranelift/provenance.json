@@ -64,7 +64,7 @@
     "experiments/php-wasix-fiber-probe/native_contract.py": "14e768a301284cb462d526491af39448a580391584052430571f4d2469850f08",
     "experiments/php-wasix-fiber-probe/patch_source.py": "607140f77676773d34053d67c46e03241c5e1bf1dd87d871b2409469045f2793",
     "experiments/php-wasix-host-probe/cgi_check.py": "49de8a40ef2f4bd964d1980f2f4989a2b3935d116422847cbe6e1d1f2dbd01fa",
-    "experiments/php-wasix-host-probe/check.py": "77206d3829621b69b655c1e3b2c64c204a0e5821ecb06fd0324d634ad6de119a",
+    "experiments/php-wasix-host-probe/check.py": "11a80feee6a4ba608dd6ffec1a1a677776cfeeb3ad399db0114e3408e8ed9fac",
     "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
     "experiments/php-wasix-host-probe/native_cgi_contract.py": "6efd7d2009221d823e0a7471791e8de75c412cefaaba1b8bd61be690a1b935c3",
     "experiments/php-wasix-host-probe/unit_check.py": "652517686d6cfffec99874dffbb0351806fb7818ac1ca3b2092fe6ccc378c0f9",

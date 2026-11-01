@@ -8,6 +8,8 @@ name: PHP WASIX Fiber CGI prototype
     paths:
       - "experiments/php-wasix-managed-access-probe/fixtures/recastpress_fs_access.h"
       - "experiments/php-wasix-managed-access-probe/fixtures/rpc_cgi_contract.php"
+      - "experiments/php-wasix-managed-access-probe/fixtures/memory_cgi_contract.php"
+      - "experiments/php-wasix-managed-access-probe/fixtures/operation_cgi_contract.php"
       - "experiments/php-wasix-managed-access-probe/patches/0001-wasi-managed-access.patch"
       - "experiments/php-wasix-managed-access-probe/patch-plan.json"
       - "experiments/php-wasix-managed-access-probe/manifest.json"

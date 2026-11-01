@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import subprocess
 import sys
 
@@ -58,8 +59,56 @@ def record_timeout_capture(report, error):
         report['stderr_excerpt'] = host.diagnostic(stderr, 4096)
 
 
-def expected_php():
-    return {'php_version': '8.5.12', 'version_id': 80512, 'php_int_size': 8, 'sapi': 'cli',
+CGI_FIXTURE = 'experiments/php-wasix-managed-access-probe/fixtures/operation_cgi_contract.php'
+CGI_GUEST = '/fixture/operation_cgi_contract.php'
+CGI_FIXTURE_SHA = '455204fd5af80680dca3b32de236bb22db2a212ab91f124fc2fb02b8007a1f88'
+
+
+def operation_cgi_environment(index):
+    return [['GATEWAY_INTERFACE', 'CGI/1.1'], ['SERVER_PROTOCOL', 'HTTP/1.1'],
+        ['SERVER_SOFTWARE', 'recastpress-v0.5-fixed-operation-cgi-probe'], ['SERVER_NAME', 'fixture.invalid'],
+        ['SERVER_PORT', '80'], ['REDIRECT_STATUS', '200'], ['REQUEST_METHOD', 'GET'],
+        ['SCRIPT_FILENAME', CGI_GUEST], ['SCRIPT_NAME', '/__rp_operation.php'], ['DOCUMENT_ROOT', '/fixture'],
+        ['QUERY_STRING', 'rp_operation_cgi=1'], ['REQUEST_URI', '/__rp_operation.php?rp_operation_cgi=1'],
+        ['CONTENT_LENGTH', '0'], ['RP_OPERATION_CASE', 'loop' if index == 1 else 'normal']]
+
+
+def parse_operation_cgi(wire):
+    """Parse only this normal request's completed fixed 200 JSON response."""
+    require(type(wire) is bytes and 0 < len(wire) <= 65536, 'operation CGI wire quota')
+    newline = wire.find(b'\n')
+    require(newline > 0, 'operation CGI newline')
+    separator = b'\r\n' if wire[newline - 1:newline] == b'\r' else b'\n'
+    boundary = wire.find(separator * 2)
+    require(0 <= boundary and boundary + 2 * len(separator) <= 16384, 'operation CGI header terminator/quota')
+    lines = wire[:boundary].split(separator)
+    require(0 < len(lines) <= 64, 'operation CGI header count')
+    fields = []
+    for line in lines:
+        require(line and line[:1] not in (b' ', b'\t') and b':' in line, 'invalid/folded operation CGI header')
+        name, value = line.split(b':', 1)
+        require(re.fullmatch(rb"[!#$%&'*+.^_`|~0-9A-Za-z-]+", name) is not None, 'operation CGI header name')
+        value = value.strip(b' \t')
+        require(all(byte == 9 or 32 <= byte != 127 for byte in value), 'operation CGI control/mixed header newline')
+        fields.append((name.decode('ascii').lower(), value))
+    values = lambda name: [value for key, value in fields if key == name]
+    statuses, lengths = values('status'), values('content-length')
+    require(len(statuses) <= 1 and len(lengths) <= 1, 'operation CGI duplicate status/length')
+    if statuses: require(re.fullmatch(rb'200(?: [^\r\n]*)?', statuses[0]) is not None, 'normal operation CGI status')
+    body = wire[boundary + 2 * len(separator):]
+    if lengths:
+        require(re.fullmatch(rb'[0-9]+', lengths[0]) is not None and int(lengths[0]) == len(body), 'operation CGI body length')
+    headers = [{'name': name, 'value_hex': value.hex()} for name, value in fields if name not in {'status', 'content-length'}]
+    equal(headers, [{'name': 'x-powered-by', 'value_hex': b'PHP/8.5.12'.hex()},
+        {'name': 'content-type', 'value_hex': b'application/json'.hex()}], 'fixed normal operation CGI headers')
+    return {'status': 200, 'headers': headers, 'body_bytes': len(body), 'body_hex': body.hex(),
+        'body_sha256': hashlib.sha256(body).hexdigest(), 'representation_length': None}, body
+
+
+def expected_php(*, profile='cli'):
+    require(profile in ['cli', 'managed-cgi'], 'closed operation entry profile')
+    return {'php_version': '8.5.12', 'version_id': 80512, 'php_int_size': 8,
+            'sapi': 'cli' if profile == 'cli' else 'cgi-fcgi',
             'kind': 'normal', 'globals_before_present': False, 'globals_after': 'request-local',
             'echo': 'recastpress-v0.5-php-operation-budget'}
 
@@ -91,10 +140,12 @@ def validate_handle_lifecycle(case):
     equal(lifecycle['prior_recycle_returns'], count, 'prior-recycle returned')
 
 
-def validate_result(value, pid, backend):
+def validate_result(value, pid, backend, *, profile='cli', provenance=None):
+    require(profile in ['cli', 'managed-cgi'], 'closed operation validation profile')
+    cgi = profile == 'managed-cgi'
     for field, expected in [
-        ('schema', 'recastpress.php-wasix-operation-budget.v0.5'), ('process_pid', pid),
-        ('engine', 'wasmer-7.2.0/' + backend), ('phase', 'php_operation_budget_diagnostic_verified'),
+        ('schema', 'recastpress.php-wasix-managed-operation-host.v0.5' if cgi else 'recastpress.php-wasix-operation-budget.v0.5'), ('process_pid', pid),
+        ('engine', 'wasmer-7.2.0/' + backend), ('phase', 'managed_operation_budget_verified' if cgi else 'php_operation_budget_diagnostic_verified'),
         ('ok', True), ('php_wasm_operation_budget_verified_for_fixed_cases', True),
         ('trial_points', POINTS), ('cost_policy', 'one-point-per-original-Wasm-operator'),
         ('module_start_section_present', True), ('budget_reset_count', 0),
@@ -131,18 +182,30 @@ def validate_result(value, pid, backend):
                   'native_comparison_performed', 'product_adopted', 'real_db', 'wordpress_executed',
                   'full_php_compatibility_verified', 'exceptions_executed']:
         equal(value[field], False, 'unverified scope ' + field)
-    equal(value['artifact']['path'], '.reference/php-wasix-8.5.12/php.wasm', 'fixed CLI module path')
-    equal(value['artifact']['verified'], True, 'fixed CLI identity verification')
-    equal(value['artifact']['expected_bytes'], 39727549, 'CLI module byte size')
-    for key in ['expected_sha256', 'observed_sha256']:
-        equal(value['artifact'][key], ARTIFACT_SHA, 'module ' + key)
+    if cgi:
+        require(type(provenance) is dict and type(provenance.get('module')) is dict, 'explicit managed operation provenance')
+        equal(value['artifact']['path'], 'target/php-wasix-managed-access-probe/php-fiber-cgi.wasm', 'fixed managed CGI path')
+        equal(value['artifact']['observed_bytes'], provenance['module']['bytes'], 'managed CGI module size')
+        equal(value['artifact']['observed_sha256'], provenance['module']['sha256'], 'managed CGI module digest')
+    else:
+        require(provenance is None, 'CLI operation validation uses its fixed reference')
+        equal(value['artifact']['path'], '.reference/php-wasix-8.5.12/php.wasm', 'fixed CLI module path')
+        equal(value['artifact']['expected_bytes'], 39727549, 'CLI module byte size')
+        for key in ['expected_sha256', 'observed_sha256']:
+            equal(value['artifact'][key], ARTIFACT_SHA, 'module ' + key)
+    equal(value['artifact']['verified'], True, 'fixed identity verification')
     equal(value['source']['commit'], 'f4bfae79d5c19028349082f707930cf0951d23b9', 'PHP source')
     isolation = value['isolation']
     for field in ['host_environment_forwarded', 'host_directories_mapped', 'home_mapped', 'http_client',
                   'memory_limit_enforced', 'in_process_deadline_enforced', 'other_virtual_root_writes_forbidden']:
         equal(isolation[field], False, 'isolation ' + field)
-    equal(isolation['guest_environment_supplied'], [], 'no supplied environment')
-    equal(isolation['guest_fixture_files'], [], 'no mounted fixture or host directory')
+    equal(isolation['guest_environment_supplied'], None if cgi else [], 'closed supplied environment profile')
+    equal(isolation['guest_fixture_files'], [CGI_GUEST] if cgi else [], 'fixed fixture profile')
+    if cgi:
+        for key, expected in [('guest_readonly_mounts', ['/fixture']), ('asynchronous_threading', False),
+                ('deep_sleep', False), ('max_guest_threads', 1),
+                ('guest_environment_policy', 'fixed CGI scaffold and closed normal/loop case')]:
+            equal(isolation[key], expected, 'operation CGI isolation ' + key)
     equal(isolation['networking'], 'UnsupportedVirtualNetworking', 'no guest networking')
     equal(isolation['stdin'], 'closed-pipe', 'closed input')
     equal(isolation['configured_guest_max_threads'], 1, 'one guest thread')
@@ -164,7 +227,7 @@ def validate_result(value, pid, backend):
             ('name', CASES[index]), ('request_number', index + 1),
             ('configured_engine_identity', reuse['configured_engine_identity']), ('module_delivery', 'Module.clone'),
             ('module_compile_invocations', 0), ('fixed_program_sha256', LOOP_SHA if loop else NORMAL_SHA),
-            ('guest_arguments', ['-n', '-r', '<fixed-loop>' if loop else '<fixed-normal>']),
+            ('guest_arguments', ['-n', '-d', 'fiber.stack_size=2097152', '-d', 'register_argc_argv=0'] if cgi else ['-n', '-r', '<fixed-loop>' if loop else '<fixed-normal>']),
             ('success_expected', not loop), ('ok', not loop), ('expectation_met', True),
             ('configured_initial_points', {'kind': 'remaining', 'points': POINTS}), ('budget_reset_count', 0),
             ('setup_observation_phase', 'after-Instance.new-start-before-_initialize'),
@@ -175,7 +238,7 @@ def validate_result(value, pid, backend):
             ('metering_observation_error', None), ('ready_reached', loop), ('budget_exhausted', loop),
             ('runtime_shutdown_returned', True), ('runtime_shutdown_wait_limit_ms', 2000),
             ('stdout_eof', True), ('stderr_eof', True), ('stdout_overflow', False), ('stderr_overflow', False),
-            ('guest_environment_supplied', []), ('host_environment_forwarded', False),
+            ('guest_environment_supplied', operation_cgi_environment(index) if cgi else []), ('host_environment_forwarded', False),
             ('host_directories_mapped', False), ('home_mapped', False), ('http_client', False),
             ('networking', 'UnsupportedVirtualNetworking'), ('stdin', 'closed-pipe'),
             ('stdout_limit_bytes', 65536), ('stderr_limit_bytes', 65536),
@@ -198,6 +261,9 @@ def validate_result(value, pid, backend):
             equal(captured['stdout'], READY, 'READY reached before the loop exhaustion')
             equal(case['php'], None, 'loop has no completed PHP response')
             require(type(case['execution_error']) is str and bool(case['execution_error']), 'loop must retain its Runner error')
+            if cgi:
+                equal(case['complete_cgi_response_verified'], False, 'exhausted loop is not a completed CGI response')
+                require('response' not in case, 'no fabricated complete CGI response for loop')
         else:
             require('execution_error' not in case, 'normal execution must have no Runner error')
             points = case['final_points']
@@ -205,9 +271,17 @@ def validate_result(value, pid, backend):
             equal(points['kind'], 'remaining', 'normal remaining kind')
             require(type(points['points']) is int and 0 < points['points'] < reference,
                     'normal must consume points after start and leave a positive remainder')
-            php = parse_json(captured['stdout'])
-            equal(php, expected_php(), 'normal PHP JSON/types and fresh globals')
+            body = captured['stdout']
+            if cgi:
+                equal(case['complete_cgi_response_verified'], True, 'normal complete CGI response')
+                response, body = parse_operation_cgi(body)
+                equal(case['response'], response, 'actual original CGI capture/decoded response identity')
+            php = parse_json(body)
+            equal(php, expected_php(profile=profile), 'normal PHP JSON/types and fresh globals')
             equal(case['php'], php, 'normal decoded/captured consistency')
+        if cgi:
+            equal(case['fresh_wasi_runtime'], True, 'fresh CGI operation runtime')
+            equal(case['program_sha256'], CGI_FIXTURE_SHA, 'actual CGI fixture source identity')
 
 
 def main():

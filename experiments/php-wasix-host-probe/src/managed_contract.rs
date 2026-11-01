@@ -138,6 +138,34 @@ pub fn describe_rpc(report: &mut Value) {
         json!("fixed CGI GET and case selector plus one fixed per-request marker");
     super::managed_rpc_contract::describe_fixture(report);
 }
+pub fn describe_memory(report: &mut Value) {
+    super::php_memory_cap::describe(report);
+    profile(report);
+    report["schema"] = json!("recastpress.php-wasix-managed-memory-host.v0.5");
+    report["scope"] = json!("three-patch-managed-candidate-four-CGI-memory-cases");
+    report["product_runtime_selected"] = json!(false);
+    report["managed_access_verified_for_fixed_cases"] = json!(false);
+    super::php_memory_cap::describe_cgi_fixture(report);
+}
+pub fn verify_memory(report: &mut Value) -> Result<()> {
+    report["phase"] = json!("managed_memory_build_verification");
+    let bytes = load_cgi_module(report)?;
+    super::php_memory_cap::verify_cgi(bytes, report)
+}
+pub fn describe_operation(report: &mut Value) {
+    super::php_operation_budget::describe(report);
+    profile(report);
+    report["schema"] = json!("recastpress.php-wasix-managed-operation-host.v0.5");
+    report["scope"] = json!("three-patch-managed-candidate-three-CGI-operation-budget-cases");
+    report["product_runtime_selected"] = json!(false);
+    report["managed_access_verified_for_fixed_cases"] = json!(false);
+    super::php_operation_budget::describe_cgi_fixture(report);
+}
+pub fn verify_operation(report: &mut Value) -> Result<()> {
+    report["phase"] = json!("managed_operation_build_verification");
+    let bytes = load_cgi_module(report)?;
+    super::php_operation_budget::verify_cgi(bytes, report)
+}
 pub fn describe_fiber(report: &mut Value) {
     super::fiber_cgi_contract::describe(report);
     profile(report);

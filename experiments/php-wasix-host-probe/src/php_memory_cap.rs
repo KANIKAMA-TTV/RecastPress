@@ -6,6 +6,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result, ensure};
 use serde_json::{Value, json};
+use sha2::{Digest, Sha256};
 use wasmer::{Engine, Module, Pages};
 use wasmer_wasix::runtime::module_cache::HashedModuleData;
 use wasmer_wasix::runtime::task_manager::tokio::TokioTaskManager;
@@ -36,6 +37,70 @@ echo json_encode(['php_version'=>PHP_VERSION,'php_int_size'=>PHP_INT_SIZE,
 'first_byte'=>ord($payload[0]),'last_byte'=>ord($payload[strlen($payload)-1]),
 'echo'=>'recastpress-v0.5-php-memory-cap'], JSON_THROW_ON_ERROR);
 "#;
+
+const CGI_FIXTURE: &[u8] =
+    include_bytes!("../../php-wasix-managed-access-probe/fixtures/memory_cgi_contract.php");
+const CGI_FIXTURE_SHA: &str = "9b9c066b75628b04569df02288b60c1d4f392f7af773bf09fc0255b191e427b7";
+const CGI_SOURCE: &str =
+    "experiments/php-wasix-managed-access-probe/fixtures/memory_cgi_contract.php";
+const CGI_GUEST: &str = "/fixture/memory_cgi_contract.php";
+
+#[derive(Clone, Copy)]
+enum Profile {
+    Cli,
+    Cgi,
+}
+impl Profile {
+    fn is_cgi(self) -> bool {
+        matches!(self, Self::Cgi)
+    }
+}
+fn sha(bytes: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(bytes))
+}
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
+fn cgi_environment(allocate: bool) -> Vec<(String, String)> {
+    [
+        ("GATEWAY_INTERFACE", "CGI/1.1"),
+        ("SERVER_PROTOCOL", "HTTP/1.1"),
+        ("SERVER_SOFTWARE", "recastpress-v0.5-fixed-memory-cgi-probe"),
+        ("SERVER_NAME", "fixture.invalid"),
+        ("SERVER_PORT", "80"),
+        ("REDIRECT_STATUS", "200"),
+        ("REQUEST_METHOD", "GET"),
+        ("SCRIPT_FILENAME", CGI_GUEST),
+        ("SCRIPT_NAME", "/__rp_memory.php"),
+        ("DOCUMENT_ROOT", "/fixture"),
+        ("QUERY_STRING", "rp_memory_cgi=1"),
+        ("REQUEST_URI", "/__rp_memory.php?rp_memory_cgi=1"),
+        ("CONTENT_LENGTH", "0"),
+        (
+            "RP_MEMORY_CASE",
+            if allocate { "allocate" } else { "normal" },
+        ),
+    ]
+    .into_iter()
+    .map(|(name, value)| (name.to_owned(), value.to_owned()))
+    .collect()
+}
+
+pub(crate) fn describe_cgi_fixture(report: &mut Value) {
+    report["fixture"] = json!({"source":CGI_SOURCE,"guest_path":CGI_GUEST,
+        "expected_sha256":CGI_FIXTURE_SHA,"verified":false,
+        "canonical_source":"experiments/php-wasix-host-probe/src/php_memory_cap.rs",
+        "case_bodies_byte_identical":false,"stderr_alias":"STDERR=php://stderr (wb), fixed CGI wrapper only"});
+    report["isolation"]["guest_environment_supplied"] = Value::Null;
+    report["isolation"]["guest_environment_policy"] =
+        json!("fixed CGI GET scaffold and closed normal/allocate case");
+    report["isolation"]["guest_fixture_files"] = json!([CGI_GUEST]);
+    report["isolation"]["guest_readonly_mounts"] = json!(["/fixture"]);
+    report["isolation"]["asynchronous_threading"] = json!(true);
+    report["isolation"]["deep_sleep"] = json!(false);
+    report["isolation"]["max_guest_threads"] = json!(1);
+}
 
 #[derive(Clone, Copy)]
 struct Case {
@@ -102,6 +167,36 @@ pub fn describe(report: &mut Value) {
 }
 
 pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
+    verify_profile(bytes, report, Profile::Cli)
+}
+
+pub(crate) fn verify_cgi(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
+    ensure!(
+        sha(CGI_FIXTURE) == CGI_FIXTURE_SHA,
+        "fixed memory CGI fixture hash"
+    );
+    for body in [NORMAL, ALLOCATE] {
+        ensure!(
+            CGI_FIXTURE
+                .windows(body.len())
+                .filter(|window| *window == body.as_bytes())
+                .count()
+                == 1,
+            "original memory program body must occur exactly once"
+        );
+    }
+    report["fixture"]["verified"] = json!(true);
+    report["fixture"]["observed_sha256"] = json!(sha(CGI_FIXTURE));
+    report["fixture"]["case_bodies_byte_identical"] = json!(true);
+    verify_profile(bytes, report, Profile::Cgi)?;
+    ensure!(
+        report["observed_php_int_size"] == 8,
+        "managed CGI integer width"
+    );
+    Ok(())
+}
+
+fn verify_profile(bytes: Vec<u8>, report: &mut Value, profile: Profile) -> Result<()> {
     let data = HashedModuleData::new(bytes);
     let engine = make_engine();
     let identity = format!("{:?}", engine.id());
@@ -129,8 +224,16 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
             "networking":"UnsupportedVirtualNetworking","http_client":false,
             "stdin":"closed-pipe","stdout_limit_bytes":OUTPUT_LIMIT,"stderr_limit_bytes":OUTPUT_LIMIT,
             "oom_observed":false});
-        let result = execute(&engine, module.clone(), &data, *case, &mut record)
-            .and_then(|()| validate(&record, *case))
+        let result = execute(&engine, module.clone(), &data, *case, profile, &mut record)
+            .and_then(|()| {
+                if profile.is_cgi() && !case.success_expected {
+                    ensure!(
+                        record["failed_stdout_completed_json_observed"] == false,
+                        "failed CGI allocation emitted completed JSON, including JSON null"
+                    );
+                }
+                validate(&record, *case)
+            })
             .and_then(|observed_width| {
                 if let Some(observed) = observed_width {
                     if let Some(previous) = width {
@@ -170,8 +273,22 @@ fn execute(
     module: Module,
     data: &HashedModuleData,
     case: Case,
+    profile: Profile,
     record: &mut Value,
 ) -> Result<()> {
+    if profile.is_cgi() {
+        record["fresh_wasi_runtime"] = json!(true);
+        record["fresh_memory_policy"] = json!(true);
+        record["program_sha256"] = json!(sha(CGI_FIXTURE));
+        record["guest_environment_supplied"] = json!(cgi_environment(case.allocate));
+        record["cgi_response_parsed"] = json!(false);
+        record["cgi_response_accepted"] = json!(false);
+        record["response_scope"] = json!(
+            "response is accepted only after successful guest exit; failed parse observations are separate"
+        );
+        record["response"] = Value::Null;
+        record["response_observation"] = Value::Null;
+    }
     let memories = Arc::new(Mutex::new(Vec::<MemorySnapshot>::new()));
     let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
@@ -200,8 +317,34 @@ fn execute(
         runtime.set_networking_implementation(UnsupportedVirtualNetworking::default());
         runtime.http_client = None;
         let mut runner = WasiRunner::new();
-        runner
-            .with_args([
+        if profile.is_cgi() {
+            let arguments = [
+                "-n",
+                "-d",
+                "memory_limit=-1",
+                "-d",
+                "display_errors=stderr",
+                "-d",
+                "log_errors=0",
+                "-d",
+                "fiber.stack_size=2097152",
+                "-d",
+                "register_argc_argv=0",
+            ];
+            runner
+                .with_args(arguments)
+                .with_envs(cgi_environment(case.allocate))
+                .with_current_dir("/fixture")
+                .with_mount(
+                    "/fixture".into(),
+                    Arc::new(super::language_contract::single_file_fs(
+                        "memory_cgi_contract.php",
+                        CGI_FIXTURE,
+                    )),
+                );
+            record["guest_arguments"] = json!(arguments);
+        } else {
+            runner.with_args([
                 "-n",
                 "-d",
                 "memory_limit=-1",
@@ -211,10 +354,12 @@ fn execute(
                 "log_errors=0",
                 "-r",
                 if case.allocate { ALLOCATE } else { NORMAL },
-            ])
+            ]);
+        }
+        runner
             .with_forward_host_env(false)
             .with_home_mapped(false)
-            .with_asynchronous_threading(false)
+            .with_asynchronous_threading(profile.is_cgi())
             .with_stdin(Box::new(stdin_reader))
             .with_stdout(Box::new(LimitedPipe::new(
                 stdout_sender,
@@ -247,6 +392,10 @@ fn execute(
     drop(guard);
     tokio_runtime.shutdown_timeout(Duration::from_secs(2));
     record["runtime_shutdown_returned"] = json!(true);
+    if profile.is_cgi() {
+        record["runtime_shutdown_wait_limit_ms"] = json!(2000);
+        record["php_completed"] = json!(outcome.is_ok());
+    }
     let stdout = collect_pipe(stdout_reader);
     let stderr = collect_pipe(stderr_reader);
     record["stdout_eof"] = json!(stdout.is_ok());
@@ -256,10 +405,18 @@ fn execute(
     if let Ok(bytes) = &stdout {
         record["stdout_bytes"] = json!(bytes.len());
         record["stdout"] = json!(String::from_utf8_lossy(bytes));
+        if profile.is_cgi() {
+            record["stdout_hex"] = json!(hex(bytes));
+            record["stdout_sha256"] = json!(sha(bytes));
+        }
     }
     if let Ok(bytes) = &stderr {
         record["stderr_bytes"] = json!(bytes.len());
         record["stderr"] = json!(String::from_utf8_lossy(bytes));
+        if profile.is_cgi() {
+            record["stderr_hex"] = json!(hex(bytes));
+            record["stderr_sha256"] = json!(sha(bytes));
+        }
     }
     let memories = memories.lock().expect("memory observations poisoned");
     record["memory_observation_count"] = json!(memories.len());
@@ -277,9 +434,52 @@ fn execute(
     );
     let stdout = stdout.context("case stdout EOF")?;
     let stderr = stderr.context("case stderr EOF")?;
-    record["php"] = serde_json::from_slice::<Value>(&stdout)
-        .ok()
-        .unwrap_or(Value::Null);
+    if !profile.is_cgi() {
+        record["php"] = serde_json::from_slice::<Value>(&stdout)
+            .ok()
+            .unwrap_or(Value::Null);
+    } else {
+        record["php"] = Value::Null;
+        if outcome.is_ok() {
+            let response = super::cgi_contract::cgi_response::parse(&stdout)?;
+            record["cgi_response_parsed"] = json!(true);
+            record["response"] = json!({"status":response.status,
+                "headers":response.headers.iter().map(|(name,value)| json!({"name":name,"value_hex":hex(value)})).collect::<Vec<_>>(),
+                "body_bytes":response.body.len(),"body_hex":hex(&response.body),"body_sha256":sha(&response.body),
+                "representation_length":response.representation_length});
+            record["response_observation"] = record["response"].clone();
+            ensure!(response.status == 200, "successful memory CGI status");
+            record["php"] = serde_json::from_slice::<Value>(&response.body)
+                .context("successful memory CGI JSON body")?;
+            record["cgi_response_accepted"] = json!(true);
+        } else {
+            // Parsing is an observation, not acceptance of a failed run. Keep
+            // partial stdout unchanged, and reject completed JSON even if the
+            // guest failed after emitting it or emitted malformed CGI headers.
+            if let Ok(response) = super::cgi_contract::cgi_response::parse(&stdout) {
+                record["cgi_response_parsed"] = json!(true);
+                record["response_observation"] = json!({"status":response.status,
+                    "headers":response.headers.iter().map(|(name,value)| json!({"name":name,"value_hex":hex(value)})).collect::<Vec<_>>(),
+                    "body_bytes":response.body.len(),"body_hex":hex(&response.body),"body_sha256":sha(&response.body),
+                    "representation_length":response.representation_length});
+            }
+            let mut candidates = vec![stdout.as_slice()];
+            for separator in [b"\r\n\r\n".as_slice(), b"\n\n".as_slice()] {
+                if let Some(start) = stdout
+                    .windows(separator.len())
+                    .position(|part| part == separator)
+                {
+                    candidates.push(&stdout[start + separator.len()..]);
+                }
+            }
+            record["failed_stdout_json_probe_performed"] = json!(true);
+            let completed_json = candidates
+                .into_iter()
+                .find_map(|bytes| serde_json::from_slice::<Value>(bytes).ok());
+            record["failed_stdout_completed_json_observed"] = json!(completed_json.is_some());
+            record["php"] = completed_json.unwrap_or(Value::Null);
+        }
+    }
     let stderr = String::from_utf8_lossy(&stderr);
     record["oom_observed"] = json!(
         outcome.is_err()

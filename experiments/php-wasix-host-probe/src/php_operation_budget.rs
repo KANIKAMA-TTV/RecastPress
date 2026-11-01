@@ -47,6 +47,63 @@ fflush(STDOUT);
 while (true) {}
 "#;
 
+const CGI_FIXTURE: &[u8] =
+    include_bytes!("../../php-wasix-managed-access-probe/fixtures/operation_cgi_contract.php");
+const CGI_FIXTURE_SHA: &str = "455204fd5af80680dca3b32de236bb22db2a212ab91f124fc2fb02b8007a1f88";
+const CGI_FILENAME: &str = "operation_cgi_contract.php";
+const CGI_GUEST: &str = "/fixture/operation_cgi_contract.php";
+const CGI_SOURCE: &str =
+    "experiments/php-wasix-managed-access-probe/fixtures/operation_cgi_contract.php";
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum EntryProfile {
+    Cli,
+    ManagedCgi,
+}
+
+fn cgi_environment(index: usize) -> Vec<(String, String)> {
+    [
+        ("GATEWAY_INTERFACE", "CGI/1.1"),
+        ("SERVER_PROTOCOL", "HTTP/1.1"),
+        (
+            "SERVER_SOFTWARE",
+            "recastpress-v0.5-fixed-operation-cgi-probe",
+        ),
+        ("SERVER_NAME", "fixture.invalid"),
+        ("SERVER_PORT", "80"),
+        ("REDIRECT_STATUS", "200"),
+        ("REQUEST_METHOD", "GET"),
+        ("SCRIPT_FILENAME", CGI_GUEST),
+        ("SCRIPT_NAME", "/__rp_operation.php"),
+        ("DOCUMENT_ROOT", "/fixture"),
+        ("QUERY_STRING", "rp_operation_cgi=1"),
+        ("REQUEST_URI", "/__rp_operation.php?rp_operation_cgi=1"),
+        ("CONTENT_LENGTH", "0"),
+        (
+            "RP_OPERATION_CASE",
+            if index == 1 { "loop" } else { "normal" },
+        ),
+    ]
+    .into_iter()
+    .map(|(name, value)| (name.to_owned(), value.to_owned()))
+    .collect()
+}
+
+pub(crate) fn describe_cgi_fixture(report: &mut Value) {
+    report["fixture"] = json!({"source":CGI_SOURCE,"guest_path":CGI_GUEST,
+        "expected_sha256":CGI_FIXTURE_SHA,"verified":false,
+        "canonical_source":"experiments/php-wasix-host-probe/src/php_operation_budget.rs",
+        "case_bodies_byte_identical":false});
+    report["isolation"]["guest_fixture_files"] = json!([CGI_GUEST]);
+    report["isolation"]["guest_readonly_mounts"] = json!(["/fixture"]);
+    report["isolation"]["guest_environment_supplied"] = Value::Null;
+    report["isolation"]["guest_environment_policy"] =
+        json!("fixed CGI scaffold and closed normal/loop case");
+    report["isolation"]["asynchronous_threading"] = json!(false);
+    report["isolation"]["deep_sleep"] = json!(false);
+    report["isolation"]["max_guest_threads"] = json!(1);
+}
+
 fn sha(wire: &[u8]) -> String {
     format!("{:x}", Sha256::digest(wire))
 }
@@ -510,6 +567,31 @@ impl VirtualTaskManager for MeteredTaskManager {
 }
 
 pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
+    verify_profile(bytes, report, EntryProfile::Cli)
+}
+
+pub(crate) fn verify_cgi(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
+    ensure!(
+        sha(CGI_FIXTURE) == CGI_FIXTURE_SHA,
+        "fixed operation CGI fixture identity"
+    );
+    for body in [NORMAL, LOOP] {
+        ensure!(
+            CGI_FIXTURE
+                .windows(body.len())
+                .filter(|window| *window == body.as_bytes())
+                .count()
+                == 1,
+            "original operation body must occur exactly once in CGI fixture"
+        );
+    }
+    report["fixture"]["verified"] = json!(true);
+    report["fixture"]["observed_sha256"] = json!(sha(CGI_FIXTURE));
+    report["fixture"]["case_bodies_byte_identical"] = json!(true);
+    verify_profile(bytes, report, EntryProfile::ManagedCgi)
+}
+
+fn verify_profile(bytes: Vec<u8>, report: &mut Value, profile: EntryProfile) -> Result<()> {
     ensure!(
         cfg!(target_os = "linux"),
         "fixed PHP operation-budget execution is Linux-only; MSVC formal EH remains unexecuted"
@@ -547,7 +629,20 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
             "guest_environment_supplied":[],"host_environment_forwarded":false,"host_directories_mapped":false,
             "home_mapped":false,"networking":"UnsupportedVirtualNetworking","http_client":false,
             "stdin":"closed-pipe","stdout_limit_bytes":OUTPUT_LIMIT,"stderr_limit_bytes":OUTPUT_LIMIT});
-        let execution = execute(&engine, module.clone(), &data, index, &mut record);
+        if profile == EntryProfile::ManagedCgi {
+            record["guest_arguments"] = json!([
+                "-n",
+                "-d",
+                "fiber.stack_size=2097152",
+                "-d",
+                "register_argc_argv=0"
+            ]);
+            record["guest_environment_supplied"] = json!(cgi_environment(index));
+            record["program_sha256"] = json!(sha(CGI_FIXTURE));
+            record["fresh_wasi_runtime"] = json!(true);
+            record["complete_cgi_response_verified"] = json!(false);
+        }
+        let execution = execute(&engine, module.clone(), &data, index, &mut record, profile);
         let observed = post_start_remaining(&record["post_start_points"]).ok();
         if index == 0 {
             reference = observed;
@@ -557,7 +652,7 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
             record["post_start_difference_from_first"] = json!(points as i64 - first as i64);
             record["post_start_matches_first"] = json!(points == first);
         }
-        let result = execution.and_then(|()| validate(&record, index));
+        let result = execution.and_then(|()| validate(&record, index, profile));
         record["expectation_met"] = json!(result.is_ok());
         if let Err(error) = result {
             all_met = false;
@@ -591,6 +686,7 @@ fn execute(
     data: &HashedModuleData,
     index: usize,
     record: &mut Value,
+    profile: EntryProfile,
 ) -> Result<()> {
     let observations: SharedObservations = Arc::new(Mutex::new(Observations::default()));
     let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
@@ -617,8 +713,28 @@ fn execute(
             observe_setup(&setup, store, instance)
         });
         let mut runner = WasiRunner::new();
+        if profile == EntryProfile::Cli {
+            runner.with_args(["-n", "-r", if index == 1 { LOOP } else { NORMAL }]);
+        } else {
+            runner
+                .with_args([
+                    "-n",
+                    "-d",
+                    "fiber.stack_size=2097152",
+                    "-d",
+                    "register_argc_argv=0",
+                ])
+                .with_envs(cgi_environment(index))
+                .with_current_dir("/fixture")
+                .with_mount(
+                    "/fixture".into(),
+                    Arc::new(super::language_contract::single_file_fs(
+                        CGI_FILENAME,
+                        CGI_FIXTURE,
+                    )),
+                );
+        }
         runner
-            .with_args(["-n", "-r", if index == 1 { LOOP } else { NORMAL }])
             .with_forward_host_env(false)
             .with_home_mapped(false)
             .with_asynchronous_threading(false)
@@ -695,8 +811,22 @@ fn execute(
     );
     record["ready_reached"] = json!(stdout == READY);
     if index != 1 && outcome.is_ok() {
+        let body = if profile == EntryProfile::ManagedCgi {
+            // Only normal successful requests can claim a complete CGI response.
+            // The exhausted loop's direct php://stdout READY remains raw data.
+            let response = super::cgi_contract::cgi_response::parse(&stdout)?;
+            record["response"] = json!({"status":response.status,
+                "headers":response.headers.iter().map(|(name,value)| json!({"name":name,"value_hex":hex(value)})).collect::<Vec<_>>(),
+                "body_bytes":response.body.len(),"body_hex":hex(&response.body),
+                "body_sha256":sha(&response.body),"representation_length":response.representation_length});
+            ensure!(response.status == 200, "normal operation CGI status");
+            record["complete_cgi_response_verified"] = json!(true);
+            response.body
+        } else {
+            stdout
+        };
         record["php"] =
-            serde_json::from_slice::<Value>(&stdout).context("normal PHP operation-budget JSON")?;
+            serde_json::from_slice::<Value>(&body).context("normal PHP operation-budget JSON")?;
     }
     // Expected guest errors are preserved above and classified only by validate,
     // which requires READY plus the independently observed exhausted global.
@@ -744,7 +874,7 @@ fn validate_handle_lifecycle(record: &Value) -> Result<()> {
     Ok(())
 }
 
-fn validate(record: &Value, index: usize) -> Result<()> {
+fn validate(record: &Value, index: usize, profile: EntryProfile) -> Result<()> {
     validate_handle_lifecycle(record)?;
     ensure!(
         record["setup_observation_count"] == 1
@@ -796,7 +926,8 @@ fn validate(record: &Value, index: usize) -> Result<()> {
         );
         ensure!(
             record["php"]
-                == json!({"php_version":"8.5.12","version_id":80512,"php_int_size":8,"sapi":"cli",
+                == json!({"php_version":"8.5.12","version_id":80512,"php_int_size":8,
+            "sapi":if profile == EntryProfile::Cli { "cli" } else { "cgi-fcgi" },
             "kind":"normal","globals_before_present":false,"globals_after":"request-local",
             "echo":"recastpress-v0.5-php-operation-budget"}),
             "normal PHP response differs from the fixed contract"

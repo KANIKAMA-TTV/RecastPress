@@ -73,6 +73,8 @@ enum ProbeMode {
     ManagedRuntimeContract,
     ManagedCgiContract,
     ManagedRpcContract,
+    ManagedMemoryCap,
+    ManagedOperationBudget,
 }
 
 #[cfg(feature = "llvm")]
@@ -115,6 +117,11 @@ fn main() -> ExitCode {
         ProbeMode::ManagedCgiContract
     } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--managed-rpc-contract"] {
         ProbeMode::ManagedRpcContract
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--managed-php-memory-cap"] {
+        ProbeMode::ManagedMemoryCap
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--managed-php-operation-budget"]
+    {
+        ProbeMode::ManagedOperationBudget
     } else {
         ProbeMode::VersionOnly
     };
@@ -197,6 +204,10 @@ fn main() -> ExitCode {
         managed_contract::describe_cgi(&mut report);
     } else if mode == ProbeMode::ManagedRpcContract {
         managed_contract::describe_rpc(&mut report);
+    } else if mode == ProbeMode::ManagedMemoryCap {
+        managed_contract::describe_memory(&mut report);
+    } else if mode == ProbeMode::ManagedOperationBudget {
+        managed_contract::describe_operation(&mut report);
     }
 
     let passed = match run(&mut report, mode) {
@@ -220,6 +231,8 @@ fn main() -> ExitCode {
                 ProbeMode::ManagedRuntimeContract => "managed_runtime_contract_verified",
                 ProbeMode::ManagedCgiContract => "managed_cgi_contract_verified",
                 ProbeMode::ManagedRpcContract => "managed_rpc_contract_verified",
+                ProbeMode::ManagedMemoryCap => "managed_memory_cap_verified",
+                ProbeMode::ManagedOperationBudget => "managed_operation_budget_verified",
             });
             true
         }
@@ -261,8 +274,10 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
             || (mode == ProbeMode::ManagedFiberContract && std::env::args_os().len() == 2)
             || (mode == ProbeMode::ManagedRuntimeContract && std::env::args_os().len() == 2)
             || (mode == ProbeMode::ManagedCgiContract && std::env::args_os().len() == 2)
-            || (mode == ProbeMode::ManagedRpcContract && std::env::args_os().len() == 2),
-        "this fixed probe accepts only --language-contract, --module-reuse, --php-memory-cap, --cgi-contract, --rpc-contract, --context-contract, --php-operation-budget, --fiber-contract, --fiber-cgi-contract, --cgi-runtime-contract, --managed-fiber-cgi-contract, --managed-cgi-runtime-contract, --managed-cgi-contract, --managed-rpc-contract or no arguments"
+            || (mode == ProbeMode::ManagedRpcContract && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::ManagedMemoryCap && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::ManagedOperationBudget && std::env::args_os().len() == 2),
+        "this fixed probe accepts only --language-contract, --module-reuse, --php-memory-cap, --cgi-contract, --rpc-contract, --context-contract, --php-operation-budget, --fiber-contract, --fiber-cgi-contract, --cgi-runtime-contract, --managed-fiber-cgi-contract, --managed-cgi-runtime-contract, --managed-cgi-contract, --managed-rpc-contract, --managed-php-memory-cap, --managed-php-operation-budget or no arguments"
     );
     if mode == ProbeMode::CgiContract {
         return cgi_contract::verify(report);
@@ -282,6 +297,10 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
         return managed_contract::verify_cgi(report);
     } else if mode == ProbeMode::ManagedRpcContract {
         return managed_rpc_contract::verify(report);
+    } else if mode == ProbeMode::ManagedMemoryCap {
+        return managed_contract::verify_memory(report);
+    } else if mode == ProbeMode::ManagedOperationBudget {
+        return managed_contract::verify_operation(report);
     }
     if mode == ProbeMode::LanguageContract {
         language_contract::verify_fixture(report)?;
@@ -425,7 +444,9 @@ fn execute(bytes: Vec<u8>, report: &mut Value, mode: ProbeMode) -> Result<(Vec<u
             ProbeMode::ManagedFiberContract
             | ProbeMode::ManagedRuntimeContract
             | ProbeMode::ManagedCgiContract
-            | ProbeMode::ManagedRpcContract => {
+            | ProbeMode::ManagedRpcContract
+            | ProbeMode::ManagedMemoryCap
+            | ProbeMode::ManagedOperationBudget => {
                 bail!("managed contracts must use their own closed three-patch artifact path")
             }
         }

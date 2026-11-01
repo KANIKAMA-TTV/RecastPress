@@ -25,6 +25,8 @@ python experiments/php-wasix-managed-access-probe/managed_check.py --fiber --rec
 python experiments/php-wasix-managed-access-probe/managed_check.py --record
 python experiments/php-wasix-managed-access-probe/cgi_check.py --record
 python experiments/php-wasix-managed-access-probe/rpc_check.py --record
+python experiments/php-wasix-managed-access-probe/memory_check.py --record
+python experiments/php-wasix-managed-access-probe/operation_check.py --record
 ```
 
 LLVMは実行checkerに`--llvm`を付ける。runtime比較の前に既存のWPソース準備が必要。Fiber/runtime比較はcompile済みmoduleから3つのfresh要求を作り、native CGIの既存6ケースと応答全体を照合する。PHP JSON・warning・native期待値を補正して合格にはしない。実権限照会のallow/deny、応答読了、invalid/IOエラーなし、scratch実書込み・readonly不変も検証する。providerのopen/close計数はRust VirtualFile単位であり、guest fd数ではない。
@@ -53,6 +55,18 @@ source `edc6b645aead72b00eb482994a58e69957879118`の[CI 41337652464](https://git
 
 共通CGI処理はexit・shutdown・EOF・quotaを確認して完全な応答を解析する。RPC側はその実本文とRpcFs.finishの両方を検証し、取得失敗時も必ずfinishする。新checkerはraw stdout・response・PHP JSON・callback snapshotを直接照合し、元CLIのreportへ変換しない。外側のbuild1200秒・実行600秒、出力上限・cleanup失敗時の成功取消も維持する。
 
-実装とWindows36単体テスト、リリースビルド、固定本文の構文確認・84入力の純粋照合が通過。実CGIでの4要求は次のLinux CIで確認する。実DB・標準wpdb・永続cache・製品ABIは実装していない。
+source `bc628143449a924653d23845568845cd0baeb1a9`の[CI 41356526706](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41356526706)で両backendの実CGI 4要求が通過。[Cranelift](evidence/ci-41356526706-cranelift/provenance.json)・[LLVM](evidence/ci-41356526706-llvm/provenance.json)の生JSONと元Git照合を保存した。全caseでPHP自体は正常終了し、RPC受入はtrue/true/false/true。正常要求は各5操作・入力90B・返信76B全読了、不完全要求は入力12B・pending12B・dispatch0・返信0で拒否され、正常回復した。Linux37単体テストとFiber/runtime/CGI比較も再通過した。
+
+実DB・標準wpdb・永続cache・製品ABIは実装していない。取得した完成CGIとPHP成功を、RPCが拒否した要求の受入へ読み替えない。
+
+## 資源診断のCGI移設
+
+旧CLI候補で確認したメモリ上限・Wasm演算予算の診断も、同じ3patch候補で実行する入口を追加する。既存のMemoryPolicyManager、typed Global observer、setup/recycleと期待値を共用し、固定CGI fixtureのargs/env/mountと出力解析だけを切り替える。元CLIの入口は維持する。これらの値は製品設定ではない。
+
+`memory_check.py`は256MiBのactual最大値、128MiBの割当、通常→期待OOM→通常回復→無cap対照を維持する。CGI wrapperでSTDERRを明示し、元のPHP本文を変更しない。失敗時もstdout/stderrを保存し、完全な応答を受理しない。完成JSONの出力があれば、失敗したguestを期待OOMとして受理しない。実memory snapshotのshared/max/sizeとrecycle1件、無cap対照が4096pagesを超える条件も維持する。
+
+`operation_check.py`は初期1億points、start sectionの消費、補充0、通常→loopの実Exhausted→通常回復を維持する。元NORMAL/LOOP本文を残し、CGIでは必要なSTDOUT aliasとNORMALのSAPI差だけを明示する。loopのraw READYとRunner失敗、保持したtyped Globalによる実Exhaustedを検証し、完全CGI成功と区別する。通常のCGI本文は完全応答から解析する。タイムアウトをExhaustedとは扱わない。
+
+外側のbuild期限は1200秒、memory実行は600秒、operation実行はCranelift300秒/LLVM600秒。Windowsのunit・release build、native CGIのnormal smoke、純粋なfixture/source照合を確認し、Wasmの実資源制御は次のLinux CIで判定する。RSS・合計memory・hostcallの待機・CPU時間・製品値・全資源回収は別gateであり、この2つの診断を同時に全要求へ適用したという意味ではない。
 
 全WP bootstrap、wpdb・実DB、HTTP listener、全資源回収、stack guard/free/reuse、配布条件、3配備先の受入は未完了。

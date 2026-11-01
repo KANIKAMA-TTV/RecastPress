@@ -60,6 +60,8 @@ def compiled_inputs():
                ROOT / 'experiments/php-wasix-managed-access-probe/patches/0001-wasi-managed-access.patch',
                ROOT / 'experiments/php-wasix-managed-access-probe/fixtures/recastpress_fs_access.h',
                ROOT / 'experiments/php-wasix-managed-access-probe/fixtures/rpc_cgi_contract.php',
+               ROOT / 'experiments/php-wasix-managed-access-probe/fixtures/memory_cgi_contract.php',
+               ROOT / 'experiments/php-wasix-managed-access-probe/fixtures/operation_cgi_contract.php',
                ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
 
 

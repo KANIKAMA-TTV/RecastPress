@@ -7,6 +7,8 @@ name: PHP WASIX managed access candidate
     paths:
       - "experiments/php-wasix-managed-access-probe/fixtures/recastpress_fs_access.h"
       - "experiments/php-wasix-managed-access-probe/fixtures/rpc_cgi_contract.php"
+      - "experiments/php-wasix-managed-access-probe/fixtures/memory_cgi_contract.php"
+      - "experiments/php-wasix-managed-access-probe/fixtures/operation_cgi_contract.php"
       - "experiments/php-wasix-managed-access-probe/patches/0001-wasi-managed-access.patch"
       - "experiments/php-wasix-host-probe/Cargo.*"
       - "experiments/php-wasix-host-probe/src/**"
@@ -63,6 +65,11 @@ name: PHP WASIX managed access candidate
       - "experiments/php-wasix-managed-access-probe/managed_check.py"
       - "experiments/php-wasix-managed-access-probe/cgi_check.py"
       - "experiments/php-wasix-managed-access-probe/rpc_check.py"
+      - "experiments/php-wasix-managed-access-probe/memory_check.py"
+      - "experiments/php-wasix-managed-access-probe/operation_check.py"
+      - "experiments/php-wasix-host-probe/memory_check.py"
+      - "experiments/php-wasix-host-probe/reuse_check.py"
+      - "experiments/php-wasix-host-probe/operation_check.py"
       - "experiments/php-wasix-host-probe/rpc_check.py"
       - "experiments/php-wasix-managed-access-probe/manifest.json"
       - "experiments/php-wasix-managed-access-probe/patch-plan.json"
@@ -211,6 +218,16 @@ jobs:
         id: rpc_contract
         run: python3 experiments/php-wasix-managed-access-probe/rpc_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
 
+      - name: Verify actual memory cap, expected allocation OOM and normal recovery on CGI
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.units.outcome == 'success' }}
+        id: memory_cap
+        run: python3 experiments/php-wasix-managed-access-probe/memory_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
+
+      - name: Verify start-charged operation budget, actual exhaustion and normal recovery on CGI
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.units.outcome == 'success' }}
+        id: operation_budget
+        run: python3 experiments/php-wasix-managed-access-probe/operation_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
+
       - name: Record CI outcomes even if preparation or build failed
         if: ${{ always() }}
         env:
@@ -229,6 +246,8 @@ jobs:
           STAGE_FIBER_CONTRACT: ${{ steps.fiber_contract.outcome }}
           STAGE_CGI_CONTRACT: ${{ steps.cgi_contract.outcome }}
           STAGE_RPC_CONTRACT: ${{ steps.rpc_contract.outcome }}
+          STAGE_MEMORY_CAP: ${{ steps.memory_cap.outcome }}
+          STAGE_OPERATION_BUDGET: ${{ steps.operation_budget.outcome }}
           PROBE_BACKEND: ${{ matrix.backend }}
         run: |
           python3 - <<'PY'
@@ -256,9 +275,9 @@ jobs:
           inputs += sorted(runtime.glob('fixtures/*')) + [runtime / 'evidence/native-cgi-runtime-contract.json']
           report = {
               'format_version': 1,
-              'scope': 'Three-patch NTS CGI build with pure Rust access queries, native Fiber and runtime comparisons; no product adoption',
+              'scope': 'Three-patch NTS CGI build with fixed Fiber, language, IO, RPC, memory and operation-budget diagnostics; no product adoption',
               'backend': os.environ['PROBE_BACKEND'],
-              'guest_execution_verdict': 'see the separate Fiber, CGI, runtime and private RPC receipts',
+              'guest_execution_verdict': 'see separate Fiber, CGI, runtime, RPC, memory and operation-budget receipts',
               'product_runtime_selected': False,
               'redistributed_binaries': False,
               'source_commit': os.environ['GITHUB_SHA'],
@@ -267,7 +286,7 @@ jobs:
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
                          for name in ['PHP_SOURCE', 'DEPS_SOURCE', 'PARSER_SOURCE',
                                       'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD',
-                                      'RUST', 'HOST_LLVM', 'UNITS', 'WORDPRESS_SOURCE', 'FIBER_CONTRACT', 'CGI_CONTRACT', 'RUNTIME_CONTRACT', 'RPC_CONTRACT']},
+                                      'RUST', 'HOST_LLVM', 'UNITS', 'WORDPRESS_SOURCE', 'FIBER_CONTRACT', 'CGI_CONTRACT', 'RUNTIME_CONTRACT', 'RPC_CONTRACT', 'MEMORY_CAP', 'OPERATION_BUDGET']},
               'input_files': {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                               for path in inputs if path.is_file()},
           }

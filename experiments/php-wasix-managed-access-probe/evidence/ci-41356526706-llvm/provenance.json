@@ -1,0 +1,428 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_original_managed_cgi_rpc_ci_import",
+  "source_commit": "bc628143449a924653d23845568845cd0baeb1a9",
+  "backend": "llvm",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41356526706",
+  "artifact_id": 13104640645,
+  "artifact_zip_bytes": 107522,
+  "artifact_zip_sha256": "7fe352e8a7f149cc64ff953a1f7afeca59e7f54be0e083d3b95e943a90e9ccd2",
+  "pinned_stages": {
+    "php_source": "success",
+    "deps_source": "success",
+    "parser_source": "success",
+    "dependencies": "success",
+    "definitions": "success",
+    "tools": "success",
+    "build": "success",
+    "rust": "success",
+    "host_llvm": "success",
+    "units": "success",
+    "wordpress_source": "success",
+    "fiber_contract": "success",
+    "cgi_contract": "success",
+    "runtime_contract": "success",
+    "rpc_contract": "success"
+  },
+  "pinned_verdicts": {
+    "fiber": "success",
+    "runtime": "success",
+    "cgi": "success",
+    "rpc": "success"
+  },
+  "original_git_source_hashes_verified": true,
+  "php_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "source_archive_acquired_by_importer": false,
+  "source_tool_or_module_binaries_reverified_by_importer": false,
+  "product_runtime_selected": false,
+  "full_php_compatibility_verified": false,
+  "archive_member_map": {
+    "build.json": "php-wasix-managed-access-probe/evidence/build.json",
+    "ci-stages.json": "php-wasix-managed-access-probe/evidence/ci-stages.json",
+    "linux-llvm-managed-fiber-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-fiber-contract.json",
+    "linux-llvm-managed-runtime-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-runtime-contract.json",
+    "native-cgi-fiber-contract.json": "php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json",
+    "native-cgi-runtime-contract.json": "php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json",
+    "wordpress-source.json": "php-wasix-cgi-runtime-probe/evidence/wordpress-source.json",
+    "toolchain.json": "php-wasix-cgi-build/evidence/toolchain.json",
+    "windows-cranelift-unit-contract.json": "php-wasix-host-probe/evidence/windows-cranelift-unit-contract.json",
+    "linux-llvm-unit-contract.json": "php-wasix-host-probe/evidence/linux-llvm-unit-contract.json",
+    "llvm-toolchain-verification.json": "php-wasix-host-probe/evidence/llvm-toolchain-verification.json",
+    "linux-llvm-managed-cgi-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-cgi-contract.json",
+    "native-cgi-contract.json": "php-wasix-host-probe/evidence/native-cgi-contract.json",
+    "linux-llvm-managed-rpc-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-rpc-contract.json"
+  },
+  "input_files": {
+    "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
+    "experiments/php-wasix-cgi-build/build.py": "66428ef0b96a40c0185e6bb4080d342d5beb743e7414bb441489680d8a1817e1",
+    "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-cgi-runtime-probe/import_ci_evidence.py": "e28e8f96129e68e0fbd8e674453f56613f9e79a18abf634f03ab6a410c368f61",
+    "experiments/php-wasix-cgi-runtime-probe/native_contract.py": "4981126bf27b3750fa623f520d865d6617b50aa3e499dc8c6f9b94e6132b6ada",
+    "experiments/php-wasix-cgi-runtime-probe/prepare.py": "875a70887883b199eee33f13d08ff932d2a6c65cd5192831a1f3ea46d4ae81b8",
+    "experiments/php-wasix-cgi-runtime-probe/runtime_check.py": "aef17a00fda4c8cad4651958f31815f4e01636fc9618529fe9a1e23e1f15aa4d",
+    "experiments/php-wasix-fiber-cgi-probe/build.py": "94835a38f075d8fc73530294891f6200dd986da8b2fe0314a3b6b93b7640a50a",
+    "experiments/php-wasix-fiber-cgi-probe/fiber_cgi_check.py": "9b2c618b6dacbcff5a03cd069aa7b7e3f4c159e23701ad5cb9b82d1090094c4f",
+    "experiments/php-wasix-fiber-cgi-probe/import_ci_evidence.py": "80390a89f583546bb9ab3c2afa924d929e5d5b5873f71a83634c9315da440ff9",
+    "experiments/php-wasix-fiber-cgi-probe/native_contract.py": "fbb1d1466eac3e85b2f5ff6bf10ea0a764c828230086fe0bdb99bacaca631fe7",
+    "experiments/php-wasix-fiber-cgi-probe/patch_source.py": "70d985f23d0cb24d4c6aea7db5bff9a1f18f9a87a579a8b52cff00381a3babad",
+    "experiments/php-wasix-fiber-probe/native_contract.py": "14e768a301284cb462d526491af39448a580391584052430571f4d2469850f08",
+    "experiments/php-wasix-fiber-probe/patch_source.py": "607140f77676773d34053d67c46e03241c5e1bf1dd87d871b2409469045f2793",
+    "experiments/php-wasix-host-probe/cgi_check.py": "49de8a40ef2f4bd964d1980f2f4989a2b3935d116422847cbe6e1d1f2dbd01fa",
+    "experiments/php-wasix-host-probe/check.py": "11a80feee6a4ba608dd6ffec1a1a677776cfeeb3ad399db0114e3408e8ed9fac",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/native_cgi_contract.py": "6efd7d2009221d823e0a7471791e8de75c412cefaaba1b8bd61be690a1b935c3",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",
+    "experiments/php-wasix-host-probe/unit_check.py": "652517686d6cfffec99874dffbb0351806fb7818ac1ca3b2092fe6ccc378c0f9",
+    "experiments/php-wasix-managed-access-probe/build.py": "8dd2db46ee1897976301876d551d2e098f5b5ea63c9c0fd94f957326f3a6c8bd",
+    "experiments/php-wasix-managed-access-probe/cgi_check.py": "4e81212de3094bef16455540f69facb65f7d60187d40592f7f2f74d1d2ea511e",
+    "experiments/php-wasix-managed-access-probe/import_cgi_evidence.py": "14f224adcd821a910122ce146f45604b8afe206357cb79c4f0bd3af4d25c37fd",
+    "experiments/php-wasix-managed-access-probe/import_ci_evidence.py": "4bd9f4b50dfaa99c59f8db6eaacb1861250058bcc38fa6c5847c6cb62e12bcaf",
+    "experiments/php-wasix-managed-access-probe/import_rpc_evidence.py": "5b45856a3266f1c952a3cc9da863c7d40ed3a7ab2c00b06ef920b5afe3ba131b",
+    "experiments/php-wasix-managed-access-probe/managed_check.py": "981c449d0de5331fc2d524677593494676830ad77add7f7481a6fa47e74a8b47",
+    "experiments/php-wasix-managed-access-probe/patch_source.py": "e725a0edacbd859b3f952683c85ac9ef67176f02709fcccc442f79fb259e3a67",
+    "experiments/php-wasix-managed-access-probe/rpc_check.py": "bb54cf6a1321e3d02777ecc9e7e42ec0a4de482e7b6d6a1523cfd81cc085fdcf",
+    "experiments/php-wasix-managed-access-probe/source_profile.py": "e38c16665f2e8f23f2e212f4a49bd793bca3136d381e5aaadab22e5f20f436b0",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "imported_files": {
+    "build.json": "6ad22f354e9cc23c322bfdd246b73702bd47fb7588264134586ba0f9f8be6423",
+    "ci-stages.json": "8eec9f35d8034b855a82cee7910d5a8892a016ed381cc808474469cdb07b5c94",
+    "linux-llvm-managed-fiber-contract.json": "c1389740a62e9b721595e811eacb13258c12d126f40b813267fbcda58a468c70",
+    "linux-llvm-managed-runtime-contract.json": "9b0f4ed6fcb4f4de616a52c87afb874b92d42ab971578bce298e7615b0b58aa3",
+    "native-cgi-fiber-contract.json": "58ff09bac489a0e1416968255f30f217c9a76e0eba0b24ea07ae959ce64e9a04",
+    "native-cgi-runtime-contract.json": "513fb91461b0e8638c3f075c8ccae63a753dae80bd8d2713c39f722063d7a20b",
+    "wordpress-source.json": "4dc5996d44ede3f5cf941b176df4f4453da8d7234ec96fd89322a0af9ce52dcd",
+    "toolchain.json": "c8ee9bf77a0a15b01b0deea0a8abe0fa18481bb34a7faf9f33a2cb6966853d4e",
+    "windows-cranelift-unit-contract.json": "29d36c83b04fe99943c94021d5134ec1e36408130afc422d7a5b96d2c59e481c",
+    "linux-llvm-unit-contract.json": "1f442b2408421a319d29c7e2723f679ac3a025bc2efd447f61b5ad62cd43aaba",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854",
+    "linux-llvm-managed-cgi-contract.json": "fb74de1febc1c69cc0dcbef6977fefb2bbf933700c2145f6e75ec1680df1e499",
+    "native-cgi-contract.json": "6dd39db327fb5c8233452ddb54ee29ddad65a24dbe86af0c8a0bf4110d150994",
+    "linux-llvm-managed-rpc-contract.json": "df07e6b077bdbb1d0c7f1e3aeac79934e8ee43571e125ed67f6475f166cae471"
+  },
+  "observations": {
+    "managed_build_passed": true,
+    "source_patch_sets_applied": 3,
+    "bounded_linux_units_passed": 37,
+    "module": {
+      "path": "target/php-wasix-managed-access-probe/php-fiber-cgi.wasm",
+      "bytes": 39150496,
+      "sha256": "76ab64f40a0aec93c199de209ae64def0f663ae6cfa0dde47a3f999e8af986a2",
+      "wasm_header_verified": true,
+      "executed": false
+    },
+    "fiber": {
+      "comparison_passed": true,
+      "fixed_native_cases": 6,
+      "fresh_requests": 3,
+      "module_compile_calls": 1,
+      "permission_query_execution_verified": false,
+      "compile_elapsed_ms": 86210,
+      "counter_scope": "underlying Rust VirtualFile events, not guest fd/fopen counts"
+    },
+    "runtime": {
+      "comparison_passed": true,
+      "fixed_native_cases": 6,
+      "fresh_requests": 3,
+      "module_compile_calls": 1,
+      "permission_query_execution_verified": true,
+      "compile_elapsed_ms": 85588,
+      "counter_scope": "underlying Rust VirtualFile events, not guest fd/fopen counts",
+      "php_metadata_matches_actual_readonly_denial": true,
+      "observed_requests": [
+        {
+          "name": "normal_first",
+          "managed_access": {
+            "active_handles": 0,
+            "allowed": 3,
+            "closed_handles": 5,
+            "denied": 2,
+            "eof_reads": 5,
+            "finished": true,
+            "generated_bytes": 25,
+            "input_bytes": 140,
+            "invalid": 0,
+            "io_calls": 100,
+            "io_errors": 0,
+            "missing": 0,
+            "open_events": 5,
+            "pending_bytes": 0,
+            "protocol_error": null,
+            "read_bytes": 25,
+            "requests": 5,
+            "reused_transactions": 4,
+            "unmanaged": 0,
+            "unread_response_bytes": 0
+          },
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          }
+        },
+        {
+          "name": "normal_repeat",
+          "managed_access": {
+            "active_handles": 0,
+            "allowed": 3,
+            "closed_handles": 5,
+            "denied": 2,
+            "eof_reads": 5,
+            "finished": true,
+            "generated_bytes": 25,
+            "input_bytes": 140,
+            "invalid": 0,
+            "io_calls": 100,
+            "io_errors": 0,
+            "missing": 0,
+            "open_events": 5,
+            "pending_bytes": 0,
+            "protocol_error": null,
+            "read_bytes": 25,
+            "requests": 5,
+            "reused_transactions": 4,
+            "unmanaged": 0,
+            "unread_response_bytes": 0
+          },
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          }
+        },
+        {
+          "name": "normal_final",
+          "managed_access": {
+            "active_handles": 0,
+            "allowed": 3,
+            "closed_handles": 5,
+            "denied": 2,
+            "eof_reads": 5,
+            "finished": true,
+            "generated_bytes": 25,
+            "input_bytes": 140,
+            "invalid": 0,
+            "io_calls": 100,
+            "io_errors": 0,
+            "missing": 0,
+            "open_events": 5,
+            "pending_bytes": 0,
+            "protocol_error": null,
+            "read_bytes": 25,
+            "requests": 5,
+            "reused_transactions": 4,
+            "unmanaged": 0,
+            "unread_response_bytes": 0
+          },
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          }
+        }
+      ]
+    },
+    "product_runtime_selected": false,
+    "full_php_compatibility_verified": false,
+    "source_or_license_attestation_verified": false,
+    "all_resources_immediately_reclaimed": false,
+    "full_wordpress_bootstrap_executed": false,
+    "real_db": false,
+    "cgi": {
+      "comparison_passed": true,
+      "fixed_native_cases": 3,
+      "fresh_requests": 3,
+      "module_compile_calls": 1,
+      "compile_elapsed_ms": 83846,
+      "request_names": [
+        "get_cookie",
+        "post_raw_body",
+        "status_cookies_binary"
+      ],
+      "native_comparison_results": {
+        "get_cookie": {
+          "equal_to_native": true,
+          "body_comparison": "exact-JSON-types-and-values-after-declared-path-normalization"
+        },
+        "post_raw_body": {
+          "equal_to_native": true,
+          "body_comparison": "exact-JSON-types-and-values-after-declared-path-normalization"
+        },
+        "status_cookies_binary": {
+          "equal_to_native": true,
+          "body_comparison": "exact-binary-bytes"
+        }
+      },
+      "stdout_bindings": [
+        {
+          "bytes": 462,
+          "sha256": "843b38139041a24f2cd232e1896c9f2cd545c12866f67a0510ba13abcb90ee1c"
+        },
+        {
+          "bytes": 544,
+          "sha256": "6be0185aea96ec57b6711c64ade27e3996407599eff1381506bf6559ee736a97"
+        },
+        {
+          "bytes": 201,
+          "sha256": "9075ff988ad7461e931fbaa1751d85e877db25068b230c89613090bbc0145ce6"
+        }
+      ],
+      "binary_body_hex": "00ff4347490d0a",
+      "permission_query_execution_verified": false,
+      "native_path_normalization": {
+        "field": "script_filename",
+        "native_public_value": "<owned-fixture>",
+        "guest_exact_value": "/fixture/cgi_contract.php",
+        "original_value_stored": false,
+        "reason": "identical verified source bytes reside at different native and virtual paths; all other PHP fields compare exactly"
+      },
+      "native_json_serialization_bytes_compared": false,
+      "native_transport_framing_compared": false,
+      "actual_guest_cgi_wire_reparsed": true,
+      "full_php_compatibility_verified": false
+    },
+    "rpc": {
+      "comparison_passed": true,
+      "fixed_cases": 4,
+      "module_compile_calls": 1,
+      "compile_elapsed_ms": 86161,
+      "fixture": {
+        "canonical_source": "experiments/php-wasix-host-probe/src/rpc_contract.rs",
+        "case_bodies_byte_identical": true,
+        "expected_sha256": "382d54a93357a480926255d7af8d69dadcedaabd34e6dade030ba932abdf5871",
+        "guest_path": "/fixture/rpc_cgi_contract.php",
+        "observed_sha256": "382d54a93357a480926255d7af8d69dadcedaabd34e6dade030ba932abdf5871",
+        "source": "experiments/php-wasix-managed-access-probe/fixtures/rpc_cgi_contract.php",
+        "verified": true
+      },
+      "original_php_bodies_byte_identical": true,
+      "raw_cgi_stdout_preserved": true,
+      "expected_incomplete_case_accepted": false,
+      "incomplete_frame_rejected": true,
+      "permission_query_execution_verified": false,
+      "observed_cases": [
+        {
+          "name": "normal_first",
+          "nonce": 101,
+          "php_completed": true,
+          "ok": true,
+          "rpc_valid": true,
+          "expectation_met": true,
+          "stdout_bytes": 472,
+          "stdout_sha256": "baf2961f00f1b238324aa4d3984944f62111e8400275e127a0fc5d2958c53cc6",
+          "rpc": {
+            "cache_entries": 1,
+            "channel_open": false,
+            "failure": null,
+            "finished": true,
+            "operations": 5,
+            "pending_bytes": 0,
+            "real_db": false,
+            "request_bytes": 90,
+            "response_bytes": 76,
+            "response_read_bytes": 76,
+            "standard_wpdb": false
+          }
+        },
+        {
+          "name": "normal_second",
+          "nonce": 102,
+          "php_completed": true,
+          "ok": true,
+          "rpc_valid": true,
+          "expectation_met": true,
+          "stdout_bytes": 472,
+          "stdout_sha256": "4043175d63030999535e58d4e97a008496745c6902e82679b3eb856eb63c8bc4",
+          "rpc": {
+            "cache_entries": 1,
+            "channel_open": false,
+            "failure": null,
+            "finished": true,
+            "operations": 5,
+            "pending_bytes": 0,
+            "real_db": false,
+            "request_bytes": 90,
+            "response_bytes": 76,
+            "response_read_bytes": 76,
+            "standard_wpdb": false
+          }
+        },
+        {
+          "name": "incomplete_ignored",
+          "nonce": 103,
+          "php_completed": true,
+          "ok": false,
+          "rpc_valid": false,
+          "expectation_met": true,
+          "stdout_bytes": 305,
+          "stdout_sha256": "ee672ac4716e1330ac3f88fe3a0e51ce6d52e82d53cbe1d758819d7689fa3d58",
+          "rpc": {
+            "cache_entries": 0,
+            "channel_open": false,
+            "failure": "incomplete RPC frame on channel close",
+            "finished": true,
+            "operations": 0,
+            "pending_bytes": 12,
+            "real_db": false,
+            "request_bytes": 12,
+            "response_bytes": 0,
+            "response_read_bytes": 0,
+            "standard_wpdb": false
+          }
+        },
+        {
+          "name": "normal_recovery",
+          "nonce": 104,
+          "php_completed": true,
+          "ok": true,
+          "rpc_valid": true,
+          "expectation_met": true,
+          "stdout_bytes": 472,
+          "stdout_sha256": "b7662a9b6073bc25aa872657fb79ba30cc134f2e9c6b7c8d599d278636a62324",
+          "rpc": {
+            "cache_entries": 1,
+            "channel_open": false,
+            "failure": null,
+            "finished": true,
+            "operations": 5,
+            "pending_bytes": 0,
+            "real_db": false,
+            "request_bytes": 90,
+            "response_bytes": 76,
+            "response_read_bytes": 76,
+            "standard_wpdb": false
+          }
+        }
+      ],
+      "real_db": false,
+      "standard_wpdb": false,
+      "product_runtime_selected": false
+    }
+  }
+}
