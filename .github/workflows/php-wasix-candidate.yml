@@ -105,62 +105,9 @@ jobs:
             --proto '=https' --proto-redir '=https' \
             --connect-timeout 30 --max-time 600 --retry 3 --retry-max-time 900 \
             --max-filesize 741670068 --output "$LLVM_ARCHIVE" "$LLVM_URL"
-          python3 - <<'PY'
-          from pathlib import Path
-          import hashlib
-          import json
-          import os
-          import subprocess
-          import tarfile
+          python3 experiments/php-wasix-host-probe/prepare_host_llvm.py
 
-          root = Path.cwd().resolve()
-          manifest = root / 'experiments/php-wasix-host-probe/llvm-toolchain.json'
-          identity = json.loads(manifest.read_text(encoding='utf-8'))
-          archive = root / '.reference' / identity['archive_filename']
-          if archive.stat().st_size != identity['archive_bytes']:
-              raise SystemExit('LLVM archive length mismatch; refusing to extract')
-          checksum = hashlib.sha256()
-          with archive.open('rb') as stream:
-              for block in iter(lambda: stream.read(1024 * 1024), b''):
-                  checksum.update(block)
-          if checksum.hexdigest() != identity['archive_sha256']:
-              raise SystemExit('LLVM archive SHA-256 mismatch; refusing to extract')
-          prefix = (root / identity['extract_directory']).resolve()
-          if not prefix.is_relative_to(root / '.reference'):
-              raise SystemExit('LLVM extraction target escaped .reference')
-          if identity['strip_components'] != 0:
-              raise SystemExit('Unexpected LLVM archive layout')
-          prefix.mkdir(exist_ok=False)
-          # Wasmer's official build.yml extracts directly into LLVM_DIR; bin/
-          # is at this root. Python's data filter rejects escaping archive paths.
-          with tarfile.open(archive, 'r:xz') as source:
-              source.extractall(prefix, filter='data')
-          llvm_config = prefix / identity['required_llvm_config']
-          if not llvm_config.resolve().is_relative_to(prefix) or not llvm_config.is_file():
-              raise SystemExit('Verified LLVM archive lacks bin/llvm-config')
-          version = subprocess.check_output([str(llvm_config), '--version'], text=True, timeout=10).strip()
-          expected = identity['llvm_version_prefix']
-          if version != expected and not version.startswith(expected + '.'):
-              raise SystemExit('LLVM version does not match the fixed 22.1 family')
-          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as output:
-              output.write(f'LLVM_SYS_221_PREFIX={prefix}\n')
-              output.write(f'LD_LIBRARY_PATH={prefix / "lib"}\n')
-          with open(os.environ['GITHUB_PATH'], 'a', encoding='utf-8') as output:
-              output.write(str(prefix / 'bin') + '\n')
-          evidence = root / 'experiments/php-wasix-host-probe/evidence'
-          evidence.mkdir(exist_ok=True)
-          (evidence / 'llvm-toolchain-verification.json').write_text(json.dumps({
-              'format_version': 1,
-              'llvm_toolchain_manifest_sha256': hashlib.sha256(manifest.read_bytes()).hexdigest(),
-              'archive_bytes': archive.stat().st_size,
-              'archive_sha256': checksum.hexdigest(),
-              'llvm_config_version': version,
-              'php_executed_by_this_step': False,
-          }, indent=2) + '\n', encoding='utf-8', newline='\n')
-          print(f'Pinned host LLVM verified: {version}')
-          PY
-
-      - name: Test the immutable fixture filesystem
+      - name: Test fixture filesystem, memory policy and CGI parser
         id: fixture_fs
         run: |
           set -euo pipefail
@@ -180,6 +127,12 @@ jobs:
           set -euo pipefail
           python3 experiments/php-wasix-host-probe/reuse_check.py --llvm --record
 
+      - name: Verify fixed PHP memory ceiling, OOM, recovery and uncapped control
+        id: php_memory
+        run: |
+          set -euo pipefail
+          python3 experiments/php-wasix-host-probe/memory_check.py --llvm --record
+
       - name: Compare three fixed PHP language cases with the native reference
         id: language
         run: |
@@ -198,6 +151,7 @@ jobs:
           STAGE_LANGUAGE: ${{ steps.language.outcome }}
           STAGE_FIXTURE_FS: ${{ steps.fixture_fs.outcome }}
           STAGE_REUSE: ${{ steps.reuse.outcome }}
+          STAGE_PHP_MEMORY: ${{ steps.php_memory.outcome }}
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -213,12 +167,12 @@ jobs:
                     'experiments/php-runtime-candidate-probe/artifact.json']
           report = {
               'format_version': 1,
-              'scope': 'independent Linux LLVM version, module reuse and language P0 candidate',
+              'scope': 'independent Linux LLVM version, module reuse, fixed PHP memory and language P0 candidate',
               'source_commit': os.environ['GITHUB_SHA'],
               'run_id': os.environ['GITHUB_RUN_ID'],
               'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
-                         for name in ['DEPENDENCIES', 'RUST', 'PHP', 'CARGO', 'LLVM', 'FIXTURE_FS', 'PROBE', 'REUSE', 'LANGUAGE']},
+                         for name in ['DEPENDENCIES', 'RUST', 'PHP', 'CARGO', 'LLVM', 'FIXTURE_FS', 'PROBE', 'REUSE', 'PHP_MEMORY', 'LANGUAGE']},
               'input_files': {name: hashlib.sha256((root / name).read_bytes()).hexdigest()
                               for name in inputs if (root / name).is_file()},
               'wordpress_bootstrapped': False,

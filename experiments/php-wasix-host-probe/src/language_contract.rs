@@ -69,7 +69,10 @@ pub fn configure(runner: &mut WasiRunner) {
     runner
         .with_args(["-n", GUEST_PATH])
         .with_current_dir("/fixture")
-        .with_mount("/fixture".to_owned(), Arc::new(FixtureFs));
+        .with_mount(
+            "/fixture".to_owned(),
+            Arc::new(single_file_fs("runtime_contract.php", FIXTURE)),
+        );
 }
 
 pub fn validate_observation(php: &Value, report: &mut Value) -> Result<()> {
@@ -123,12 +126,19 @@ pub fn validate_observation(php: &Value, report: &mut Value) -> Result<()> {
     Ok(())
 }
 
-/// The only exposed entries are / and /runtime_contract.php. All source bytes
-/// were snapshotted at Rust compile time and verified before creating a runner.
-#[derive(Debug)]
-struct FixtureFs;
+/// Expose one compile-time file in a read-only memory mount. Callers verify the
+/// source bytes before mounting; this does not expose any host filesystem path.
+pub(crate) fn single_file_fs(name: &'static str, bytes: &'static [u8]) -> SingleFileFs {
+    SingleFileFs { name, bytes }
+}
 
-fn entry(path: &Path) -> std::result::Result<bool, FsError> {
+#[derive(Debug)]
+pub(crate) struct SingleFileFs {
+    name: &'static str,
+    bytes: &'static [u8],
+}
+
+fn entry(path: &Path, expected: &str) -> std::result::Result<bool, FsError> {
     let mut name = None;
     for part in path.components() {
         match part {
@@ -139,12 +149,12 @@ fn entry(path: &Path) -> std::result::Result<bool, FsError> {
     }
     match name {
         None => Ok(false),
-        Some(name) if name == "runtime_contract.php" => Ok(true),
+        Some(name) if name == expected => Ok(true),
         _ => Err(FsError::EntryNotFound),
     }
 }
 
-fn metadata(file: bool) -> Metadata {
+fn metadata(file: bool, bytes: &[u8]) -> Metadata {
     Metadata {
         ft: FileType {
             file,
@@ -154,11 +164,11 @@ fn metadata(file: bool) -> Metadata {
         accessed: 0,
         created: 0,
         modified: 0,
-        len: if file { FIXTURE.len() as u64 } else { 0 },
+        len: if file { bytes.len() as u64 } else { 0 },
     }
 }
 
-impl FileOpener for FixtureFs {
+impl FileOpener for SingleFileFs {
     fn open(
         &self,
         path: &Path,
@@ -167,31 +177,31 @@ impl FileOpener for FixtureFs {
         if options.would_mutate() {
             return Err(FsError::PermissionDenied);
         }
-        if !entry(path)? {
+        if !entry(path, self.name)? {
             return Err(FsError::NotAFile);
         }
-        Ok(Box::new(StaticFile::new(FIXTURE.to_vec())))
+        Ok(Box::new(StaticFile::new(self.bytes.to_vec())))
     }
 }
 
-impl FileSystem for FixtureFs {
+impl FileSystem for SingleFileFs {
     fn readlink(&self, path: &Path) -> std::result::Result<PathBuf, FsError> {
-        entry(path)?;
+        entry(path, self.name)?;
         Err(FsError::InvalidInput)
     }
 
     fn read_dir(&self, path: &Path) -> std::result::Result<ReadDir, FsError> {
-        if entry(path)? {
+        if entry(path, self.name)? {
             return Err(FsError::BaseNotDirectory);
         }
         Ok(ReadDir::new(vec![DirEntry {
-            path: PathBuf::from("/runtime_contract.php"),
-            metadata: Ok(metadata(true)),
+            path: PathBuf::from(format!("/{}", self.name)),
+            metadata: Ok(metadata(true, self.bytes)),
         }]))
     }
 
     fn metadata(&self, path: &Path) -> std::result::Result<Metadata, FsError> {
-        Ok(metadata(entry(path)?))
+        Ok(metadata(entry(path, self.name)?, self.bytes))
     }
 
     fn symlink_metadata(&self, path: &Path) -> std::result::Result<Metadata, FsError> {
@@ -236,7 +246,7 @@ mod tests {
             .build()
             .unwrap();
         runtime.block_on(async {
-            let fs = FixtureFs;
+            let fs = single_file_fs("runtime_contract.php", FIXTURE);
             let mut report = json!({});
             verify_fixture(&mut report).unwrap();
             let mut file = fs
@@ -274,7 +284,7 @@ mod tests {
             .build()
             .unwrap();
         runtime.block_on(async {
-            let fs = FixtureFs;
+            let fs = single_file_fs("runtime_contract.php", FIXTURE);
             let path = Path::new("/runtime_contract.php");
             for flags in [
                 [true, false, false, false, false],

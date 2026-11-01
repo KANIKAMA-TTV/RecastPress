@@ -229,8 +229,8 @@ def main():
             report['comparison_passed'] = False
             report['outcome'] = 'cleanup_failed'
             report['cleanup_diagnostics'] = str(error)[:8192]
-    inputs = [HERE / name for name in ['Cargo.toml', 'Cargo.lock', 'check.py', 'language_check.py']]
-    inputs += sorted((HERE / 'src').glob('*.rs')) + [ROOT / 'scripts/owned_probe.py', FIXTURE, BASELINE,
+    inputs = version_probe.compiled_inputs() + [HERE / 'check.py', HERE / 'language_check.py',
+              ROOT / 'scripts/owned_probe.py', BASELINE,
               ROOT / 'experiments/php-runtime-candidate-probe/artifact.json']
     report['input_files'] = {path.relative_to(ROOT).as_posix(): digest(path) for path in inputs if path.is_file()}
     if args.record:

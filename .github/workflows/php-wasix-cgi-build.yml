@@ -5,6 +5,15 @@ name: PHP WASIX CGI build candidate
     branches: ["dev/v0.5"]
     paths:
       - "experiments/php-wasix-cgi-build/**"
+      - "experiments/php-wasix-host-probe/Cargo.*"
+      - "experiments/php-wasix-host-probe/src/**"
+      - "experiments/php-wasix-host-probe/fixtures/cgi_contract.php"
+      - "experiments/php-wasix-host-probe/cgi_check.py"
+      - "experiments/php-wasix-host-probe/prepare_host_llvm.py"
+      - "experiments/php-wasix-host-probe/llvm-toolchain.json"
+      - "experiments/php-wasix-host-probe/evidence/native-cgi-contract.json"
+      - "experiments/php-wasi-host-probe/src/cgi_response.rs"
+      - "scripts/owned_probe.py"
       - ".github/workflows/php-wasix-cgi-build.yml"
   workflow_dispatch: {}
 
@@ -20,6 +29,9 @@ jobs:
   build-only:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: "2"
+      RUSTUP_TOOLCHAIN: "1.94.0"
     defaults:
       run:
         shell: bash
@@ -64,7 +76,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
             build-essential autoconf automake bison re2c pkg-config wabt \
-            curl xz-utils tar php-cli php-xml
+            curl xz-utils tar php-cli php-xml \
+            cmake ninja-build libzstd-dev zlib1g-dev libxml2-dev libncurses-dev libffi-dev
 
       - name: Validate closed build inputs
         id: definitions
@@ -81,6 +94,30 @@ jobs:
         id: build
         run: python3 experiments/php-wasix-cgi-build/build.py --record
 
+      - name: Prepare the fixed native Rust host
+        id: rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.94.0 --profile minimal --no-self-update
+          rustc +1.94.0 --version
+          cargo +1.94.0 fetch --locked --manifest-path experiments/php-wasix-host-probe/Cargo.toml
+
+      - name: Prepare the separately pinned host LLVM 22.1
+        id: host_llvm
+        run: |
+          set -euo pipefail
+          mkdir -p .reference
+          LLVM_URL="$(python3 -c 'import json; print(json.load(open("experiments/php-wasix-host-probe/llvm-toolchain.json"))["archive_url"])')"
+          curl --fail --silent --show-error --location \
+            --proto '=https' --proto-redir '=https' \
+            --connect-timeout 30 --max-time 600 --retry 3 --retry-max-time 900 \
+            --max-filesize 741670068 --output .reference/llvm-linux-amd64.tar.xz "$LLVM_URL"
+          python3 experiments/php-wasix-host-probe/prepare_host_llvm.py
+
+      - name: Execute three fixed CGI requests inside the Rust host
+        id: cgi_contract
+        run: python3 experiments/php-wasix-host-probe/cgi_check.py --llvm --record
+
       - name: Record CI outcomes even if preparation or build failed
         if: ${{ always() }}
         env:
@@ -91,6 +128,9 @@ jobs:
           STAGE_DEFINITIONS: ${{ steps.definitions.outcome }}
           STAGE_TOOLS: ${{ steps.tools.outcome }}
           STAGE_BUILD: ${{ steps.build.outcome }}
+          STAGE_RUST: ${{ steps.rust.outcome }}
+          STAGE_HOST_LLVM: ${{ steps.host_llvm.outcome }}
+          STAGE_CGI_CONTRACT: ${{ steps.cgi_contract.outcome }}
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -105,10 +145,13 @@ jobs:
           inputs = [root / '.github/workflows/php-wasix-cgi-build.yml']
           inputs += sorted(experiment.glob('*.py')) + sorted(experiment.glob('*.json'))
           inputs += sorted(experiment.glob('patches/*.patch'))
+          inputs += [root / 'experiments/php-wasix-host-probe/llvm-toolchain.json',
+                     root / 'experiments/php-wasix-host-probe/prepare_host_llvm.py',
+                     root / 'experiments/php-wasix-host-probe/cgi_check.py']
           report = {
               'format_version': 1,
-              'scope': 'CGI build only; no guest execution or product adoption',
-              'guest_executed': False,
+              'scope': 'CGI build and three fixed Rust-hosted requests; not product adoption',
+              'guest_execution_verdict': 'see the separate CGI contract receipt',
               'product_runtime_selected': False,
               'redistributed_binaries': False,
               'source_commit': os.environ['GITHUB_SHA'],
@@ -116,7 +159,8 @@ jobs:
               'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
                          for name in ['PHP_SOURCE', 'DEPS_SOURCE', 'PARSER_SOURCE',
-                                      'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD']},
+                                      'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD',
+                                      'RUST', 'HOST_LLVM', 'CGI_CONTRACT']},
               'input_files': {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                               for path in inputs if path.is_file()},
           }
@@ -130,6 +174,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: php-wasix-cgi-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
-          path: experiments/php-wasix-cgi-build/evidence/*.json
+          path: |
+            experiments/php-wasix-cgi-build/evidence/*.json
+            experiments/php-wasix-host-probe/evidence/*cgi-contract.json
+            experiments/php-wasix-host-probe/evidence/llvm-toolchain-verification.json
           if-no-files-found: warn
           retention-days: 14

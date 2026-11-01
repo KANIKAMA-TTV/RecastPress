@@ -198,9 +198,8 @@ def main():
             report['reuse_passed'] = False
             report['outcome'] = 'cleanup_failed'
             report['cleanup_diagnostics'] = str(error)[:8192]
-    inputs = [HERE / name for name in ['Cargo.toml', 'Cargo.lock', 'check.py', 'reuse_check.py']]
-    inputs += sorted((HERE / 'src').glob('*.rs')) + [ROOT / 'scripts/owned_probe.py',
-              ROOT / 'experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php']
+    inputs = version_probe.compiled_inputs() + [HERE / 'check.py', HERE / 'reuse_check.py',
+                                               ROOT / 'scripts/owned_probe.py']
     report['input_files'] = {path.relative_to(ROOT).as_posix(): version_probe.digest(path)
                            for path in inputs if path.is_file()}
     if args.record:

@@ -1,25 +1,21 @@
-//! Test-only memory-policy experiment; not installed in the PHP runtime.
+//! WAT tests for the same safe policy used by the fixed PHP diagnostic.
 //! Limits one imported shared linear memory, not RSS or compiler allocations.
 
-use std::future::Future;
-use std::pin::Pin;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use anyhow::{Context, Result, ensure};
-use wasmer::{Memory, MemoryError, MemoryType, Module, Pages, StoreMut};
+use wasmer::{Memory, MemoryError, MemoryType, Module, Pages};
 use wasmer_wasix::runtime::module_cache::HashedModuleData;
 use wasmer_wasix::runtime::task_manager::tokio::TokioTaskManager;
-use wasmer_wasix::runtime::task_manager::{SpawnType, TaskWasm, TaskWasmRecycleProperties};
+use wasmer_wasix::runtime::task_manager::{SpawnType, TaskWasmRecycleProperties};
 use wasmer_wasix::{
-    Pipe, PluggableRuntime, UnsupportedVirtualNetworking, VirtualTaskManager, WasiThreadError,
+    Pipe, PluggableRuntime, UnsupportedVirtualNetworking, WasiThreadError,
     runners::wasi::{RuntimeOrEngine, WasiRunner},
 };
 
+use super::memory_policy::{MemoryPolicyManager, apply_policy};
 use super::{collect_pipe, make_engine};
-
-type SharedFuture = Pin<Box<dyn Future<Output = ()> + Send + 'static>>;
-type SharedTask = Box<dyn FnOnce() -> SharedFuture + Send + 'static>;
 
 // No memory export: exercise the same imported-only shape as the PHP guest.
 // Five u32 observations are written into memory and read in the recycle hook.
@@ -58,107 +54,6 @@ struct Observation {
 
 type Observations = Arc<Mutex<Vec<std::result::Result<Observation, String>>>>;
 
-#[derive(Debug)]
-struct MemoryPolicyManager {
-    inner: TokioTaskManager,
-    cap: Option<Pages>,
-    observations: Observations,
-}
-
-/// This closed experiment accepts only creation of one imported shared
-/// memory. Existing AttachMemory, internal-memory and linker-group routes
-/// are rejected; it is not a general WASIX memory or process supervisor.
-fn apply_policy(
-    spawn: &mut SpawnType,
-    cap: Option<Pages>,
-) -> std::result::Result<(), WasiThreadError> {
-    let SpawnType::CreateMemoryOfType(ty) = spawn else {
-        return Err(WasiThreadError::Unsupported);
-    };
-    if !ty.shared {
-        return Err(WasiThreadError::MemoryCreateFailed(
-            MemoryError::MemoryNotShared,
-        ));
-    }
-    if let Some(cap) = cap {
-        if ty.minimum > cap {
-            return Err(WasiThreadError::MemoryCreateFailed(
-                MemoryError::MinimumMemoryTooLarge {
-                    min_requested: ty.minimum,
-                    max_allowed: cap,
-                },
-            ));
-        }
-        ty.maximum = Some(ty.maximum.map_or(cap, |original| original.min(cap)));
-    }
-    Ok(())
-}
-
-impl VirtualTaskManager for MemoryPolicyManager {
-    fn build_memory(
-        &self,
-        store: &mut StoreMut,
-        mut spawn: SpawnType,
-    ) -> std::result::Result<Option<Memory>, WasiThreadError> {
-        apply_policy(&mut spawn, self.cap)?;
-        self.inner.build_memory(store, spawn)
-    }
-
-    fn sleep_now(
-        &self,
-        time: Duration,
-    ) -> Pin<Box<dyn Future<Output = ()> + Send + Sync + 'static>> {
-        self.inner.sleep_now(time)
-    }
-
-    fn task_shared(&self, task: SharedTask) -> std::result::Result<(), WasiThreadError> {
-        self.inner.task_shared(task)
-    }
-
-    fn task_wasm(&self, mut task: TaskWasm) -> std::result::Result<(), WasiThreadError> {
-        let info = task.module.info();
-        if info.memories.len() != 1 || info.num_imported_memories != 1 {
-            return Err(WasiThreadError::Unsupported);
-        }
-        let imported = task
-            .module
-            .imports()
-            .memories()
-            .next()
-            .ok_or(WasiThreadError::Unsupported)?;
-        if imported.module() != "env" || imported.name() != "memory" {
-            return Err(WasiThreadError::Unsupported);
-        }
-        // TokioTaskManager does not call VirtualTaskManager::build_memory
-        // here: rewrite the SpawnType that its new_with_store path consumes.
-        apply_policy(&mut task.spawn_type, self.cap)?;
-        let previous_recycle = task.callbacks.recycle.take();
-        let observations = self.observations.clone();
-        task.callbacks.recycle = Some(Box::new(move |props| {
-            let observation = observe(&props).map_err(|error| format!("{error:#}"));
-            observations
-                .lock()
-                .expect("observations mutex poisoned")
-                .push(observation);
-            if let Some(previous) = previous_recycle {
-                previous(props);
-            }
-        }));
-        self.inner.task_wasm(task)
-    }
-
-    fn task_dedicated(
-        &self,
-        task: Box<dyn FnOnce() + Send + 'static>,
-    ) -> std::result::Result<(), WasiThreadError> {
-        self.inner.task_dedicated(task)
-    }
-
-    fn thread_parallelism(&self) -> std::result::Result<usize, WasiThreadError> {
-        self.inner.thread_parallelism()
-    }
-}
-
 fn observe(props: &TaskWasmRecycleProperties) -> Result<Observation> {
     let mut wire = [0; 20];
     props.memory.view(&props.store).read(0, &mut wire)?;
@@ -190,11 +85,18 @@ fn run_fixture(cap: Option<Pages>) -> Result<Observation> {
     let (stdout_sender, stdout_reader) = Pipe::channel();
     let (stderr_sender, stderr_reader) = Pipe::channel();
     let outcome = (|| -> Result<()> {
-        let manager = MemoryPolicyManager {
-            inner: TokioTaskManager::new(tokio_runtime.handle().clone()),
+        let captured = observations.clone();
+        let manager = MemoryPolicyManager::new(
+            TokioTaskManager::new(tokio_runtime.handle().clone()),
             cap,
-            observations: observations.clone(),
-        };
+            move |props| {
+                let observed = observe(props).map_err(|error| format!("{error:#}"));
+                captured
+                    .lock()
+                    .expect("observations mutex poisoned")
+                    .push(observed);
+            },
+        );
         let mut runtime = PluggableRuntime::new(Arc::new(manager));
         runtime.set_engine(engine);
         runtime.set_networking_implementation(UnsupportedVirtualNetworking::default());

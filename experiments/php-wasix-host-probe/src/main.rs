@@ -3,10 +3,13 @@
 //! Closed P0 candidates. Run under an owned-child supervisor.
 //! A version-only result does not establish exception, WordPress, or DB support.
 
+mod cgi_contract;
 mod language_contract;
 #[cfg(test)]
 mod memory_limits;
+mod memory_policy;
 mod module_reuse;
+mod php_memory_cap;
 
 use std::fs::File;
 use std::io::{self, Read, SeekFrom, Write};
@@ -43,6 +46,8 @@ enum ProbeMode {
     VersionOnly,
     LanguageContract,
     ModuleReuse,
+    PhpMemoryCap,
+    CgiContract,
 }
 
 #[cfg(feature = "llvm")]
@@ -60,6 +65,10 @@ fn main() -> ExitCode {
         ProbeMode::LanguageContract
     } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--module-reuse"] {
         ProbeMode::ModuleReuse
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--php-memory-cap"] {
+        ProbeMode::PhpMemoryCap
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--cgi-contract"] {
+        ProbeMode::CgiContract
     } else {
         ProbeMode::VersionOnly
     };
@@ -118,6 +127,10 @@ fn main() -> ExitCode {
         language_contract::describe(&mut report);
     } else if mode == ProbeMode::ModuleReuse {
         module_reuse::describe(&mut report);
+    } else if mode == ProbeMode::PhpMemoryCap {
+        php_memory_cap::describe(&mut report);
+    } else if mode == ProbeMode::CgiContract {
+        cgi_contract::describe(&mut report);
     }
 
     let passed = match run(&mut report, mode) {
@@ -129,6 +142,8 @@ fn main() -> ExitCode {
                 // compares all fields of the three cases against the receipt.
                 ProbeMode::LanguageContract => "language_contract_observed",
                 ProbeMode::ModuleReuse => "module_reuse_verified",
+                ProbeMode::PhpMemoryCap => "php_memory_cap_diagnostic_verified",
+                ProbeMode::CgiContract => "cgi_contract_verified",
             });
             true
         }
@@ -158,9 +173,14 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
     ensure!(
         (mode == ProbeMode::VersionOnly && std::env::args_os().len() == 1)
             || (mode == ProbeMode::LanguageContract && std::env::args_os().len() == 2)
-            || (mode == ProbeMode::ModuleReuse && std::env::args_os().len() == 2),
-        "this fixed probe accepts only --language-contract, --module-reuse or no arguments"
+            || (mode == ProbeMode::ModuleReuse && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::PhpMemoryCap && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::CgiContract && std::env::args_os().len() == 2),
+        "this fixed probe accepts only --language-contract, --module-reuse, --php-memory-cap, --cgi-contract or no arguments"
     );
+    if mode == ProbeMode::CgiContract {
+        return cgi_contract::verify(report);
+    }
     if mode == ProbeMode::LanguageContract {
         language_contract::verify_fixture(report)?;
     }
@@ -186,6 +206,8 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
 
     if mode == ProbeMode::ModuleReuse {
         return module_reuse::verify(bytes, report);
+    } else if mode == ProbeMode::PhpMemoryCap {
+        return php_memory_cap::verify(bytes, report);
     }
 
     let (stdout, stderr) = execute(bytes, report, mode)?;
@@ -272,6 +294,12 @@ fn execute(bytes: Vec<u8>, report: &mut Value, mode: ProbeMode) -> Result<(Vec<u
                 language_contract::configure(&mut runner);
             }
             ProbeMode::ModuleReuse => bail!("module reuse must use its separate execution path"),
+            ProbeMode::PhpMemoryCap => {
+                bail!("memory cap diagnostic must use its separate execution path")
+            }
+            ProbeMode::CgiContract => {
+                bail!("CGI contract must use its generated artifact execution path")
+            }
         }
         let capabilities = runner.capabilities_mut();
         capabilities.insecure_allow_all = false;

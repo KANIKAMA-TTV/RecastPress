@@ -30,6 +30,16 @@ def digest(path):
     return value.hexdigest()
 
 
+def compiled_inputs():
+    """Local compile inputs shared by every closed host mode, including embeds."""
+    return ([HERE / 'Cargo.toml', HERE / 'Cargo.lock']
+            + sorted((HERE / 'src').glob('*.rs'))
+            + sorted((HERE / 'fixtures').glob('*.php'))
+            + [ROOT / 'experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php',
+               ROOT / 'experiments/php-wasix-cgi-build/manifest.json',
+               ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
+
+
 def require(condition, message):
     if not condition:
         raise ValueError(message)
@@ -147,9 +157,7 @@ def main():
             report['diagnostics'] = diagnostic(error.stderr, 8192)
     finally:
         owned_probe.reap_owned_probes()
-    inputs = [HERE / name for name in ['Cargo.toml', 'Cargo.lock', 'check.py']]
-    inputs += sorted((HERE / 'src').glob('*.rs')) + [ROOT / 'scripts/owned_probe.py',
-              ROOT / 'experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php']
+    inputs = compiled_inputs() + [HERE / 'check.py', ROOT / 'scripts/owned_probe.py']
     report['input_files'] = {path.relative_to(ROOT).as_posix(): digest(path) for path in inputs}
     if args.record:
         directory = HERE / 'evidence'

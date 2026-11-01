@@ -1,0 +1,52 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "98215a27f7f48f7738ad6e0008d3f1fd97473fe0",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41300641489",
+  "artifact_id": 13081821666,
+  "artifact_zip_bytes": 38109,
+  "artifact_zip_sha256": "4682233d47bc5588a8b21609fb7a13aeaea262a1c9be54403ff0031a8c3d13b6",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "6907244da1006ce66f7358b366544c7cda818ee466b7312fb30bcfd1cc8ca538",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "2e74181453ed24bb1988792ce91227374d7a1e55340d454a1e900147345b854a"
+  },
+  "imported_files": {
+    "ci-stages.json": "848bfbeb954c4a28dab11d361c1e01cf0ce768752687f060980d6c919edaee2d",
+    "linux-llvm.json": "0bec672c2733a3495ed708aa906084d40ef504fe496725aae0667aba3d68b432",
+    "linux-llvm-module-reuse.json": "82fc8928e900234b135ed9cd741da9ccc7d21e0f01882ebe269842eb6c0491ba",
+    "linux-llvm-language-contract.json": "0342f33e23b78614bc6ab8db5968012c1354076eb739d7b10acef44f64731319",
+    "llvm-toolchain-verification.json": "0f0015f15d38178ddd94c91afd58053a31b1848193681bd52ea92f1cdd0f13a7"
+  },
+  "observations": {
+    "module_reuse_passed": true,
+    "language_comparison_passed": false,
+    "case_results": {
+      "basic": {
+        "equal_to_native": true
+      },
+      "exceptions": {
+        "equal_to_native": true
+      },
+      "fiber": {
+        "equal_to_native": false,
+        "difference": "contract fields mismatch: fiber"
+      }
+    },
+    "compile_elapsed_ms": 152273,
+    "request_execution_elapsed_ms": [
+      67,
+      69,
+      63
+    ],
+    "counter_scope": "explicit PHP Module::new call site; internal backend operations are not instrumented",
+    "timing_scope": "one CI runner; run_wasm includes startup/shutdown; not a product latency benchmark"
+  }
+}

@@ -63,11 +63,35 @@ compile回数はコード内の明示した呼出し点の計数で、backend内
 
 ## imported shared memory上限の単体実証
 
-test専用[memory_limits.rs](src/memory_limits.rs)は、公開`VirtualTaskManager::task_wasm`で`CreateMemoryOfType`を変更してからTokio managerへ渡す。`build_memory`のoverrideだけには依存しない。対象は`env::memory`を1つだけimportする既知のshared memoryで、既存memory attach・内部定義・linker groupは受け付けない。
+source `98215a2`のtest専用実装は、公開`VirtualTaskManager::task_wasm`で`CreateMemoryOfType`を変更してからTokio managerへ渡す。後続実装で[共通policy](src/memory_policy.rs)と[WAT tests](src/memory_limits.rs)へ分けた。`build_memory`のoverrideだけには依存しない。対象は`env::memory`を1つだけimportする既知のshared memoryで、既存memory attach・内部定義・linker groupは受け付けない。
 
 [Windowsの実測](evidence/memory-policy-windows.json)で、小さい固定WATを本物のWasiRunnerから実行した。初期403 pagesから1024 pagesへのgrowは成功し、capありの追加1 pageは−1、対照のcapなしでは1025 pagesになった。recycle callbackで実memoryのmaximumも1024／65536と照合した。初期値超過と既存／別経路の拒否を含む3件、既存FS2件、計5 unitが成功した。Cargoのtest artifactとソース・compile時PHP fixture・実行バイナリをSHAで結合した。
 
-1024 pages=64MiBは試験値である。PHP経路にはまだ適用せず、`php_memory_limit_verified=false`を維持する。静的仮想予約・compiler・RSS・複数memory合計の上限ではなく、全guest／fork／直接instantiateの制御とも異なる。Watはdev依存だけに追加する。
+1024 pages=64MiBは試験値である。この観測時点はPHP経路未統合で、receiptの`php_memory_limit_verified=false`を維持する。後続の固定PHP試験は次節へ分ける。静的仮想予約・compiler・RSS・複数memory合計の上限ではなく、全guest／fork／直接instantiateの制御とも異なる。Watはdev依存だけに追加する。
+
+## 固定PHPの上限・OOM・回復の追加試験
+
+```text
+python experiments/php-wasix-host-probe/memory_check.py --llvm --record
+```
+
+追加`--php-memory-cap`モードではWATと共通のsafe policyを使い、通常要求→64MiB capでの128MiB確保失敗→通常要求の回復→同確保の無cap対照を、同じコンパイル済みmodule・4つの新規環境で観測する。PHP自身のmemory_limit=-1の実出力、期待OOMの失敗、callbackの実max/size、無capの成功をすべて要求する。
+
+期待OOMの要求は`ok=false`と実行errorを保持し、4ケース全体の制御実証と区別する。PHPのmemoryはmetadataだけを読み、WAT用の先頭20B読取りは流用しない。既存の通常モード・製品メモリ上限のverdictは変えない。実PHPの正実行はLinux CIで別途確認する。
+
+## 生成CGIの3要求
+
+```text
+python experiments/php-wasix-host-probe/cgi_check.py --llvm --record
+```
+
+`--cgi-contract`はCLI固定artifactの検証より前に別分岐し、同じCI jobで作った固定CGIパスだけを読む。build/tool/manifest/source/patch/config/実物の由来とbyte数・SHAを前後照合し、Rustもreceiptと同一の読取済みバイトをcompileする。任意path・PHP・query・env mappingは渡せない。これは同jobの来歴照合であり、署名付きattestationやbit単位の再現ビルドではない。
+
+compile1回から3つのfresh CGI環境へcloneし、GET/Cookie、POSTとphp://input、404/2 Cookie/7B binary本文を比較する。正常終了・両pipeのEOF・出力上限を確認した後だけ、既存の[CGI parser](../php-wasi-host-probe/src/cgi_response.rs)へ渡す。FastCGI socketやHTTP listenerを通した実証ではない。
+
+[native CGI比較基準](evidence/native-cgi-contract.json)は通常PHP8.5.12の配布78ファイルを検証し、実`php-cgi.exe`で3要求を実行したもの。CIのcheckerはその基準を検証して比較するがnative PHPを起動しない。SCRIPT_FILENAMEだけを明示正規化し、JSON型・値・status・Cookie・binaryは維持する。公開証跡ではローカル絶対pathを除き、元JSON byte数/SHAと正規化済み比較値を区別する。
+
+新たな共通FS化後にrelease build・14 unit（FS2、memory3、CGI parser9）・fmtを確認した。native3要求と合成改変の拒否はWasmの実行成功へ数えず、CGI実物の3要求は専用CIで別に観測する。
 
 ## 実験の制御範囲
 
