@@ -1,0 +1,331 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_original_cgi_runtime_io_ci_import",
+  "source_commit": "2649132e3fd082a01d13ffe4850cc268a3a62889",
+  "backend": "cranelift",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41328695777",
+  "artifact_id": 13093006555,
+  "artifact_zip_bytes": 72375,
+  "artifact_zip_sha256": "b31ee5695fc208d35d6751c9811879923943d3b0f5491935b047ce3556490b84",
+  "ci_verdict": "failure",
+  "original_git_source_hashes_verified": true,
+  "php_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "source_archive_acquired_by_importer": false,
+  "source_tool_or_module_binaries_reverified_by_importer": false,
+  "raw_failed_observations_preserved": true,
+  "product_runtime_selected": false,
+  "full_php_compatibility_verified": false,
+  "archive_member_map": {
+    "build.json": "php-wasix-fiber-cgi-probe/evidence/build.json",
+    "ci-stages.json": "php-wasix-fiber-cgi-probe/evidence/ci-stages.json",
+    "native-cgi-fiber-contract.json": "php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json",
+    "linux-cranelift-fiber-cgi-contract.json": "php-wasix-fiber-cgi-probe/evidence/linux-cranelift-fiber-cgi-contract.json",
+    "toolchain.json": "php-wasix-cgi-build/evidence/toolchain.json",
+    "windows-cranelift-unit-contract.json": "php-wasix-host-probe/evidence/windows-cranelift-unit-contract.json",
+    "linux-cranelift-unit-contract.json": "php-wasix-host-probe/evidence/linux-cranelift-unit-contract.json",
+    "native-cgi-runtime-contract.json": "php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json",
+    "wordpress-source.json": "php-wasix-cgi-runtime-probe/evidence/wordpress-source.json",
+    "linux-cranelift-cgi-runtime-contract.json": "php-wasix-cgi-runtime-probe/evidence/linux-cranelift-cgi-runtime-contract.json"
+  },
+  "input_files": {
+    "experiments/php-wasix-cgi-runtime-probe/import_ci_evidence.py": "e28e8f96129e68e0fbd8e674453f56613f9e79a18abf634f03ab6a410c368f61",
+    "experiments/php-wasix-fiber-cgi-probe/import_ci_evidence.py": "80390a89f583546bb9ab3c2afa924d929e5d5b5873f71a83634c9315da440ff9",
+    "experiments/php-wasix-fiber-cgi-probe/fiber_cgi_check.py": "9b2c618b6dacbcff5a03cd069aa7b7e3f4c159e23701ad5cb9b82d1090094c4f",
+    "experiments/php-wasix-fiber-cgi-probe/native_contract.py": "fbb1d1466eac3e85b2f5ff6bf10ea0a764c828230086fe0bdb99bacaca631fe7",
+    "experiments/php-wasix-cgi-runtime-probe/runtime_check.py": "aef17a00fda4c8cad4651958f31815f4e01636fc9618529fe9a1e23e1f15aa4d",
+    "experiments/php-wasix-cgi-runtime-probe/native_contract.py": "4981126bf27b3750fa623f520d865d6617b50aa3e499dc8c6f9b94e6132b6ada",
+    "experiments/php-wasix-cgi-runtime-probe/prepare.py": "875a70887883b199eee33f13d08ff932d2a6c65cd5192831a1f3ea46d4ae81b8",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/unit_check.py": "8f1077e0db30edf5ea9678d0ded22e8bef7ef1c67dc680e733955725c21d0ea2",
+    "experiments/php-wasix-host-probe/check.py": "eacc304ad14553ccc4c59ec69ee16e8448546fe6d14448c70febbb95925c3df9",
+    "experiments/php-wasix-fiber-cgi-probe/build.py": "87fb4c3bb5d9f59bf52cc435e1a3c386f7ef4edc6305f8fdfc7cf01aa8a2e076",
+    "experiments/php-wasix-fiber-cgi-probe/patch_source.py": "70d985f23d0cb24d4c6aea7db5bff9a1f18f9a87a579a8b52cff00381a3babad",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
+    "experiments/php-wasix-fiber-probe/native_contract.py": "14e768a301284cb462d526491af39448a580391584052430571f4d2469850f08",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "imported_files": {
+    "build.json": "888fd36559f7187c33e708a716ec59546f04b3eb07632620ed22101acfa849f2",
+    "ci-stages.json": "d287f2c45e3d7d483bda44244bc0eda71249c16076d49b9b22dc6e23c6a54950",
+    "native-cgi-fiber-contract.json": "58ff09bac489a0e1416968255f30f217c9a76e0eba0b24ea07ae959ce64e9a04",
+    "linux-cranelift-fiber-cgi-contract.json": "cdfd95736ecfd77c2dacf393ca2a1e8b81c255d09c6a65e55b85e4e15a51fc07",
+    "toolchain.json": "94e4f41185e9340d1758d10a145b8a7f17a445949d817be19510391189190d39",
+    "windows-cranelift-unit-contract.json": "3decf9ce3b2f922c5c87eab5c53f5caef5a18b085975e116058cb97e0bc57e84",
+    "linux-cranelift-unit-contract.json": "24d52cdbb193125581e23b64e45d8e4ab19f65067644c33d3385bcf258b97776",
+    "native-cgi-runtime-contract.json": "513fb91461b0e8638c3f075c8ccae63a753dae80bd8d2713c39f722063d7a20b",
+    "wordpress-source.json": "1baf2d7434b07a0dca2e8685425a1c93a843714015a9e1903730f0889a5e6e59",
+    "linux-cranelift-cgi-runtime-contract.json": "cd2004263395d506b48dc01d051a3e6aaca16a24f407a3bbaefd4a4e04f2b7ef"
+  },
+  "observations": {
+    "combined_build_passed": true,
+    "canonical_patch_sets_applied": 2,
+    "bounded_linux_units_passed": 31,
+    "fixed_native_fiber_cases_passed": 6,
+    "fresh_fiber_requests": 3,
+    "wordpress_pure_source_files_prepared": 3,
+    "module_bytes": 39146736,
+    "module_sha256": "9ad52bcb36485cb8a7fe3fcb6ad83dc267ea838c833dfe15de3757ef8b256b09",
+    "runtime": {
+      "runtime_contract_passed": false,
+      "outcome": "execution_failed",
+      "host_phase": "cgi_runtime_execution",
+      "host_error": "CGI runtime native six-case comparison failed",
+      "postopt_adapter_verified": true,
+      "observed_requests": [
+        {
+          "name": "normal_first",
+          "expectation_met": false,
+          "native_semantics_match": false,
+          "php_run_completed": true,
+          "expectation_error": "CGI runtime corpus or response differs from native oracle",
+          "stdout_capture_binding_verified": true,
+          "native_comparison_passed": false,
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          },
+          "scratch_vfs_observations": {
+            "ordinary_equals_12_byte_fixture": true,
+            "readonly_equals_unchanged_17_byte_fixture": true,
+            "readonly_mutating_open_rejection_observed": true,
+            "open_handles_after_request": 0
+          },
+          "stdout": {
+            "bytes": 1697,
+            "sha256": "76f203f6eb01e8323473b8a82ad158b9c487423a8c45515bf3f3eb9539081c50"
+          },
+          "complete_cgi_response_reparsed": true,
+          "body": {
+            "bytes": 1629,
+            "sha256": "836e3ac14dfa2b3c78000867177ae3c5578170d012d61bac01f0cc093bb91876"
+          },
+          "json_observation_available": true,
+          "php_json_identity": {
+            "bytes": 1640,
+            "sha256": "b31c94c38082f5c4159a83f8e46d21784fe7c208a1fd18dd061dcf413a523fe7"
+          },
+          "native_difference_count_retained": 2,
+          "native_differences_truncated": false,
+          "native_differences": [
+            {
+              "path": "/cases/readonly_io/value/writable",
+              "kind": "value",
+              "observed": true,
+              "native": false
+            },
+            {
+              "path": "/cases/readonly_io/warnings/0/message",
+              "kind": "value",
+              "observed": "file_put_contents(/scratch/readonly.txt): Failed to open stream: Operation not permitted",
+              "native": "file_put_contents(/scratch/readonly.txt): Failed to open stream: Permission denied"
+            }
+          ],
+          "observed_case_statuses": {
+            "basic": "ok",
+            "exceptions": "ok",
+            "fiber": "ok",
+            "wordpress_hooks": "ok",
+            "scratch_io": "ok",
+            "readonly_io": "ok"
+          },
+          "case_names_identical_to_native": [
+            "basic",
+            "exceptions",
+            "fiber",
+            "wordpress_hooks",
+            "scratch_io"
+          ],
+          "observed_readonly_php_metadata": {
+            "readable": true,
+            "writable": true,
+            "write_result": false,
+            "unchanged": true
+          },
+          "scratch_vfs_bytes_match_php_io_observations": true,
+          "readonly_php_metadata_vs_actual_vfs_denial_disagree": true
+        },
+        {
+          "name": "normal_repeat",
+          "expectation_met": false,
+          "native_semantics_match": false,
+          "php_run_completed": true,
+          "expectation_error": "CGI runtime corpus or response differs from native oracle",
+          "stdout_capture_binding_verified": true,
+          "native_comparison_passed": false,
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          },
+          "scratch_vfs_observations": {
+            "ordinary_equals_12_byte_fixture": true,
+            "readonly_equals_unchanged_17_byte_fixture": true,
+            "readonly_mutating_open_rejection_observed": true,
+            "open_handles_after_request": 0
+          },
+          "stdout": {
+            "bytes": 1697,
+            "sha256": "76f203f6eb01e8323473b8a82ad158b9c487423a8c45515bf3f3eb9539081c50"
+          },
+          "complete_cgi_response_reparsed": true,
+          "body": {
+            "bytes": 1629,
+            "sha256": "836e3ac14dfa2b3c78000867177ae3c5578170d012d61bac01f0cc093bb91876"
+          },
+          "json_observation_available": true,
+          "php_json_identity": {
+            "bytes": 1640,
+            "sha256": "b31c94c38082f5c4159a83f8e46d21784fe7c208a1fd18dd061dcf413a523fe7"
+          },
+          "native_difference_count_retained": 2,
+          "native_differences_truncated": false,
+          "native_differences": [
+            {
+              "path": "/cases/readonly_io/value/writable",
+              "kind": "value",
+              "observed": true,
+              "native": false
+            },
+            {
+              "path": "/cases/readonly_io/warnings/0/message",
+              "kind": "value",
+              "observed": "file_put_contents(/scratch/readonly.txt): Failed to open stream: Operation not permitted",
+              "native": "file_put_contents(/scratch/readonly.txt): Failed to open stream: Permission denied"
+            }
+          ],
+          "observed_case_statuses": {
+            "basic": "ok",
+            "exceptions": "ok",
+            "fiber": "ok",
+            "wordpress_hooks": "ok",
+            "scratch_io": "ok",
+            "readonly_io": "ok"
+          },
+          "case_names_identical_to_native": [
+            "basic",
+            "exceptions",
+            "fiber",
+            "wordpress_hooks",
+            "scratch_io"
+          ],
+          "observed_readonly_php_metadata": {
+            "readable": true,
+            "writable": true,
+            "write_result": false,
+            "unchanged": true
+          },
+          "scratch_vfs_bytes_match_php_io_observations": true,
+          "readonly_php_metadata_vs_actual_vfs_denial_disagree": true
+        },
+        {
+          "name": "normal_final",
+          "expectation_met": false,
+          "native_semantics_match": false,
+          "php_run_completed": true,
+          "expectation_error": "CGI runtime corpus or response differs from native oracle",
+          "stdout_capture_binding_verified": true,
+          "native_comparison_passed": false,
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          },
+          "scratch_vfs_observations": {
+            "ordinary_equals_12_byte_fixture": true,
+            "readonly_equals_unchanged_17_byte_fixture": true,
+            "readonly_mutating_open_rejection_observed": true,
+            "open_handles_after_request": 0
+          },
+          "stdout": {
+            "bytes": 1697,
+            "sha256": "76f203f6eb01e8323473b8a82ad158b9c487423a8c45515bf3f3eb9539081c50"
+          },
+          "complete_cgi_response_reparsed": true,
+          "body": {
+            "bytes": 1629,
+            "sha256": "836e3ac14dfa2b3c78000867177ae3c5578170d012d61bac01f0cc093bb91876"
+          },
+          "json_observation_available": true,
+          "php_json_identity": {
+            "bytes": 1640,
+            "sha256": "b31c94c38082f5c4159a83f8e46d21784fe7c208a1fd18dd061dcf413a523fe7"
+          },
+          "native_difference_count_retained": 2,
+          "native_differences_truncated": false,
+          "native_differences": [
+            {
+              "path": "/cases/readonly_io/value/writable",
+              "kind": "value",
+              "observed": true,
+              "native": false
+            },
+            {
+              "path": "/cases/readonly_io/warnings/0/message",
+              "kind": "value",
+              "observed": "file_put_contents(/scratch/readonly.txt): Failed to open stream: Operation not permitted",
+              "native": "file_put_contents(/scratch/readonly.txt): Failed to open stream: Permission denied"
+            }
+          ],
+          "observed_case_statuses": {
+            "basic": "ok",
+            "exceptions": "ok",
+            "fiber": "ok",
+            "wordpress_hooks": "ok",
+            "scratch_io": "ok",
+            "readonly_io": "ok"
+          },
+          "case_names_identical_to_native": [
+            "basic",
+            "exceptions",
+            "fiber",
+            "wordpress_hooks",
+            "scratch_io"
+          ],
+          "observed_readonly_php_metadata": {
+            "readable": true,
+            "writable": true,
+            "write_result": false,
+            "unchanged": true
+          },
+          "scratch_vfs_bytes_match_php_io_observations": true,
+          "readonly_php_metadata_vs_actual_vfs_denial_disagree": true
+        }
+      ],
+      "full_php_compatibility_verified": false,
+      "full_wordpress_bootstrap_executed": false,
+      "php_metadata_matches_actual_readonly_denial": false,
+      "product_runtime_selected": false
+    },
+    "product_runtime_selected": false,
+    "source_or_license_attestation_verified": false,
+    "all_resources_immediately_reclaimed": false
+  }
+}

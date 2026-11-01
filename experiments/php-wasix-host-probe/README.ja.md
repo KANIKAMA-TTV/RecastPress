@@ -186,3 +186,6 @@ source `af4bceb`の[LLVM追試](evidence/ci-41326284424-llvm-operation-timeout/p
 先のa05 LLVM成功時にもcompileは221,189msだった。a05からaf4まで予算のRust/Python/Cargo設定はbyte一致している。この失敗を保存したうえで、LLVMだけcompileを含む所有host待機期限を有限600秒へ分ける。Craneliftは300秒を維持する。1億points、補充禁止、READYと実Exhausted、fresh環境での回復という受入条件は変えない。再度の期限切れも失敗のままで、PHP CPU予算の成立にはしない。
 
 新checkerはtimeout時にも観測phase、部分出力のbyte数とSHA、最後に観測したphaseを記録する。通常のhost結果受信と、timeout後の所有process強制回収も区別する。compile完了専用markerを追加した結果ではないため、詳細な停止箇所は引き続き未識別とする。
+
+
+source `17cada2`の再診断は[Cranelift](evidence/ci-41329575174-cranelift/provenance.json)と[LLVM](evidence/ci-41329575174-llvm/provenance.json)の両方で、Linux31 unitと正常Remaining→loop実Exhausted→正常回復を通過した。compileはCranelift23,386ms、LLVM280,175ms。後者もこの回は旧300秒以内であり、af4の停止原因が期限変更だけで解決したと断定しない。元af4 timeoutは残し、今後も有限期限で失敗を検出する。元の公式PHPのFiber不一致により、このbaseline CI全体のverdictはfailureのままである。

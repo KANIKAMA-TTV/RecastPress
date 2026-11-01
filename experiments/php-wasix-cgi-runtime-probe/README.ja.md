@@ -56,3 +56,10 @@ python3 experiments/php-wasix-cgi-runtime-probe/runtime_check.py --record
 [結合候補の同じworkflow](../../.github/workflows/php-wasix-fiber-cgi.yml)で、拡張Fiber6ケースの比較を維持したまま独立stageとして追加する。いずれかの比較が失敗すればCIも失敗のままとする。JSONのみを保存し、PHP・WP source・tool・Wasm binariesはuploadしない。
 
 追加時点ではnative全6ケース、要求専用FSの4 unitを含むWindows30 unit、合成した検証記録の不正16変異の拒否を確認した。最後の検査はcheckerのメタデータ検証であり、このruntime corpusのWasm実行結果ではない。Linuxの実PHP観測は次のCIで別に判定する。
+
+
+## 初回のWasm比較結果
+
+source `2649132`の[run 41328695777](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41328695777)では両backendともLinux31 unit、WP3ソース準備、拡張Fiber6ケース×fresh3要求を通過した。runtime比較は、各要求でbasic・exceptions・fiber・WP pure hooks・通常IOの5ケースが一致し、readonlyケースの2差分で失敗した。原記録と元Git入力照合は[Cranelift](evidence/ci-41328695777-cranelift/provenance.json)・[LLVM](evidence/ci-41328695777-llvm/provenance.json)に保存する。
+
+readonlyへの実書込は拒否され、17Bの内容も不変だった。一方、PHPの`is_writable()`はtrueを返し、警告文言はnativeの`Permission denied`に対して`Operation not permitted`だった。比較結果はfailureを維持する。[RP開発者向け報告](findings.ja.md)に、実測値、libcの親fd継承権限による照会、hostのerrno変換を分けて記録した。次はRustの実ポリシーをPHPの組込み照会へ渡す試作で整合させる。

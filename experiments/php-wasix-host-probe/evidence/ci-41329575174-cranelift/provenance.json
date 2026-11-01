@@ -1,0 +1,160 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "17cada299880537ea2e27d1908704c3fbde7103a",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41329575174",
+  "artifact_id": 13093026101,
+  "artifact_zip_bytes": 78296,
+  "artifact_zip_sha256": "1e6c92554207848c834d9c26bbcf4d32aeaa1f2691238ac3b00f4bac91cd45c9",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "e320a36922590f2b630db34e71d1b782d46208125ddbfe989a7ba564a10e5dec",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "eacc304ad14553ccc4c59ec69ee16e8448546fe6d14448c70febbb95925c3df9",
+    "experiments/php-wasix-host-probe/cgi_check.py": "b410fc62e4357ce5daf2db2578b7ff474818d70810d5d17a03dc5d669f80b5b6",
+    "experiments/php-wasix-host-probe/memory_check.py": "1dd73f00dbc46473babc7ad65f916c9cc6276aba598b7f4bff88617b53c8c2a8",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",
+    "experiments/php-wasix-host-probe/unit_check.py": "8f1077e0db30edf5ea9678d0ded22e8bef7ef1c67dc680e733955725c21d0ea2",
+    "experiments/php-wasix-host-probe/operation_check.py": "5f63ffc34b7d5e2f0631ec23f149891a38942d20ee5c9dbfdf15f638231f8bb5"
+  },
+  "imported_files": {
+    "ci-stages.json": "c38d8df58188a9cc68a62083b7720a5993d868bba3f4a68a167f43c00a0ec869",
+    "linux-cranelift.json": "63fd2e7ec49a10b0cd34e131289cd3ca596b9f0dc24e2b6387761cb6baedb9e5",
+    "linux-cranelift-module-reuse.json": "98895620a9cf1af1031eec748a3b982b8d054216edb85de2555843b6f92e2295",
+    "linux-cranelift-rpc-contract.json": "50de61024d40778344e9f432287a43ed32c133ef3f69225f2c240cb52f1adc35",
+    "linux-cranelift-php-memory-cap.json": "f87164c4b33c19876058978262ba239c639998eb7cebed4903f7634c272694d6",
+    "linux-cranelift-language-contract.json": "26838e8eed8586e17aa606b5d684d9cf848f1af759cafed86834da2cc0a0f86a",
+    "linux-cranelift-unit-contract.json": "f236cab8fdb4e830454595a4cc2b9b46c3cc9926ebcdef5030e65e55d1789e7a",
+    "linux-cranelift-dependency-inventory.json": "16d72edfe3881c80f4221d9c8f0914f8049f72bfa14d70efed383f13aff908e9",
+    "linux-cranelift-php-operation-budget.json": "700e65689e6f147d11f61e8a5779c631283be23e3dcdca8c8414e245b5b02461"
+  },
+  "observations": {
+    "module_reuse_passed": true,
+    "language_comparison_passed": false,
+    "case_results": {
+      "basic": {
+        "equal_to_native": true
+      },
+      "exceptions": {
+        "equal_to_native": true
+      },
+      "fiber": {
+        "equal_to_native": false,
+        "difference": "contract fields mismatch: fiber"
+      }
+    },
+    "compile_elapsed_ms": 10328,
+    "request_execution_elapsed_ms": [
+      72,
+      71,
+      54
+    ],
+    "counter_scope": "explicit PHP Module::new call site; internal backend operations are not instrumented",
+    "timing_scope": "one CI runner; run_wasm includes startup/shutdown; not a product latency benchmark",
+    "private_rpc_diagnostic_passed": true,
+    "php_memory_diagnostic_passed": true,
+    "incomplete_rpc_case_accepted": false,
+    "test_memory_cap_bytes": 268435456,
+    "production_memory_limit_verified": false,
+    "real_db": false,
+    "standard_wpdb": false,
+    "rpc_case_acceptance": [
+      true,
+      true,
+      false,
+      true
+    ],
+    "memory_case_execution_results": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "memory_observations": [
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 65536,
+        "shared": true,
+        "size_pages": 6734
+      }
+    ],
+    "backend": "cranelift",
+    "bounded_unit_tests_passed": 31,
+    "formal_eh_wat_metering_passed": true,
+    "php_cpu_budget_verified": false,
+    "declared_license_inventory_recorded": true,
+    "legal_compatibility_evaluated": false,
+    "compiler_reachability": {
+      "wasmer-compiler-llvm": {
+        "runtime": false,
+        "build": false,
+        "dev": false
+      },
+      "wasmer-compiler-cranelift": {
+        "runtime": true,
+        "build": false,
+        "dev": false
+      }
+    },
+    "operation_supervision": {
+      "outer_build_timeout_seconds": 1200,
+      "outer_execution_timeout_seconds": 300,
+      "outer_execution_timeout_scope": "owned child wait for compilation and all cases; EOF and forced cleanup use separate finite waits",
+      "outer_cleanup_wait_seconds": 5,
+      "outer_io_join_wait_seconds": 1,
+      "normal_host_result_received": true,
+      "owned_host_reap_kind": "normal-host-return",
+      "owned_process_cleanup_completed": true,
+      "compile_elapsed_ms": 23386
+    },
+    "php_operation_budget_diagnostic_passed": true,
+    "php_operation_cases_executed": 3,
+    "operation_raw_runner_outcomes": [
+      true,
+      false,
+      true
+    ],
+    "actual_final_points": [
+      {
+        "kind": "remaining",
+        "points": 56923012
+      },
+      {
+        "kind": "exhausted"
+      },
+      {
+        "kind": "remaining",
+        "points": 56923012
+      }
+    ],
+    "start_charged_points": [
+      37,
+      37,
+      37
+    ],
+    "configured_wasm_operation_points": 100000000,
+    "budget_reset_count": 0,
+    "final_observer_strategy": "setup-captured-typed-global-handles",
+    "production_operation_budget_verified": false
+  }
+}

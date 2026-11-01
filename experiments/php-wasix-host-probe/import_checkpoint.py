@@ -18,6 +18,31 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SOURCE = '071c9443ba56b2b5dd27032567ed3e7a9c8d0045'
 SPECS = {
+    '41329575174-cranelift': {
+        'run_id': '41329575174', 'backend': 'cranelift',
+        'source': '17cada299880537ea2e27d1908704c3fbde7103a',
+        'kind': 'compiler-matrix-operation-passed', 'artifact': 13093026101, 'bytes': 78296,
+        'sha256': '1e6c92554207848c834d9c26bbcf4d32aeaa1f2691238ac3b00f4bac91cd45c9',
+        'unit_count': 31, 'operation_supervision_v2': True,
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-cranelift.json', 'linux-cranelift-module-reuse.json',
+                    'linux-cranelift-rpc-contract.json', 'linux-cranelift-php-memory-cap.json',
+                    'linux-cranelift-language-contract.json', 'linux-cranelift-unit-contract.json',
+                    'linux-cranelift-dependency-inventory.json', 'linux-cranelift-php-operation-budget.json'],
+    },
+    '41329575174-llvm': {
+        'run_id': '41329575174', 'backend': 'llvm',
+        'source': '17cada299880537ea2e27d1908704c3fbde7103a',
+        'kind': 'compiler-matrix-operation-passed', 'artifact': 13093900809, 'bytes': 78515,
+        'sha256': '277d8282171d8ecd6d06bad6e73d0ee5174d9f42a4300b3c11677eccfe49e76f',
+        'unit_count': 31, 'operation_supervision_v2': True,
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-llvm.json', 'linux-llvm-module-reuse.json',
+                    'linux-llvm-rpc-contract.json', 'linux-llvm-php-memory-cap.json',
+                    'linux-llvm-language-contract.json', 'linux-llvm-unit-contract.json',
+                    'linux-llvm-dependency-inventory.json', 'linux-llvm-php-operation-budget.json',
+                    'llvm-toolchain-verification.json'],
+    },
     '41320223203-cranelift': {
         'run_id': '41320223203', 'backend': 'cranelift',
         'source': 'a05a2ca1e795e64dacbb2ee0845b6fdc9464da2a',
@@ -475,11 +500,13 @@ def verify_rpc_memory(data, backend='llvm', matrix=False, operation_start_reject
 
 
 def verify_compiler_matrix(data, backend, operation_start_rejected=False, operation_recycle_missing=False,
-                           operation_diagnostic_passed=False):
+                           operation_diagnostic_passed=False, expected_unit_count=None,
+                           operation_supervision_v2=False):
     operation_failed = operation_start_rejected or operation_recycle_missing
     summary = verify_rpc_memory(data, backend, matrix=True, operation_start_rejected=operation_failed,
                                 operation_diagnostic_passed=operation_diagnostic_passed)
-    unit_count = 27 if operation_diagnostic_passed else 26 if operation_failed else 25
+    unit_count = (expected_unit_count if expected_unit_count is not None else
+                  27 if operation_diagnostic_passed else 26 if operation_failed else 25)
     prefix = 'linux-' + backend
     unit, inventory = data[prefix + '-unit-contract.json'], data[prefix + '-dependency-inventory.json']
     for report in [unit, inventory]:
@@ -587,6 +614,38 @@ def verify_compiler_matrix(data, backend, operation_start_rejected=False, operat
         operation_check.equal(operation['observed_phases'], ['module_compile'] + operation_check.CASES, 'operation phases')
         operation_check.validate_result(operation['native_result'], operation['owned_process_pid'], backend)
         value = operation['native_result']
+        if operation_supervision_v2:
+            for key, expected in [
+                ('outer_build_timeout_seconds', 1200),
+                ('outer_execution_timeout_seconds', 600 if backend == 'llvm' else 300),
+                ('outer_execution_timeout_scope', 'owned child wait for compilation and all cases; EOF and forced cleanup use separate finite waits'),
+                ('outer_cleanup_wait_seconds', 5), ('outer_io_join_wait_seconds', 1),
+                ('normal_host_result_received', True), ('owned_host_reap_kind', 'normal-host-return'),
+                ('owned_process_cleanup_completed', True), ('expected_execution_results', [True, False, True]),
+                ('trial_points', 100000000), ('budget_reset_count', 0), ('start_execution_included', True),
+                ('build_exit_code', 0),
+                ('php_wasm_operation_budget_verified_for_fixed_cases', True),
+            ]:
+                operation_check.equal(operation[key], expected, 'operation supervisor ' + key)
+            operation_check.equal(value['post_start_reference_points'], 99999963, 'unchanged start charge')
+            for field in ['production_operation_budget_verified', 'cpu_time_budget_verified',
+                          'php_opcode_budget_verified', 'hostcall_timeout_verified', 'memory_limit_verified',
+                          'product_runtime_selected', 'wordpress_executed', 'fiber_compatibility_verified',
+                          'full_php_compatibility_verified', 'native_comparison_performed']:
+                operation_check.equal(operation[field], False, 'operation supervisor unverified scope ' + field)
+            for index, case in enumerate(value['cases']):
+                operation_check.equal(case['start_charged_points'], 37, 'exact fresh start charge')
+                operation_check.equal(case['final_points'], {'kind': 'exhausted'} if index == 1 else
+                                      {'kind': 'remaining', 'points': 56923012}, 'fixed CI final counter observation')
+            summary.update(operation_supervision={
+                'outer_build_timeout_seconds': 1200,
+                'outer_execution_timeout_seconds': operation['outer_execution_timeout_seconds'],
+                'outer_execution_timeout_scope': operation['outer_execution_timeout_scope'],
+                'outer_cleanup_wait_seconds': 5, 'outer_io_join_wait_seconds': 1,
+                'normal_host_result_received': True, 'owned_host_reap_kind': 'normal-host-return',
+                'owned_process_cleanup_completed': True,
+                'compile_elapsed_ms': value['compile_elapsed_ms'],
+            })
         summary.update(php_operation_budget_diagnostic_passed=True,
                        php_operation_cases_executed=3, operation_raw_runner_outcomes=[case['ok'] for case in value['cases']],
                        actual_final_points=[case['final_points'] for case in value['cases']],
@@ -641,7 +700,9 @@ def main():
         summary = verify_compiler_matrix(data, spec['backend'],
                                         operation_start_rejected=spec['kind'] == 'compiler-matrix-start-rejected',
                                         operation_recycle_missing=spec['kind'] == 'compiler-matrix-recycle-missing',
-                                        operation_diagnostic_passed=spec['kind'] == 'compiler-matrix-operation-passed')
+                                        operation_diagnostic_passed=spec['kind'] == 'compiler-matrix-operation-passed',
+                                        expected_unit_count=spec.get('unit_count'),
+                                        operation_supervision_v2=spec.get('operation_supervision_v2', False))
     else:
         data['_raw_toolchain'] = raw['toolchain.json']
         if spec['kind'] == 'cgi-contract':

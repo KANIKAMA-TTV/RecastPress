@@ -49,9 +49,19 @@ def runtime_sources():
         ROOT / 'experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php']
 
 
-def source_hashes():
-    oracle = parse_json(read_fixed(ORACLE, 256 * 1024))
+def verify_native_reference(read_source=None):
+    oracle = parse_json(combined.validation_source(ORACLE, read_source))
+    for name, expected in oracle['input_files'].items():
+        equal(hashlib.sha256(combined.validation_source(ROOT / name, read_source)).hexdigest(), expected,
+            'original runtime native source binding')
+    # Current pure validator must still match these original native inputs.
+    # A changed native corpus therefore fails closed rather than being relabeled.
     native.validate_receipt(oracle)
+    return oracle
+
+
+def source_hashes():
+    oracle = verify_native_reference()
     paths = host.compiled_inputs() + [Path(__file__).resolve(), HERE / 'native_contract.py',
         HOST / 'check.py', HOST / 'language_check.py', COMBINED / 'fiber_cgi_check.py', ROOT / 'scripts/owned_probe.py']
     hashes = {p.relative_to(ROOT).as_posix(): digest(p) for p in paths}
@@ -66,13 +76,13 @@ def source_hashes():
     return hashes
 
 
-def sources(paths):
-    return [{'path':p.relative_to(ROOT).as_posix(),'bytes':p.stat().st_size,
-        'sha256':digest(p),'verified':True} for p in paths]
+def sources(paths, read_source=None):
+    return [{'path':p.relative_to(ROOT).as_posix(),'bytes':len(combined.validation_source(p, read_source)),
+        'sha256':hashlib.sha256(combined.validation_source(p, read_source)).hexdigest(),'verified':True} for p in paths]
 
 
-def validate_result(value, pid, backend, provenance, prepared):
-    combined.validate_provenance(provenance)
+def validate_result(value, pid, backend, provenance, prepared, read_source=None, build_inputs=None):
+    combined.validate_provenance(provenance, read_source, build_inputs)
     require('error' not in value, 'failed runtime host result')
     for key, expected in [('schema','recastpress.php-wasix-cgi-runtime-host.v0.5'), ('process_pid',pid),
             ('engine','wasmer-7.2.0/'+backend), ('wasmer_wasix','0.702.0'), ('ok',True),
@@ -96,8 +106,8 @@ def validate_result(value, pid, backend, provenance, prepared):
     equal(value['build_receipt']['observed_sha256'],provenance['build_receipt_sha256'],'runtime receipt digest')
     equal(value['build_receipt']['verified'],True,'runtime receipt verified')
     equal(value['build_receipt']['full_source_tool_chain_verified_by_host'],False,'external source chain ownership')
-    equal(value['source_files'],sources(combined.embedded_sources()),'combined compiled sources')
-    equal(value['runtime_source_files'],sources(runtime_sources()),'runtime compiled sources')
+    equal(value['source_files'],sources(combined.embedded_sources(), read_source),'combined compiled sources')
+    equal(value['runtime_source_files'],sources(runtime_sources(), read_source),'runtime compiled sources')
     equal(value['wordpress_source_files'],{name:{**row,'verified':True} for name,row in prepared['files'].items()},'actual WP sources')
     equal(value['isolation'],{'asynchronous_threading':True,'deep_sleep':False,'max_guest_threads':1,
         'host_environment_forwarded':False,'home_mapped':False,'guest_environment_supplied':native.expected_environment(),
@@ -106,8 +116,8 @@ def validate_result(value, pid, backend, provenance, prepared):
         'stdout_limit_bytes':65536,'stderr_limit_bytes':65536,'other_virtual_root_writes_forbidden':False,
         'writable_fixture_entries':['/scratch/ordinary.txt'],'scratch_file_limit_bytes':4096},'runtime capabilities')
     combined.validate_inspection(value['postopt_adapter'],provenance['module'])
-    oracle = parse_json(read_fixed(ORACLE,256*1024));native.validate_receipt(oracle)
-    equal(value['native_oracle'],{'path':ORACLE.relative_to(ROOT).as_posix(),'sha256':digest(ORACLE),
+    oracle = verify_native_reference(read_source)
+    equal(value['native_oracle'],{'path':ORACLE.relative_to(ROOT).as_posix(),'sha256':hashlib.sha256(combined.validation_source(ORACLE, read_source)).hexdigest(),
         'expected_case_count':6,'expected_values_weakened':False},'runtime native oracle')
     equal(value['exception_support']['execution_verdict'],'fixed-cgi-runtime-corpus-passed','runtime exception scope')
     require(type(value['compile_elapsed_ms']) is int and value['compile_elapsed_ms']>=0,'runtime compile span')
@@ -122,7 +132,7 @@ def validate_result(value, pid, backend, provenance, prepared):
                 ('module_compile_invocations',0),('fresh_wasi_runtime',True),('fresh_scratch',True),('ok',True),
                 ('native_semantics_match',True),('expectation_met',True),('guest_json_decoded',True),
                 ('guest_arguments',native.command_arguments()),('guest_environment_supplied',native.expected_environment()),
-                ('program_sha256',digest(FIXTURE)),('stdout_eof',True),('stderr_eof',True),('stdout_overflow',False),
+                ('program_sha256',hashlib.sha256(combined.validation_source(FIXTURE, read_source)).hexdigest()),('stdout_eof',True),('stderr_eof',True),('stdout_overflow',False),
                 ('stderr_overflow',False),('stderr_bytes',0),('stderr_hex',''),('runtime_shutdown_returned',True),
                 ('runtime_shutdown_wait_limit_ms',2000)]:
             equal(case[key],expected,'runtime request '+key)

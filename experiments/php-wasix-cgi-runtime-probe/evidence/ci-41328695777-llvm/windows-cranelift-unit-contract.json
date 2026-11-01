@@ -1,0 +1,370 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T16:44:07.463757+00:00",
+  "backend": "cranelift",
+  "platform": {
+    "system": "Windows",
+    "machine": "AMD64"
+  },
+  "scope": "fixed Rust filesystem, parser, memory and WAT metering tests only",
+  "outcome": "fixed_p0_unit_tests_passed",
+  "tests_passed": true,
+  "owned_test_reaped": true,
+  "php_executed": false,
+  "php_cpu_budget_verified": false,
+  "product_runtime_selected": false,
+  "outer_build_timeout_seconds": 1200,
+  "outer_list_timeout_seconds": 10,
+  "outer_test_timeout_seconds": 30,
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "9e39660f960e4d4cf91eca63a3d24f660a87f9c10ed2a0bc58090fe151c89545",
+    "experiments/php-wasix-host-probe/Cargo.lock": "028ce5e3747f78459e0fe6776901cb5c340b1920dfdca882ff61f8ee09b89be5",
+    "experiments/php-wasix-host-probe/src/cgi_contract.rs": "90e5b89655c752467dc16c65f2f1b25abf6554db5a64618e21e2c276b096c27c",
+    "experiments/php-wasix-host-probe/src/cgi_execution.rs": "d7d4632337af7279df722a5df5c1bada56dfd220b2bd3f0e09847b7e0f0ff6bf",
+    "experiments/php-wasix-host-probe/src/cgi_runtime_contract.rs": "1c8c7d4810e0c2a77acc9143b53f8c92f1de1b3b8803bc94fa60752a2a4b8f94",
+    "experiments/php-wasix-host-probe/src/context_contract.rs": "0b3bacd902e9c967ec96262d478ee6a57cb1d5aa4b2751e3e62f8e38545fd0f6",
+    "experiments/php-wasix-host-probe/src/fiber_adapter.rs": "526626757dc93cb59e24b19912362c39f57a8b8e1eb088b04f8b4fefb9b91df9",
+    "experiments/php-wasix-host-probe/src/fiber_cgi_contract.rs": "95a8c99c2bd4cf6e7826d71fe16a7e385dfc68bd26e249bb4757f49a1c3d26a4",
+    "experiments/php-wasix-host-probe/src/fiber_contract.rs": "896fb24560462bb5d73f4d1ee6de8740cf81883d49f7f94d680e3baad201bfd3",
+    "experiments/php-wasix-host-probe/src/language_contract.rs": "02d314e638a54e3d7d5165467535badff0a4eba7e0220b0f14977d0a5dd620ff",
+    "experiments/php-wasix-host-probe/src/main.rs": "246243865da0dcad406dfcfa8b2667197269a650e376469091bd0e9c325d5314",
+    "experiments/php-wasix-host-probe/src/memory_limits.rs": "497f44ff22db8b20b7601bdfe41731fe22b53cd328f2d11ad0c667c2314cd550",
+    "experiments/php-wasix-host-probe/src/memory_policy.rs": "290d71d9d13320e731085f9ecfc1b96a729d307ed31576de7bf41a2732c932c8",
+    "experiments/php-wasix-host-probe/src/metering_limits.rs": "b06d830c9e4f2fa87be00f8eeaa02ef727b4fd2e6a43c844a45bc2d46fe9f4d0",
+    "experiments/php-wasix-host-probe/src/module_reuse.rs": "8616b0033cee1a969a28b0ac90fcf7e0f9ff90c2be8e7efa201fd49f7f8c30a4",
+    "experiments/php-wasix-host-probe/src/php_memory_cap.rs": "ca479e7b55e954e01ba656a4d8da21666a99f546304ee0d81ebfc44b54efc9ba",
+    "experiments/php-wasix-host-probe/src/php_operation_budget.rs": "4bb3bdf7a4fb0e36984d2886e9947da0c941b4d574da497fc9433e703d99f4b2",
+    "experiments/php-wasix-host-probe/src/rpc_contract.rs": "b13eab4d70aa56afa2b1423f8d68ece6942acc0fc9945d036293a0ecd104c04e",
+    "experiments/php-wasix-host-probe/src/rpc_fs.rs": "f46092f470e70d27b54c18808204a709b15f3b791920cfbed4b36d3dc69eed5e",
+    "experiments/php-wasix-host-probe/src/runtime_fixture_fs.rs": "f0775335860c401a5007fa7119a19f530a1ba7694c7814014e9f8a0ed1014860",
+    "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
+    "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasix-context-probe/manifest.json": "f0239d83ebab0d1a15c48f1273cda579f45bdbc05a68650660fbe6366dfc9e8f",
+    "experiments/php-wasix-context-probe/fixtures/context_contract.c": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.c": "7a18d8121e58b07c92c2270f59b4a8285a4abf0d91f703f74e49a3108a4f0bb5",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.h": "16977226b643017517dc94ea11771f3d7aba07d4642bdb2fd640349e8ba0e437",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.S": "f5be8b435353a655547ac85a076af1af012182c5a11aef95d1db858f4470a3a1",
+    "experiments/php-wasix-fiber-probe/manifest.json": "81cd79838d653453e27e2bb69ad3afefbbd01293846372080e2db8eb134b5c87",
+    "experiments/php-wasix-fiber-probe/patches/0001-nts-fresh-wasi-zend-fibers.patch": "2c334bcfcc34cb518971a8b7965ede50032b2813fa0c426ddfde206a8105d231",
+    "experiments/php-wasix-fiber-probe/fixtures/zend_wasix_fiber.S": "c0f44bef8e8a4d54713e3ba989be064995ae527924724edcd4bec1f8e4040c19",
+    "experiments/php-wasix-fiber-probe/fixtures/fiber_contract.php": "9da4b5ffb45677eaa0e81ddbac8c101c692663bf685bbc1157a4689c61c17831",
+    "experiments/php-wasix-fiber-probe/evidence/native-fiber-contract.json": "243ac46e0aff1cf2a476e3208a35ac0739978d141815096757ec29b1d65779ce",
+    "experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+    "experiments/php-wasix-fiber-cgi-probe/manifest.json": "b0fdc9d3bff6b0e2cc92a7c4961111c5b1ed959ca1a3ecf87916780779bb39f8",
+    "experiments/php-wasix-fiber-cgi-probe/fixtures/fiber_cgi_contract.php": "3d6b17234b12d1f391293b79366ab1575f0d9322e699ef76131c86818eadeff2",
+    "experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json": "58ff09bac489a0e1416968255f30f217c9a76e0eba0b24ea07ae959ce64e9a04",
+    "experiments/php-wasix-cgi-runtime-probe/manifest.json": "c3b9f61263d01a980434c0d8fb4e81311b62482845146b1f24c2686a3970b76f",
+    "experiments/php-wasix-cgi-runtime-probe/fixtures/runtime_cgi_contract.php": "9690cbe445386e7a779bf6ec2719f17953c9f818ae1e220bdd17a3ea2230d8f1",
+    "experiments/php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json": "513fb91461b0e8638c3f075c8ccae63a753dae80bd8d2713c39f722063d7a20b",
+    "experiments/php-wasi-host-probe/wordpress-fixture.json": "f25b298591e266cb2eaa8001807ff89aff44c60d46bade4224f7834ba0385543",
+    "experiments/php-wasi-host-probe/src/cgi_response.rs": "d7ef796e0bea093c862e67b3591d97ecf4a8ce53428e17196a22a7d06551bc49",
+    "experiments/php-wasix-host-probe/unit_check.py": "8f1077e0db30edf5ea9678d0ded22e8bef7ef1c67dc680e733955725c21d0ea2",
+    "experiments/php-wasix-host-probe/check.py": "eacc304ad14553ccc4c59ec69ee16e8448546fe6d14448c70febbb95925c3df9",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "build_exit_code": 0,
+  "test_artifact": "target/php-wasix-host-probe/release/deps/recastpress_php_wasix_host_probe-bbbe6634625312d5.exe",
+  "test_artifact_sha256": "ac52816c5361b1789a88f5c8d281896a7ebb082f4c444e2428f5b5afff878d2a",
+  "owned_list_pid": 18096,
+  "list_exit_code": 0,
+  "listed_tests": [
+    "cgi_contract::cgi_response::tests::default_status_redirect_and_explicit_redirect_are_distinct",
+    "cgi_contract::cgi_response::tests::header_budgets_include_the_terminating_blank_line",
+    "cgi_contract::cgi_response::tests::no_content_and_not_modified_keep_their_different_length_rules",
+    "cgi_contract::cgi_response::tests::preserves_header_value_bytes_but_never_reparses_body",
+    "cgi_contract::cgi_response::tests::rejects_ambiguous_status_and_nonfinal_status",
+    "cgi_contract::cgi_response::tests::rejects_folding_controls_mixed_endings_and_hop_headers",
+    "cgi_contract::cgi_response::tests::rejects_smuggling_length_forms_even_with_identical_duplicates",
+    "cgi_contract::cgi_response::tests::singleton_fields_cannot_be_combined_but_repeatable_fields_survive",
+    "cgi_contract::cgi_response::tests::wordpress_error_preserves_separate_cookies_and_binary_body",
+    "context_contract::tests::final_adapter_shapes_accept_register_only_switches_and_reject_unsafe_mutants",
+    "fiber_adapter::tests::closed_shapes_bind_exact_symbols_and_reject_unsafe_mutants",
+    "language_contract::tests::namespace_changes_and_mutating_open_modes_are_denied",
+    "language_contract::tests::verified_source_is_the_only_readable_entry_and_handles_are_immutable",
+    "memory_limits::policy_rejects_initial_excess_and_existing_or_unknown_memory_paths",
+    "memory_limits::runner_clamps_imported_shared_memory_and_rejects_growth_past_1024_pages",
+    "memory_limits::runner_without_cap_allows_the_same_extra_page",
+    "metering_limits::one_metered_module_exhausts_a_loop_and_fresh_instances_restore_the_budget",
+    "rpc_fs::tests::closed_handle_cannot_access_a_reopened_channel_and_drop_cannot_close_it",
+    "rpc_fs::tests::fragmented_fixed_wire_seek_readback_and_reopen_use_live_rust_backend",
+    "rpc_fs::tests::namespace_flags_paths_and_metadata_mutations_are_rejected",
+    "rpc_fs::tests::one_channel_capability_cannot_be_opened_concurrently_or_after_finish",
+    "rpc_fs::tests::operation_budget_and_protocol_phase_errors_are_latched",
+    "rpc_fs::tests::reply_rereads_share_a_request_budget_that_reopen_cannot_reset",
+    "rpc_fs::tests::separate_requests_have_independent_cache_nonce_failure_and_handle_state",
+    "rpc_fs::tests::unknown_oversized_and_incomplete_frames_remain_failed_after_guest_ignores_errors",
+    "rpc_fs::tests::wasix_stdio_cursor_sync_and_zero_length_probes_preserve_fragmented_frames",
+    "runtime_fixture_fs::tests::scratch_namespace_and_seek_limits_reject_escape",
+    "runtime_fixture_fs::tests::scratch_readonly_open_and_handle_mutations_are_rejected",
+    "runtime_fixture_fs::tests::scratch_regular_binary_io_and_truncate_are_request_local",
+    "runtime_fixture_fs::tests::wp_source_namespace_and_mutating_opens_are_confined"
+  ],
+  "owned_test_pid": 23896,
+  "exit_code": 0,
+  "stdout_sha256": "cc12b0d3fb4849c793c170186e21f0ebf12b2e8571586d3416823ca874270187",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_excerpt": "\nrunning 30 tests\ntest cgi_contract::cgi_response::tests::default_status_redirect_and_explicit_redirect_are_distinct ... ok\ntest cgi_contract::cgi_response::tests::header_budgets_include_the_terminating_blank_line ... ok\ntest cgi_contract::cgi_response::tests::no_content_and_not_modified_keep_their_different_length_rules ... ok\ntest cgi_contract::cgi_response::tests::preserves_header_value_bytes_but_never_reparses_body ... ok\ntest cgi_contract::cgi_response::tests::rejects_ambiguous_status_and_nonfinal_status ... ok\ntest cgi_contract::cgi_response::tests::rejects_folding_controls_mixed_endings_and_hop_headers ... ok\ntest cgi_contract::cgi_response::tests::rejects_smuggling_length_forms_even_with_identical_duplicates ... ok\ntest cgi_contract::cgi_response::tests::singleton_fields_cannot_be_combined_but_repeatable_fields_survive ... ok\ntest cgi_contract::cgi_response::tests::wordpress_error_preserves_separate_cookies_and_binary_body ... ok\ntest context_contract::tests::final_adapter_shapes_accept_register_only_switches_and_reject_unsafe_mutants ... ok\ntest fiber_adapter::tests::closed_shapes_bind_exact_symbols_and_reject_unsafe_mutants ... ok\ntest language_contract::tests::namespace_changes_and_mutating_open_modes_are_denied ... ok\ntest language_contract::tests::verified_source_is_the_only_readable_entry_and_handles_are_immutable ... ok\ntest memory_limits::policy_rejects_initial_excess_and_existing_or_unknown_memory_paths ... ok\ntest memory_limits::runner_clamps_imported_shared_memory_and_rejects_growth_past_1024_pages ... ok\ntest memory_limits::runner_without_cap_allows_the_same_extra_page ... ok\ntest metering_limits::one_metered_module_exhausts_a_loop_and_fresh_instances_restore_the_budget ... ok\ntest rpc_fs::tests::closed_handle_cannot_access_a_reopened_channel_and_drop_cannot_close_it ... ok\ntest rpc_fs::tests::fragmented_fixed_wire_seek_readback_and_reopen_use_live_rust_backend ... ok\ntest rpc_fs::tests::namespace_flags_paths_and_metadata_mutations_are_rejected ... ok\ntest rpc_fs::tests::one_channel_capability_cannot_be_opened_concurrently_or_after_finish ... ok\ntest rpc_fs::tests::operation_budget_and_protocol_phase_errors_are_latched ... ok\ntest rpc_fs::tests::reply_rereads_share_a_request_budget_that_reopen_cannot_reset ... ok\ntest rpc_fs::tests::separate_requests_have_independent_cache_nonce_failure_and_handle_state ... ok\ntest rpc_fs::tests::unknown_oversized_and_incomplete_frames_remain_failed_after_guest_ignores_errors ... ok\ntest rpc_fs::tests::wasix_stdio_cursor_sync_and_zero_length_probes_preserve_fragmented_frames ... ok\ntest runtime_fixture_fs::tests::scratch_namespace_and_seek_limits_reject_escape ... ok\ntest runtime_fixture_fs::tests::scratch_readonly_open_and_handle_mutations_are_rejected ... ok\ntest runtime_fixture_fs::tests::scratch_regular_binary_io_and_truncate_are_request_local ... ok\ntest runtime_fixture_fs::tests::wp_source_namespace_and_mutating_opens_are_confined ... ok\n\nsuccesses:\n\n---- fiber_adapter::tests::closed_shapes_bind_exact_symbols_and_reject_unsafe_mutants stdout ----\nWASIX_FIBER_ADAPTER_UNIT={\"boundary_and_high_addresses_verified\":true,\"guest_executed\":false,\"normal_switch_shapes\":2,\"type_and_imported_global_offsets_verified\":true,\"unsafe_mutants_rejected\":79}\n\n---- metering_limits::one_metered_module_exhausts_a_loop_and_fresh_instances_restore_the_budget stdout ----\n\nP0_METERING_JSON={\"case\":\"normal_first\",\"configured_budget\":10000,\"engine\":\"wasmer-7.2.0/cranelift\",\"event\":\"case_start\",\"formal_eh\":false,\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":1,\"php_executed\":false,\"schema\":\"recastpress.wasmer-metering-wat.v0.5\",\"test\":\"plain\"}\n\nP0_METERING_JSON={\"engine\":\"wasmer-7.2.0/cranelift\",\"event\":\"case_result\",\"formal_eh\":false,\"observation\":{\"call_failed\":false,\"case\":\"normal_first\",\"entered\":0,\"final_points\":{\"kind\":\"remaining\",\"points\":9996},\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":1,\"normal_result\":42,\"runtime_trap_observed\":false,\"verified\":true},\"php_executed\":false,\"schema\":\"recastpress.wasmer-metering-wat.v0.5\",\"test\":\"plain\"}\n\nP0_METERING_JSON={\"case\":\"infinite_loop\",\"configured_budget\":10000,\"engine\":\"wasmer-7.2.0/cranelift\",\"event\":\"case_start\",\"formal_eh\":false,\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":2,\"php_executed\":false,\"schema\":\"recastpress.wasmer-metering-wat.v0.5\",\"test\":\"plain\"}\n\nP0_METERING_JSON={\"engine\":\"wasmer-7.2.0/cranelift\",\"event\":\"case_result\",\"formal_eh\":false,\"observation\":{\"call_failed\":true,\"case\":\"infinite_loop\",\"entered\":1,\"final_points\":{\"kind\":\"exhausted\"},\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":2,\"normal_result\":null,\"runtime_trap_observed\":true,\"verified\":true},\"php_executed\":false,\"schema\":\"recastpress.wasmer-metering-wat.v0.5\",\"test\":\"plain\"}\n\nP0_METERING_JSON={\"case\":\"normal_recovery\",\"configured_budget\":10000,\"engine\":\"wasmer-7.2.0/cranelift\",\"event\":\"case_start\",\"formal_eh\":false,\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":3,\"php_executed\":false,\"schema\":\"recastpress.wasmer-metering-wat.v0.5\",\"test\":\"plain\"}\n\nP0_METERING_JSON={\"engine\":\"wasmer-7.2.0/cranelift\",\"event\":\"case_result\",\"formal_eh\":false,\"observation\":{\"call_failed\":false,\"case\":\"normal_recovery\",\"entered\":0,\"final_points\":{\"kind\":\"remaining\",\"points\":9996},\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":3,\"normal_result\":42,\"runtime_trap_observed\":false,\"verified\":true},\"php_executed\":false,\"schema\":\"recastpress.wasmer-metering-wat.v0.5\",\"test\":\"plain\"}\n\nP0_METERING_JSON={\"configured_budget\":10000,\"cost_policy\":\"one-point-per-original-Wasm-operator\",\"cpu_wall_clock_deadline_verified\":false,\"engine\":\"wasmer-7.2.0/cranelift\",\"event\":\"test_complete\",\"explicit_module_compile_calls\":1,\"formal_eh\":false,\"fresh_instances\":3,\"hostcall_timeout_verified\":false,\"normal_recovery_verified\":true,\"observations\":[{\"call_failed\":false,\"case\":\"normal_first\",\"entered\":0,\"final_points\":{\"kind\":\"remaining\",\"points\":9996},\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":1,\"normal_result\":42,\"runtime_trap_observed\":false,\"verified\":true},{\"call_failed\":true,\"case\":\"infinite_loop\",\"entered\":1,\"final_points\":{\"kind\":\"exhausted\"},\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":2,\"normal_result\":null,\"runtime_trap_observed\":true,\"verified\":true},{\"call_failed\":false,\"case\":\"normal_recovery\",\"entered\":0,\"final_points\":{\"kind\":\"remaining\",\"points\":9996},\"initial_points\":{\"kind\":\"remaining\",\"points\":10000},\"instance_number\":3,\"normal_result\":42,\"runtime_trap_observed\":false,\"verified\":true}],\"ok\":true,\"php_executed\":false,\"schema\":\"recastpress.wasmer-metering-wat.v0.5\",\"scope\":\"fixed-WAT-only-one-compile-three-fresh-instances\",\"test\":\"plain\"}\n\n\nsuccesses:\n    cgi_contract::cgi_response::tests::default_status_redirect_and_explicit_redirect_are_distinct\n    cgi_contract::cgi_response::tests::header_budgets_include_the_terminating_blank_line\n    cgi_contract::cgi_response::tests::no_content_and_not_modified_keep_their_different_length_rules\n    cgi_contract::cgi_response::tests::preserves_header_value_bytes_but_never_reparses_body\n    cgi_contract::cgi_response::tests::rejects_ambiguous_status_and_nonfinal_status\n    cgi_contract::cgi_response::tests::rejects_folding_controls_mixed_endings_and_hop_headers\n    cgi_contract::cgi_response::tests::rejects_smuggling_length_forms_even_with_identical_duplicates\n    cgi_contract::cgi_response::tests::singleton_fields_cannot_be_combined_but_repeatable_fields_survive\n    cgi_contract::cgi_response::tests::wordpress_error_preserves_separate_cookies_and_binary_body\n    context_contract::tests::final_adapter_shapes_accept_register_only_switches_and_reject_unsafe_mutants\n    fiber_adapter::tests::closed_shapes_bind_exact_symbols_and_reject_unsafe_mutants\n    language_contract::tests::namespace_changes_and_mutating_open_modes_are_denied\n    language_contract::tests::verified_source_is_the_only_readable_entry_and_handles_are_immutable\n    memory_limits::policy_rejects_initial_excess_and_existing_or_unknown_memory_paths\n    memory_limits::runner_clamps_imported_shared_memory_and_rejects_growth_past_1024_pages\n    memory_limits::runner_without_cap_allows_the_same_extra_page\n    metering_limits::one_metered_module_exhausts_a_loop_and_fresh_instances_restore_the_budget\n    rpc_fs::tests::closed_handle_cannot_access_a_reopened_channel_and_drop_cannot_close_it\n    rpc_fs::tests::fragmented_fixed_wire_seek_readback_and_reopen_use_live_rust_backend\n    rpc_fs::tests::namespace_flags_paths_and_metadata_mutations_are_rejected\n    rpc_fs::tests::one_channel_capability_cannot_be_opened_concurrently_or_after_finish\n    rpc_fs::tests::operation_budget_and_protocol_phase_errors_are_latched\n    rpc_fs::tests::reply_rereads_share_a_request_budget_that_reopen_cannot_reset\n    rpc_fs::tests::separate_requests_have_independent_cache_nonce_failure_and_handle_state\n    rpc_fs::tests::unknown_oversized_and_incomplete_frames_remain_failed_after_guest_ignores_errors\n    rpc_fs::tests::wasix_stdio_cursor_sync_and_zero_length_probes_preserve_fragmented_frames\n    runtime_fixture_fs::tests::scratch_namespace_and_seek_limits_reject_escape\n    runtime_fixture_fs::tests::scratch_readonly_open_and_handle_mutations_are_rejected\n    runtime_fixture_fs::tests::scratch_regular_binary_io_and_truncate_are_request_local\n    runtime_fixture_fs::tests::wp_source_namespace_and_mutating_opens_are_confined\n\ntest result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n",
+  "wat_metering_observations": [
+    {
+      "case": "normal_first",
+      "configured_budget": 10000,
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "case_start",
+      "formal_eh": false,
+      "initial_points": {
+        "kind": "remaining",
+        "points": 10000
+      },
+      "instance_number": 1,
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "test": "plain"
+    },
+    {
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "case_result",
+      "formal_eh": false,
+      "observation": {
+        "call_failed": false,
+        "case": "normal_first",
+        "entered": 0,
+        "final_points": {
+          "kind": "remaining",
+          "points": 9996
+        },
+        "initial_points": {
+          "kind": "remaining",
+          "points": 10000
+        },
+        "instance_number": 1,
+        "normal_result": 42,
+        "runtime_trap_observed": false,
+        "verified": true
+      },
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "test": "plain"
+    },
+    {
+      "case": "infinite_loop",
+      "configured_budget": 10000,
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "case_start",
+      "formal_eh": false,
+      "initial_points": {
+        "kind": "remaining",
+        "points": 10000
+      },
+      "instance_number": 2,
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "test": "plain"
+    },
+    {
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "case_result",
+      "formal_eh": false,
+      "observation": {
+        "call_failed": true,
+        "case": "infinite_loop",
+        "entered": 1,
+        "final_points": {
+          "kind": "exhausted"
+        },
+        "initial_points": {
+          "kind": "remaining",
+          "points": 10000
+        },
+        "instance_number": 2,
+        "normal_result": null,
+        "runtime_trap_observed": true,
+        "verified": true
+      },
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "test": "plain"
+    },
+    {
+      "case": "normal_recovery",
+      "configured_budget": 10000,
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "case_start",
+      "formal_eh": false,
+      "initial_points": {
+        "kind": "remaining",
+        "points": 10000
+      },
+      "instance_number": 3,
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "test": "plain"
+    },
+    {
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "case_result",
+      "formal_eh": false,
+      "observation": {
+        "call_failed": false,
+        "case": "normal_recovery",
+        "entered": 0,
+        "final_points": {
+          "kind": "remaining",
+          "points": 9996
+        },
+        "initial_points": {
+          "kind": "remaining",
+          "points": 10000
+        },
+        "instance_number": 3,
+        "normal_result": 42,
+        "runtime_trap_observed": false,
+        "verified": true
+      },
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "test": "plain"
+    },
+    {
+      "configured_budget": 10000,
+      "cost_policy": "one-point-per-original-Wasm-operator",
+      "cpu_wall_clock_deadline_verified": false,
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "test_complete",
+      "explicit_module_compile_calls": 1,
+      "formal_eh": false,
+      "fresh_instances": 3,
+      "hostcall_timeout_verified": false,
+      "normal_recovery_verified": true,
+      "observations": [
+        {
+          "call_failed": false,
+          "case": "normal_first",
+          "entered": 0,
+          "final_points": {
+            "kind": "remaining",
+            "points": 9996
+          },
+          "initial_points": {
+            "kind": "remaining",
+            "points": 10000
+          },
+          "instance_number": 1,
+          "normal_result": 42,
+          "runtime_trap_observed": false,
+          "verified": true
+        },
+        {
+          "call_failed": true,
+          "case": "infinite_loop",
+          "entered": 1,
+          "final_points": {
+            "kind": "exhausted"
+          },
+          "initial_points": {
+            "kind": "remaining",
+            "points": 10000
+          },
+          "instance_number": 2,
+          "normal_result": null,
+          "runtime_trap_observed": true,
+          "verified": true
+        },
+        {
+          "call_failed": false,
+          "case": "normal_recovery",
+          "entered": 0,
+          "final_points": {
+            "kind": "remaining",
+            "points": 9996
+          },
+          "initial_points": {
+            "kind": "remaining",
+            "points": 10000
+          },
+          "instance_number": 3,
+          "normal_result": 42,
+          "runtime_trap_observed": false,
+          "verified": true
+        }
+      ],
+      "ok": true,
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "scope": "fixed-WAT-only-one-compile-three-fresh-instances",
+      "test": "plain"
+    }
+  ],
+  "wat_metering_summaries": [
+    {
+      "configured_budget": 10000,
+      "cost_policy": "one-point-per-original-Wasm-operator",
+      "cpu_wall_clock_deadline_verified": false,
+      "engine": "wasmer-7.2.0/cranelift",
+      "event": "test_complete",
+      "explicit_module_compile_calls": 1,
+      "formal_eh": false,
+      "fresh_instances": 3,
+      "hostcall_timeout_verified": false,
+      "normal_recovery_verified": true,
+      "observations": [
+        {
+          "call_failed": false,
+          "case": "normal_first",
+          "entered": 0,
+          "final_points": {
+            "kind": "remaining",
+            "points": 9996
+          },
+          "initial_points": {
+            "kind": "remaining",
+            "points": 10000
+          },
+          "instance_number": 1,
+          "normal_result": 42,
+          "runtime_trap_observed": false,
+          "verified": true
+        },
+        {
+          "call_failed": true,
+          "case": "infinite_loop",
+          "entered": 1,
+          "final_points": {
+            "kind": "exhausted"
+          },
+          "initial_points": {
+            "kind": "remaining",
+            "points": 10000
+          },
+          "instance_number": 2,
+          "normal_result": null,
+          "runtime_trap_observed": true,
+          "verified": true
+        },
+        {
+          "call_failed": false,
+          "case": "normal_recovery",
+          "entered": 0,
+          "final_points": {
+            "kind": "remaining",
+            "points": 9996
+          },
+          "initial_points": {
+            "kind": "remaining",
+            "points": 10000
+          },
+          "instance_number": 3,
+          "normal_result": 42,
+          "runtime_trap_observed": false,
+          "verified": true
+        }
+      ],
+      "ok": true,
+      "php_executed": false,
+      "schema": "recastpress.wasmer-metering-wat.v0.5",
+      "scope": "fixed-WAT-only-one-compile-three-fresh-instances",
+      "test": "plain"
+    }
+  ]
+}
