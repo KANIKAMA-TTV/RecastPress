@@ -1,0 +1,142 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_fixed_operation_compile_window_timeout",
+  "source_commit": "af4bcebe61992d8299f6e5ff0a4f16777fdb8211",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41326284424",
+  "run_attempt": "1",
+  "workflow_job_id": 124906787928,
+  "artifact_id": 13091962402,
+  "artifact_name": "php-wasix-linux-llvm-evidence-41326284424-1",
+  "artifact_zip_bytes": 72052,
+  "artifact_zip_sha256": "d9371657f88e78bab126e06596f0c72e2cb011dc112345a045bcd220ec3d23c7",
+  "artifact_repository_id": 1432882501,
+  "exact_json_member_count": 16,
+  "artifact_identity_source": "fixed GitHub API metadata observed separately; importer makes no network calls",
+  "github_api_metadata_requeried_by_importer": false,
+  "original_git_source_hashes_verified": true,
+  "original_receipt_verdicts_preserved": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "source_binary_identity_reverified_by_importer": false,
+  "full_raw_stderr_reverified": false,
+  "product_runtime_selected": false,
+  "guest_exhaustion_verified": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_operation_timeout.py": "27cbf7b05c73d6aebdfa1bf29d98640c8e65f837e27671d960baa0d710e1e57b",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625"
+  },
+  "imported_files": {
+    "ci-stages.json": "ac420f2b88c463c6be4708cde34876b2a3b717880721f3bc89627fbea2b09e18",
+    "linux-llvm-language-contract.json": "927fb0e599e9826104864cdeb8f450b372096331c103e2efa6a78e84c85d7aae",
+    "linux-llvm-php-operation-budget.json": "7beaeef405922cc539a903ab162b4df8b8c2ed0dae7164ee0042eb123f960922"
+  },
+  "archive_json_members": {
+    "ci-stages.json": {
+      "bytes": 1119,
+      "sha256": "ac420f2b88c463c6be4708cde34876b2a3b717880721f3bc89627fbea2b09e18"
+    },
+    "linux-llvm-dependency-inventory.json": {
+      "bytes": 112561,
+      "sha256": "1bcc636ff161d303fc6bf3973e609c092f97a990dbf3c85244a2d18fe9ff70d1"
+    },
+    "linux-llvm-language-contract.json": {
+      "bytes": 18361,
+      "sha256": "927fb0e599e9826104864cdeb8f450b372096331c103e2efa6a78e84c85d7aae"
+    },
+    "linux-llvm-module-reuse.json": {
+      "bytes": 15574,
+      "sha256": "f87e255948568050ef01da88bf9f409550901bdce9b6ec0b17e1ebfc50f6c108"
+    },
+    "linux-llvm-php-memory-cap.json": {
+      "bytes": 16525,
+      "sha256": "3cd3d589a594ad563971da9fc6ac23445d9416bcf94f835111e6ee178abc7fbc"
+    },
+    "linux-llvm-php-operation-budget.json": {
+      "bytes": 6583,
+      "sha256": "7beaeef405922cc539a903ab162b4df8b8c2ed0dae7164ee0042eb123f960922"
+    },
+    "linux-llvm-rpc-contract.json": {
+      "bytes": 23231,
+      "sha256": "77d326b453d27a08a2d25a5b66913cff3631048a1472610b5f0edc6acd6891ca"
+    },
+    "linux-llvm-unit-contract.json": {
+      "bytes": 36284,
+      "sha256": "d04b676ab39dd24a5106729e851b908a35777a115cc3433dae419a04d64172f0"
+    },
+    "linux-llvm.json": {
+      "bytes": 8446,
+      "sha256": "742455c0ff897b4d75ca1777ecf62fa489d985b28aba34e5125ca691c08a47c3"
+    },
+    "llvm-toolchain-verification.json": {
+      "bytes": 417,
+      "sha256": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+    },
+    "memory-policy-windows.json": {
+      "bytes": 6158,
+      "sha256": "072baf7dbe664fa99fe47fbf414a156fe7f93716769384b1ec0f9fca28e1e6e6"
+    },
+    "native-cgi-contract.json": {
+      "bytes": 23215,
+      "sha256": "fa07c5401c3f2ce591d798b2b55d1012dcfc0978ff1c9fc68b12b3214c216a7f"
+    },
+    "windows-cranelift-dependency-inventory.json": {
+      "bytes": 116992,
+      "sha256": "ac1a933866f40b948f14b40c7b29d4ab83d68b28bde87d8b3ca6266a9676e2b8"
+    },
+    "windows-cranelift-unit-contract.json": {
+      "bytes": 25158,
+      "sha256": "809e9f4902061a70994bfaa2585218a147b28a225240d386e3934678b79fbf8f"
+    },
+    "windows-cranelift.json": {
+      "bytes": 4028,
+      "sha256": "c314da215006ba3c62e5abd885a9b59d1b8e52639b793c3fbbedca9c488739ce"
+    },
+    "windows-llvm-dependency-inventory.json": {
+      "bytes": 112562,
+      "sha256": "690c9b298f1030a0575bc2604011173d8c8ee9fed7e11be29ef47c9ba55c4fb9"
+    }
+  },
+  "observations": {
+    "original_operation_declared_input_count": 39,
+    "complete_original_operation_declared_input_set_verified": true,
+    "original_saved_receipt_source_hashes_verified": true,
+    "full_compile_dependency_graph_verified": false,
+    "original_ci_verdict": "failure",
+    "original_php_operations_stage": "failure",
+    "original_language_stage": "failure",
+    "original_operation_outcome": "execution_timeout",
+    "original_outer_host_timeout_seconds_including_compile": 300,
+    "normal_completion_owned_host_reaped_flag": false,
+    "owned_process_cleanup_completed_flag": true,
+    "missing_owned_pid_or_normal_return_reap_observation_inferred": false,
+    "observed_phase_markers_from_stored_stderr_excerpt": [
+      "module_compile"
+    ],
+    "phase_evidence_kind": "stored bounded stderr excerpt; full stderr bytes were not acquired",
+    "phase_window": "module_compile marker, then Module::new and inspect_compiled_budget, before normal_first marker",
+    "module_new_vs_following_initializer_inspection_distinguished": false,
+    "slow_compile_vs_compiler_stop_distinguished": false,
+    "guest_phase_marker_observed": false,
+    "guest_exhaustion_observed": false,
+    "guest_execution_or_exhaustion_verdict_inferred": false,
+    "actual_budget_exhausted_result_verified": false,
+    "operation_diagnostic_passed": false,
+    "separate_language_fiber_failure": "Cannot resume a fiber that is not suspended",
+    "other_runtime_case_results_revalidated": false,
+    "prior_observation": {
+      "source_commit": "a05a2ca1e795e64dacbb2ee0845b6fdc9464da2a",
+      "run_id": "41320223203",
+      "raw_receipt_sha256": "1550b9c1e1342a81acdca391179cd229958caef04a1d76ab2293532b08d54a9f",
+      "recorded_compile_elapsed_ms": 221189,
+      "related_source_bytes_identical": {
+        "experiments/php-wasix-host-probe/operation_check.py": "ba7557ca22b70a3fa6b078a40ca6c6679fd927b4df18bbec9e0e27c129fe7289",
+        "experiments/php-wasix-host-probe/src/php_operation_budget.rs": "4bb3bdf7a4fb0e36984d2886e9947da0c941b4d574da497fc9433e703d99f4b2",
+        "experiments/php-wasix-host-probe/Cargo.toml": "9e39660f960e4d4cf91eca63a3d24f660a87f9c10ed2a0bc58090fe151c89545",
+        "experiments/php-wasix-host-probe/Cargo.lock": "028ce5e3747f78459e0fe6776901cb5c340b1920dfdca882ff61f8ee09b89be5"
+      },
+      "full_prior_runtime_result_revalidated": false,
+      "timing_scope": "one prior CI observation; not a latency benchmark or proof that af4 merely compiled slowly"
+    }
+  }
+}

@@ -138,7 +138,7 @@ python experiments/php-wasix-host-probe/unit_check.py --llvm --record
 
 dev依存の`wasmer-middlewares=7.2.0`を使い、[固定WAT](src/metering_limits.rs)の正常→無限loop→正常を同module・3つの新store/instanceで実行する。各開始値10000、正常値42と正の残量、loopの実trap・`Exhausted`・到達状態、最後の初期予算復帰を照合する。WATごとに新Metering/Engineを用意し、別moduleへのmiddleware再利用はしない。hostcall importとstart sectionは無い固定対象である。
 
-[Windows Craneliftの記録](evidence/windows-cranelift-unit-contract.json)では全25件（初回24件にadapter命令検査1件を追加）が成功し、通常の残量は9996、loopだけ実`Exhausted`になった。PHPを実行した記録ではない。Linuxにはformal EHのthrow/catchと、catchから入るloopの予算trapが外側のcatchに飲み込まれないことを確認する追加テストもある。Windowsではこれをcompile対象に含めず、Linuxでの結果を別に取得する。
+[Windows Craneliftの記録](evidence/windows-cranelift-unit-contract.json)は初回24件からadapter/CGI runtime FS検証を加え、現在30件が成功している。小WATでは、通常の残量は9996、loopだけ実`Exhausted`になった。PHPを実行した記録ではない。Linuxにはformal EHのthrow/catchと、catchから入るloopの予算trapが外側のcatchに飲み込まれないことを確認する追加テストもある。Windowsではこれをcompile対象に含めず、Linuxでの結果を別に取得する。
 
 無限loopの試験を通常の無期限test実行へ任せず、checkerが`cargo test --no-run`のJSONから選んだ所有test executableを、一覧10秒・本実行30秒で監督する。全件成功・ignoredなし・記録の型/順序/実残量・byte hash・source不変・子process回収を要求する。これはWasm演算の重み付き予算であり、PHP opcode・CPU時間・hostcallやcompile時間の上限ではない。
 
@@ -157,7 +157,7 @@ python experiments/php-wasix-host-probe/operation_check.py --llvm --record
 
 `--php-operation-budget`だけにMeteringを適用し、公式PHP moduleを1回compileして、正常→READY後の無限loop→正常回復を3つの新規環境で実行する。試験値は100,000,000 pointsで、compile済みglobal初期値を公開型から照合し、start section後の残量と終了時の実`Remaining`/`Exhausted`を別々に取得する。起動消費量とfresh間の残量一致を確認し、途中で予算を補充しない。setup/recycleの観測は各1回、loopはREADY・Runner実error・実Exhausted・EOFをすべて要求し、caseの`ok=false`を保持する。
 
-他modeのengineは非instrumentのままにし、snapshot再開・deep sleepを使う経路はこの診断で拒否する。startはlocalのWasm関数だけを許可し、start中のtrapや観測欠落は失敗とする。所有hostの外側期限は300秒で、期限切れだけでは予算による中断としない。Windowsでのビルド・26 unit（Fiber assembly parserを含む）とchecker改変拒否に続き、下記のLinux両backendで実PHP3ケースを確認した。CPU時間・PHP opcode数・hostcall待機・RSS・製品の予算値・Fiber適合はこの試験で確定しない。
+他modeのengineは非instrumentのままにし、snapshot再開・deep sleepを使う経路はこの診断で拒否する。startはlocalのWasm関数だけを許可し、start中のtrapや観測欠落は失敗とする。所有hostの待機期限はCranelift 300秒、LLVM 600秒とし、module compileと3要求を含む。EOF待機と強制回収は別の有限待機であり、期限切れだけでは予算による中断としない。Windowsでのビルド・26 unit（Fiber assembly parserを含む）とchecker改変拒否に続き、下記のLinux両backendで実PHP3ケースを確認した。CPU時間・PHP opcode数・hostcall待機・RSS・製品の予算値・Fiber適合はこの試験で確定しない。
 
 source `1462082`の初回は[Cranelift](evidence/ci-41314440084-cranelift/provenance.json)と[LLVM](evidence/ci-41314440084-llvm/provenance.json)の両方で、start sectionを拒否するguardによりinstance生成前に停止した。compile成功を予算中断の成功とせず、3ケースは未実行のまま記録する。これを受け、startも同じ初期予算を消費する扱いへ修正した。
 
@@ -179,3 +179,10 @@ Windows上で取得した[Cranelift graph](evidence/windows-cranelift-dependency
 PHPの28静的archiveは[CGI build receipt](../php-wasix-cgi-build/evidence/ci-41302992818/build.json)にbyte/SHAがあるが、各archiveの元repo/commit・build flags・patch・個別license/noticeの対応は未確認で、全28本が最終リンクへ入ったとの証明でもない。`libwasix_rust_libs.a`等の内部依存はhost Cargo.lockでは追跡できない。PHP本体・Zend・TSRM、host LLVM22.1とcross-build LLVM21.1も別の来歴・配布確認対象として残す。
 
 追加調査では[sendmailの旧recipe](https://github.com/wasix-org/php-wasix-sendmail/blob/8296c22d3fc83b2f245186681b1fc075d02441c7/Makefile)が`wasix-sendmail=0.1.0`のstaticlibをdepsへコピーすると分かったが、既存archive SHAとのbuild対応、`+wasix`のtoolchain版、当時のroot license宣言は未確認である。後年の別版の宣言を流用しない。`libicrt.a`は同梱iconv headerの1.17表記との関連が候補に留まり、`libwasix_rust_libs.a`の元repo/commit/recipeも未特定である。次はlinker map等で現PHP moduleへ採用されたmemberを分け、不要なarchiveまで製品依存と決め付けずに監査範囲を確定する。
+
+
+source `af4bceb`の[LLVM追試](evidence/ci-41326284424-llvm-operation-timeout/provenance.json)は、300秒で`execution_timeout`となった。保存されたstderr抜粋には`module_compile`だけがあり、最初のguest caseや最終Exhaustedは観測されていない。markerの区間には`Module::new`と直後のcompile済み初期global検査が含まれ、両者は分離できない。遅いcompileか停止かは、この記録だけでは未確定である。
+
+先のa05 LLVM成功時にもcompileは221,189msだった。a05からaf4まで予算のRust/Python/Cargo設定はbyte一致している。この失敗を保存したうえで、LLVMだけcompileを含む所有host待機期限を有限600秒へ分ける。Craneliftは300秒を維持する。1億points、補充禁止、READYと実Exhausted、fresh環境での回復という受入条件は変えない。再度の期限切れも失敗のままで、PHP CPU予算の成立にはしない。
+
+新checkerはtimeout時にも観測phase、部分出力のbyte数とSHA、最後に観測したphaseを記録する。通常のhost結果受信と、timeout後の所有process強制回収も区別する。compile完了専用markerを追加した結果ではないため、詳細な停止箇所は引き続き未識別とする。

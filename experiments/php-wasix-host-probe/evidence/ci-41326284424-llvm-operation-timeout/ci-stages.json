@@ -1,0 +1,30 @@
+{
+  "format_version": 1,
+  "scope": "independent Linux host version, module reuse, private RPC, fixed PHP memory/operation and language P0 candidate",
+  "backend": "llvm",
+  "source_commit": "af4bcebe61992d8299f6e5ff0a4f16777fdb8211",
+  "run_id": "41326284424",
+  "run_attempt": "1",
+  "stages": {
+    "dependencies": "success",
+    "rust": "success",
+    "php": "success",
+    "cargo": "success",
+    "llvm": "success",
+    "fixture_fs": "success",
+    "probe": "success",
+    "reuse": "success",
+    "rpc": "success",
+    "php_memory": "success",
+    "php_operations": "failure",
+    "language": "failure",
+    "license_inventory": "success"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-candidate.yml": "f12f00ee49ffd94f3f74e9555ca9cfdf39946b4a0d2b3d8aa64f5ebee114dfde",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388",
+    "experiments/php-runtime-candidate-probe/artifact.json": "a5a8a3aefbc6f0bd094558756ac75f0ac4208adb35ce03317d134049b7856175"
+  },
+  "wordpress_bootstrapped": false,
+  "product_runtime_selected": false
+}

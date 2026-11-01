@@ -32,12 +32,30 @@ CASES = ['normal_first', 'loop_exhausted', 'normal_recovery']
 OBSERVER_STRATEGY = 'setup-captured-typed-global-handles'
 OBSERVER_IDENTITY = 'sha256-of-pinned-wasmer-7.2.0-Global-Debug'
 require, digest = host.require, host.digest
+HOST_TIMEOUT_SECONDS = {'cranelift': 300, 'llvm': 600}
 
 
 def source_hashes():
     paths = host.compiled_inputs() + [HERE / 'operation_check.py', HERE / 'check.py',
                                      HERE / 'language_check.py', ROOT / 'scripts/owned_probe.py']
     return {p.relative_to(ROOT).as_posix(): digest(p) for p in paths}
+
+
+def observed_phases(stderr):
+    return [line.split('=', 1)[1] for line in stderr.decode('utf-8', errors='replace').splitlines()
+            if line.startswith('PHP_WASIX_PHASE=')]
+
+
+def record_timeout_capture(report, error):
+    stdout, stderr = error.stdout or b'', error.stderr or b''
+    phases = observed_phases(stderr)
+    report.update(observed_phases=phases, last_observed_phase=phases[-1] if phases else None,
+        guest_case_phase_observed=any(phase in CASES for phase in phases),
+        timeout_compiler_subphase_distinguished=False,
+        partial_stdout_bytes=len(stdout), partial_stdout_sha256=hashlib.sha256(stdout).hexdigest(),
+        stderr_bytes=len(stderr), stderr_sha256=hashlib.sha256(stderr).hexdigest())
+    if stderr:
+        report['stderr_excerpt'] = host.diagnostic(stderr, 4096)
 
 
 def expected_php():
@@ -211,7 +229,11 @@ def main():
               'memory_limit_verified': False, 'product_runtime_selected': False,
               'wordpress_executed': False, 'fiber_compatibility_verified': False,
               'full_php_compatibility_verified': False, 'native_comparison_performed': False,
-              'outer_build_timeout_seconds': 1200, 'outer_execution_timeout_seconds': 300}
+              'outer_build_timeout_seconds': 1200, 'outer_execution_timeout_seconds': HOST_TIMEOUT_SECONDS[backend],
+              'outer_execution_timeout_scope': 'owned child wait for compilation and all cases; EOF and forced cleanup use separate finite waits',
+              'outer_cleanup_wait_seconds': owned_probe.CLEANUP_TIMEOUT,
+              'outer_io_join_wait_seconds': owned_probe.IO_JOIN_TIMEOUT,
+              'normal_host_result_received': False}
     passed, stage = False, 'platform_verification'
     before = source_hashes()
     report['input_files'] = before
@@ -236,13 +258,14 @@ def main():
         stage = 'execution'
         child_environment = {key: value for key, value in environment.items() if key.upper() not in {
             'GH_TOKEN', 'GITHUB_TOKEN', 'ACTIONS_RUNTIME_TOKEN', 'RUST_LOG', 'RUST_BACKTRACE'}}
-        pid, completed = owned_probe.run_captured_probe([str(executable), '--php-operation-budget'], child_environment, timeout=300)
+        pid, completed = owned_probe.run_captured_probe([str(executable), '--php-operation-budget'], child_environment, timeout=HOST_TIMEOUT_SECONDS[backend])
         report['owned_host_reaped'] = True
+        report['normal_host_result_received'] = True
+        report['owned_host_reap_kind'] = 'normal-host-return'
         report['owned_process_pid'], report['exit_code'] = pid, completed.returncode
         require(len(completed.stdout) <= 1024 * 1024 and len(completed.stderr) <= 64 * 1024, 'host capture budget')
         report['stderr_sha256'] = hashlib.sha256(completed.stderr).hexdigest()
-        phases = [line.split('=', 1)[1] for line in completed.stderr.decode('utf-8', errors='replace').splitlines()
-                  if line.startswith('PHP_WASIX_PHASE=')]
+        phases = observed_phases(completed.stderr)
         report['observed_phases'] = phases
         if completed.stderr:
             report['stderr_excerpt'] = host.diagnostic(completed.stderr, 4096)
@@ -259,8 +282,7 @@ def main():
     except subprocess.TimeoutExpired as error:
         report['outcome'] = stage + '_timeout'
         report['diagnostics'] = 'owned child exceeded finite deadline; this is not proof of metering exhaustion'
-        if error.stderr:
-            report['stderr_excerpt'] = host.diagnostic(error.stderr, 4096)
+        record_timeout_capture(report, error)
     except (Exception, KeyboardInterrupt) as error:
         report['outcome'] = stage + '_failed'
         report['diagnostics'] = str(error)[:8192]
@@ -268,6 +290,9 @@ def main():
         try:
             owned_probe.reap_owned_probes()
             report['owned_process_cleanup_completed'] = True
+            if report['outcome'] == 'execution_timeout':
+                report['owned_host_reaped'] = True
+                report['owned_host_reap_kind'] = 'forced-timeout-cleanup-without-normal-result'
         except (Exception, KeyboardInterrupt) as error:
             passed = False
             report['diagnostic_passed'] = report['php_wasm_operation_budget_verified_for_fixed_cases'] = False
