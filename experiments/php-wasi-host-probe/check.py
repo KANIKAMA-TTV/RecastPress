@@ -32,6 +32,7 @@ CHECKS = [
     'rpc_oversize', 'rpc_incomplete',
     'cgi_wrong_length', 'cgi_hop_header', 'cgi_header_limit',
     'parallel_request_isolation', 'independent_request_deadlines', 'normal_request_during_sibling_timeout',
+    'http_request_input', 'http_completed_response_metadata', 'http_no_output_before_completion', 'http_timeout_recovery',
 ]
 
 
@@ -89,7 +90,7 @@ def validate_result(pid, completed):
     require(type(wire) is bytes and len(wire) <= 4096 and wire.endswith(b'\n') and wire.count(b'\n') == 1 and wire.startswith(PREFIX), 'invalid native probe response')
     value = parse_json(wire[len(PREFIX):])
     expected = {
-        'format_version': 3, 'milestone': 'v0.5-P0-experiment', 'php_version': '8.2.6',
+        'format_version': 4, 'milestone': 'v0.5-P0-experiment', 'php_version': '8.2.6',
         'process_pid': pid,
         'artifact_sha256': '4fd2e8c42ae529ba72f88a0f1e46de1fc69a4b4f01e01fedd65ca966b8ffe6fa',
         'wasmtime_version': '36.0.19', 'checks': CHECKS, 'recovery_requests': 11,
@@ -99,6 +100,7 @@ def validate_result(pid, completed):
         'fuel_per_request': 200_000_000, 'product_ready': False,
         'wordpress_bootstrapped': False, 'real_database_connected': False,
         'wordpress_hook_version': '7.1.3', 'wordpress_hooks_executed': True,
+        'http_executed': True, 'http_loopback_only': True,
         'bridge': 'fixed-fixture dedicated WASI descriptor channel; not the product ABI',
     }
     require(type(value) is dict and set(value) == set(expected), 'unexpected result fields')
@@ -153,7 +155,8 @@ def main():
             'Fresh stores are disposed; this does not prove process RSS reclamation or database rollback.',
             'Wasm linear memory is limited; compiler, Rust, WASI and total process RSS are not capped here.',
             'Deadline interrupts guest execution; blocking host calls need separate production supervision.',
-            'No WordPress bootstrap, real HTTP, theme/plugin compatibility, or three-platform claim.',
+            'HTTP evidence covers fixed loopback routes, not a production listener, HEAD/Range, or request admission.',
+            'No WordPress bootstrap, theme/plugin compatibility, or three-platform claim.',
         ],
     }
     if sys.argv[1:] == ['--record']:

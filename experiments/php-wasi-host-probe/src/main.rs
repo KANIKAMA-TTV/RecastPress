@@ -17,6 +17,7 @@ use wasmtime_wasi::{
 mod cgi_response;
 mod descriptor_bridge;
 mod epoch;
+mod http_probe;
 mod parallel;
 mod wasi_rpc;
 use descriptor_bridge::Bridge;
@@ -28,6 +29,29 @@ const MEMORY: usize = 256 * 1024 * 1024;
 const OUTPUT: usize = descriptor_bridge::OUTPUT_LIMIT;
 const BODY: &[u8] = b"rp\0\xff\r\nbody";
 const WORDPRESS_FIXTURE: &str = include_str!("../wordpress-fixture.json");
+
+struct RequestInput {
+    method: String,
+    uri: String,
+    query: String,
+    cookie: String,
+    content_type: String,
+    body: Vec<u8>,
+    output_ready: Option<mpsc::Sender<u64>>,
+}
+impl RequestInput {
+    fn fixed(nonce: u64) -> Self {
+        Self {
+            method: "POST".into(),
+            uri: "/probe.php".into(),
+            query: String::new(),
+            cookie: format!("rp_fixture={nonce}"),
+            content_type: "application/octet-stream".into(),
+            body: BODY.to_vec(),
+            output_ready: None,
+        }
+    }
+}
 
 fn wordpress_directory() -> std::path::PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.reference/wordpress-7.1.3/wp-includes")
@@ -160,8 +184,55 @@ fn run_observed(
     nonce: u64,
     fuel: u64,
     timeout: Duration,
-    mut ready: Option<mpsc::Sender<u64>>,
+    ready: Option<mpsc::Sender<u64>>,
 ) -> Result<Run> {
+    execute(
+        engine,
+        module,
+        mode,
+        nonce,
+        fuel,
+        timeout,
+        ready,
+        RequestInput::fixed(nonce),
+    )
+}
+
+fn run_http(
+    engine: &Engine,
+    module: &Module,
+    mode: &str,
+    nonce: u64,
+    timeout: Duration,
+    input: RequestInput,
+) -> Result<Run> {
+    let fuel = if mode == "http_partial" {
+        u64::MAX
+    } else {
+        FUEL
+    };
+    execute(engine, module, mode, nonce, fuel, timeout, None, input)
+}
+
+fn execute(
+    engine: &Engine,
+    module: &Module,
+    mode: &str,
+    nonce: u64,
+    fuel: u64,
+    timeout: Duration,
+    mut ready: Option<mpsc::Sender<u64>>,
+    input: RequestInput,
+) -> Result<Run> {
+    let RequestInput {
+        method,
+        uri,
+        query,
+        cookie,
+        content_type,
+        body,
+        mut output_ready,
+    } = input;
     let stderr = MemoryOutputPipe::new(8192);
     let stdout = MemoryOutputPipe::new(OUTPUT);
     let bridge = Bridge::new(nonce)?;
@@ -192,20 +263,22 @@ fn run_observed(
             "-f",
             "/site/probe.php",
         ])
-        .env("REQUEST_METHOD", "POST")
-        .env("CONTENT_TYPE", "application/octet-stream")
-        .env("CONTENT_LENGTH", BODY.len().to_string())
+        .env("REQUEST_METHOD", method)
+        .env("REQUEST_URI", uri)
+        .env("QUERY_STRING", query)
+        .env("CONTENT_TYPE", content_type)
+        .env("CONTENT_LENGTH", body.len().to_string())
         .env("SCRIPT_FILENAME", "/site/probe.php")
         .env("SCRIPT_NAME", "/probe.php")
         .env("SERVER_PROTOCOL", "HTTP/1.1")
         .env("SERVER_NAME", "rp.invalid")
         .env("REDIRECT_STATUS", "200")
-        .env("HTTP_COOKIE", format!("rp_fixture={nonce}"))
+        .env("HTTP_COOKIE", cookie)
         .env("RP_PROBE_MODE", mode)
         .allow_tcp(false)
         .allow_udp(false)
         .allow_ip_name_lookup(false)
-        .stdin(MemoryInputPipe::new(BODY))
+        .stdin(MemoryInputPipe::new(body))
         .stdout(stdout.clone())
         .stderr(stderr.clone());
     builder.preopened_dir(
@@ -245,9 +318,20 @@ fn run_observed(
     let deadline = Instant::now()
         .checked_add(timeout)
         .context("request deadline overflow")?;
+    let observed_output = stdout.clone();
     store.epoch_deadline_callback(move |_| {
         if let Some(sender) = ready.take() {
             let _ = sender.send(nonce);
+        }
+        if output_ready.is_some()
+            && observed_output
+                .contents()
+                .windows(b"partial response".len())
+                .any(|bytes| bytes == b"partial response")
+        {
+            if let Some(sender) = output_ready.take() {
+                let _ = sender.send(nonce);
+            }
         }
         if Instant::now() >= deadline {
             Err(Trap::Interrupt.into())
@@ -639,8 +723,18 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         "independent_request_deadlines",
         "normal_request_during_sibling_timeout",
     ]);
+    if trace {
+        eprintln!("P0: loopback HTTP request/response and completion barrier");
+    }
+    http_probe::verify(&engine, &module)?;
+    checks.extend([
+        "http_request_input",
+        "http_completed_response_metadata",
+        "http_no_output_before_completion",
+        "http_timeout_recovery",
+    ]);
     Ok(serde_json::json!({
-        "format_version":3,"milestone":"v0.5-P0-experiment","php_version":"8.2.6",
+        "format_version":4,"milestone":"v0.5-P0-experiment","php_version":"8.2.6",
         "process_pid": std::process::id(),
         "artifact_sha256":FIXTURE_SHA256,"wasmtime_version":"36.0.19",
         "cranelift_opt_level":"none",
@@ -649,6 +743,7 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         "stdout_limit_bytes":OUTPUT,"fuel_per_request":FUEL,
         "product_ready":false,"wordpress_bootstrapped":false,"real_database_connected":false,
         "wordpress_hook_version":"7.1.3","wordpress_hooks_executed":true,
+        "http_executed":true,"http_loopback_only":true,
         "bridge":"fixed-fixture dedicated WASI descriptor channel; not the product ABI"
     }))
 }

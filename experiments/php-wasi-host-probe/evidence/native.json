@@ -1,24 +1,25 @@
 {
   "format_version": 1,
-  "observed_at_utc": "2026-11-01T07:50:57.134508+00:00",
+  "observed_at_utc": "2026-11-01T08:14:12.992667+00:00",
   "platform": {
     "system": "Windows",
     "machine": "AMD64"
   },
   "input_files": {
-    "experiments/php-wasi-host-probe/Cargo.lock": "7e8cc931eb7f7184ea3f70fd88952db13653708ca53bad0df79e6d4e3d3afa2e",
-    "experiments/php-wasi-host-probe/Cargo.toml": "32571c6a5d5f71c38a34133f097faa9197fe9ce5b0a494c4125b9a4afc39607e",
-    "experiments/php-wasi-host-probe/check.py": "a20f5c020ae02ce2de4bbce781e25d66d05f07d01876cc67c410f40214a8dffa",
+    "experiments/php-wasi-host-probe/Cargo.lock": "70fe9f983e8542dfb212c0cb50ef2e909c14b81294fe247078804288912beb5b",
+    "experiments/php-wasi-host-probe/Cargo.toml": "3a5ed0c699bc19797c6429def1a5a21fbe3d16ca88e2b7fa98ab7cc92090f33c",
+    "experiments/php-wasi-host-probe/check.py": "81751eabee6afc078a49f71bd27e1e03ddb994d9efc71a367e3fdbf098631e6f",
     "experiments/php-wasi-host-probe/fixture.json": "7264b620fd804d6b14921c7202af36262da2571e541f8ba6d2e3e8ef7bf597e5",
     "experiments/php-wasi-host-probe/fixtures/include.php": "10c0341b3516521c91fb16e1174f66df77aa4cb8699a70d9fb7046014769ba1a",
-    "experiments/php-wasi-host-probe/fixtures/probe.php": "c126a25d9eeb0a7fbbfd094c96446c321f6c9ad2dcebb78321cb8b722ba7ad30",
+    "experiments/php-wasi-host-probe/fixtures/probe.php": "285afaaa7225e0c647168d327f6b066c15bd2fc62bd4372459c449c467394eb7",
     "experiments/php-wasi-host-probe/fixtures/wasi-forwarder.wat": "1dbbf0a669507c67ab2b997cdcef9ededf8d632e2d7b8d99d36fbf8002bdb154",
     "experiments/php-wasi-host-probe/outside.txt": "e05720083b6071868cf70213cfe0394d2e885ed55d8f029900257c208439376b",
     "experiments/php-wasi-host-probe/prepare_fixture.py": "4301bd227a14984124b4efcd1d46ae6003b8f6cda0602952a8c4c14b6e47ebec",
     "experiments/php-wasi-host-probe/src/cgi_response.rs": "d7ef796e0bea093c862e67b3591d97ecf4a8ce53428e17196a22a7d06551bc49",
     "experiments/php-wasi-host-probe/src/descriptor_bridge.rs": "0b925dc87eb6f4f12d1157c6171f68634805f59e9b20eef3b18117a9c7939644",
     "experiments/php-wasi-host-probe/src/epoch.rs": "e2bd59c3183f6f7c4a974191b2ab98a4ef0d896671d97d7bb962ea4b41dc61b4",
-    "experiments/php-wasi-host-probe/src/main.rs": "2280e545cc2877a7da9314bb3bced4e583944f508bdd402138b8fcaec08c5939",
+    "experiments/php-wasi-host-probe/src/http_probe.rs": "ab8d567e0f78e57c3b2b2f18c5ead649f86ab9b1ffc8ac5e015f97661fdcf0e9",
+    "experiments/php-wasi-host-probe/src/main.rs": "ecad53fe968beeb858432a23f34a5b83caf8a44879bde2874fcb23f59b987973",
     "experiments/php-wasi-host-probe/src/parallel.rs": "5a77eb8e7855d67c12e2951958bf2bc71b5a8dbab59ce2e9b7c0161b75b5a893",
     "experiments/php-wasi-host-probe/src/wasi_rpc.rs": "ce75e5163ecbc0e88bc8082e360e7a5833281a26412d7b6d0530363f22cf186b",
     "experiments/php-wasi-host-probe/wordpress-fixture.json": "f25b298591e266cb2eaa8001807ff89aff44c60d46bade4224f7834ba0385543",
@@ -26,7 +27,7 @@
     "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
   },
   "native_artifact": "target/php-wasi-host-probe/release/recastpress-php-wasi-host-probe.exe",
-  "native_artifact_sha256": "f044ab4983c3b8699e810c56a9b266b529d4700e62303bf765987827fad48f3e",
+  "native_artifact_sha256": "cd44ca1ea00407e6f3a816fd8efa6d6422d7b10f3600fd9cd3b7d63cf2722a83",
   "result": {
     "artifact_sha256": "4fd2e8c42ae529ba72f88a0f1e46de1fc69a4b4f01e01fedd65ca966b8ffe6fa",
     "bridge": "fixed-fixture dedicated WASI descriptor channel; not the product ABI",
@@ -67,16 +68,22 @@
       "cgi_header_limit",
       "parallel_request_isolation",
       "independent_request_deadlines",
-      "normal_request_during_sibling_timeout"
+      "normal_request_during_sibling_timeout",
+      "http_request_input",
+      "http_completed_response_metadata",
+      "http_no_output_before_completion",
+      "http_timeout_recovery"
     ],
     "cranelift_opt_level": "none",
-    "format_version": 3,
+    "format_version": 4,
     "fuel_per_request": 200000000,
+    "http_executed": true,
+    "http_loopback_only": true,
     "memory_limit_bytes": 268435456,
     "milestone": "v0.5-P0-experiment",
     "parallel_requests": 4,
     "php_version": "8.2.6",
-    "process_pid": 13380,
+    "process_pid": 18984,
     "product_ready": false,
     "real_database_connected": false,
     "recovery_requests": 11,
@@ -123,6 +130,7 @@
     "Fresh stores are disposed; this does not prove process RSS reclamation or database rollback.",
     "Wasm linear memory is limited; compiler, Rust, WASI and total process RSS are not capped here.",
     "Deadline interrupts guest execution; blocking host calls need separate production supervision.",
-    "No WordPress bootstrap, real HTTP, theme/plugin compatibility, or three-platform claim."
+    "HTTP evidence covers fixed loopback routes, not a production listener, HEAD/Range, or request admission.",
+    "No WordPress bootstrap, theme/plugin compatibility, or three-platform claim."
   ]
 }

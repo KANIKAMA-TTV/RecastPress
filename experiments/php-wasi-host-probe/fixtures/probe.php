@@ -20,6 +20,12 @@ if ($mode === 'fatal') {
 if ($mode === 'output') { echo str_repeat('x', 1024 * 1024); exit; }
 if ($mode === 'memory') { echo str_repeat('x', 512 * 1024 * 1024); exit; }
 if ($mode === 'bad_rpc') { rp_rpc('UNKNOWN'); exit; }
+if ($mode === 'http_partial') {
+    rp_rpc('CACHE_SET 7');
+    echo 'partial response';
+    flush();
+    while (true) {}
+}
 if ($mode === 'literal') { echo "RP_P0 CACHE_SET 7\n\0\xff"; exit; }
 if ($mode === 'response_metadata') {
     http_response_code(201);
@@ -89,6 +95,9 @@ echo json_encode([
     'version' => PHP_VERSION,
     'include' => $included,
     'input_hex' => bin2hex($input),
+    'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
+    'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
+    'query_string' => $_SERVER['QUERY_STRING'] ?? null,
     'cookie' => $_COOKIE['rp_fixture'] ?? null,
     'counter' => $GLOBALS['rp_counter'],
     'shared_counter' => $shared->counter,
