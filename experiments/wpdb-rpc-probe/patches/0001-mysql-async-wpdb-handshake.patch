@@ -1,0 +1,179 @@
+--- a/src/conn/mod.rs
++++ b/src/conn/mod.rs
+@@ -99,6 +99,8 @@
+     id: u32,
+     is_mariadb: bool,
+     version: (u16, u16, u16),
++    raw_server_version: Vec<u8>,
++    handshake_response_capabilities: CapabilityFlags,
+     socket: Option<String>,
+     capabilities: CapabilityFlags,
+     mariadb_capabilities: MariadbCapabilities,
+@@ -159,6 +161,8 @@
+             stream: None,
+             is_mariadb: false,
+             version: (0, 0, 0),
++            raw_server_version: Vec::new(),
++            handshake_response_capabilities: CapabilityFlags::empty(),
+             id: 0,
+             pending_result: Ok(None),
+             pool: None,
+@@ -424,6 +428,18 @@
+         self.inner.version
+     }
+ 
++    /// Exact server-version bytes from the initial handshake, without its NUL terminator.
++    /// This is separate from the parsed tuple and never uses a lossy conversion.
++    pub fn raw_server_version(&self) -> &[u8] {
++        &self.inner.raw_server_version
++    }
++
++    /// Standard capability mask encoded in this connection's HandshakeResponse.
++    /// This is observational metadata, not proof that a query/feature succeeded.
++    pub fn negotiated_capabilities(&self) -> CapabilityFlags {
++        self.inner.handshake_response_capabilities
++    }
++
+     /// Returns connection options.
+     pub fn opts(&self) -> &Opts {
+         &self.inner.opts
+@@ -530,6 +546,7 @@
+             nonce
+         };
+ 
++        self.inner.raw_server_version = handshake.server_version_ref().to_vec();
+         self.inner.capabilities = handshake.capabilities() & self.inner.opts.get_capabilities();
+         self.inner.version = handshake
+             .maria_db_server_version_parsed()
+@@ -619,9 +636,14 @@
+         )
+         .with_mariadb_ext_capabilities(self.inner.mariadb_capabilities);
+ 
++        // Record the final serialized mask: HandshakeResponse may adjust bits
++        // such as CLIENT_CONNECT_ATTRS after the initial server/client intersection.
++        let serialized_capabilities = handshake_response.capabilities();
++
+         // Serialize here to satisfy borrow checker.
+         let mut buf = crate::buffer_pool().get();
+         handshake_response.serialize(buf.as_mut());
++        self.inner.handshake_response_capabilities = serialized_capabilities;
+ 
+         self.write_packet(buf).await?;
+         self.inner.handshake_complete = true;
+--- a/src/opts/mod.rs
++++ b/src/opts/mod.rs
+@@ -683,6 +683,12 @@
+     /// It makes MySQL return the FOUND rows instead of the AFFECTED rows.
+     client_found_rows: bool,
+ 
++    /// Enables `CLIENT_MULTI_STATEMENTS` (defaults to `true`, preserving upstream).
++    multi_statements: bool,
++
++    /// Enables `CLIENT_LOCAL_FILES` (defaults to `true`, preserving upstream).
++    local_files: bool,
++
+     /// Enables Client-Side Cleartext Pluggable Authentication (defaults to `false`).
+     ///
+     /// Enables client to send passwords to the server as cleartext, without hashing or encryption
+@@ -1119,6 +1125,18 @@
+         self.inner.mysql_opts.client_found_rows
+     }
+ 
++    /// Whether the handshake advertises `CLIENT_MULTI_STATEMENTS` (default true).
++    /// This added option is configured through `OptsBuilder`, not URL parameters.
++    pub fn multi_statements(&self) -> bool {
++        self.inner.mysql_opts.multi_statements
++    }
++
++    /// Whether the handshake advertises `CLIENT_LOCAL_FILES` (default true).
++    /// This added option is configured through `OptsBuilder`, not URL parameters.
++    pub fn local_files(&self) -> bool {
++        self.inner.mysql_opts.local_files
++    }
++
+     /// Returns `true` if `mysql_clear_password` plugin support is enabled (defaults to `false`).
+     ///
+     /// `mysql_clear_password` enables client to send passwords to the server as cleartext, without
+@@ -1154,8 +1172,6 @@
+             | CapabilityFlags::CLIENT_SECURE_CONNECTION
+             | CapabilityFlags::CLIENT_LONG_PASSWORD
+             | CapabilityFlags::CLIENT_TRANSACTIONS
+-            | CapabilityFlags::CLIENT_LOCAL_FILES
+-            | CapabilityFlags::CLIENT_MULTI_STATEMENTS
+             | CapabilityFlags::CLIENT_MULTI_RESULTS
+             | CapabilityFlags::CLIENT_PS_MULTI_RESULTS
+             | CapabilityFlags::CLIENT_DEPRECATE_EOF
+@@ -1172,6 +1188,12 @@
+         }
+         if self.client_found_rows() {
+             out |= CapabilityFlags::CLIENT_FOUND_ROWS;
++        }
++        if self.multi_statements() {
++            out |= CapabilityFlags::CLIENT_MULTI_STATEMENTS;
++        }
++        if self.local_files() {
++            out |= CapabilityFlags::CLIENT_LOCAL_FILES;
+         }
+ 
+         out
+@@ -1211,6 +1233,8 @@
+             wait_timeout: None,
+             secure_auth: true,
+             client_found_rows: false,
++            multi_statements: true,
++            local_files: true,
+             enable_cleartext_plugin: false,
+             connect_attributes: None,
+         }
+@@ -1536,6 +1560,20 @@
+         self
+     }
+ 
++    /// Enables or disables `CLIENT_MULTI_STATEMENTS` in the initial handshake.
++    /// Defaults to true. Does not change the independent `CLIENT_MULTI_RESULTS`.
++    pub fn multi_statements(mut self, enabled: bool) -> Self {
++        self.opts.multi_statements = enabled;
++        self
++    }
++
++    /// Enables or disables `CLIENT_LOCAL_FILES` in the initial handshake.
++    /// Defaults to true. Disabling does not expose any local infile handler.
++    pub fn local_files(mut self, enabled: bool) -> Self {
++        self.opts.local_files = enabled;
++        self
++    }
++
+     /// Enables Client-Side Cleartext Pluggable Authentication (defaults to `false`).
+     ///
+     /// Enables client to send passwords to the server as cleartext, without hashing or encryption
+@@ -2088,6 +2126,30 @@
+ #[cfg(test)]
+ mod test {
+     use super::{HostPortOrUrl, MysqlOpts, Opts, Url};
++
++    #[test]
++    fn rp_legacy_handshake_capability_defaults_are_preserved() {
++        use crate::consts::CapabilityFlags as C;
++        let opts = Opts::default();
++        let original = C::CLIENT_PROTOCOL_41 | C::CLIENT_SECURE_CONNECTION
++            | C::CLIENT_LONG_PASSWORD | C::CLIENT_TRANSACTIONS | C::CLIENT_LOCAL_FILES
++            | C::CLIENT_MULTI_STATEMENTS | C::CLIENT_MULTI_RESULTS | C::CLIENT_PS_MULTI_RESULTS
++            | C::CLIENT_DEPRECATE_EOF | C::CLIENT_PLUGIN_AUTH;
++        assert_eq!(opts.get_capabilities(), original);
++        assert!(!opts.client_found_rows());
++        assert!(opts.multi_statements() && opts.local_files());
++    }
++
++    #[test]
++    fn rp_wpdb_handshake_clears_only_selected_optional_capabilities() {
++        use crate::consts::CapabilityFlags as C;
++        let opts = Opts::from(super::OptsBuilder::default()
++            .client_found_rows(false).multi_statements(false).local_files(false));
++        let removed = C::CLIENT_FOUND_ROWS | C::CLIENT_MULTI_STATEMENTS | C::CLIENT_LOCAL_FILES;
++        assert_eq!(opts.get_capabilities(), Opts::default().get_capabilities() & !removed);
++        assert!(!opts.get_capabilities().intersects(removed));
++        assert!(opts.get_capabilities().contains(C::CLIENT_MULTI_RESULTS));
++    }
+     use crate::{error::UrlError::InvalidParamValue, SslOpts};
+ 
+     use std::{net::IpAddr, net::Ipv4Addr, net::Ipv6Addr, str::FromStr};

@@ -1,0 +1,169 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.wpdb-rpc-driver-plan.v0.5",
+  "status": "prepared_not_applied_not_compiled_not_connected",
+  "purpose": "first isolated candidate-1 db.php-to-Rust driver preparation; not full standard-wpdb compatibility or product selection",
+  "existing_reference": {
+    "cargo_manifest": "experiments/binlog-probe/Cargo.toml",
+    "cargo_manifest_sha256": "5bb59bc54c1fa07b384a29c7f945d8b961e9f29f69b629ce588d768ce8344377",
+    "cargo_lock": "experiments/binlog-probe/Cargo.lock",
+    "cargo_lock_sha256": "24ce8f6b88f8e3dc8ba341a4297629455013d1581b9ec7ddc319b83616f9574c",
+    "source": "local cached crate archives matched against this unchanged existing lock"
+  },
+  "crates": [
+    {
+      "name": "mysql_async",
+      "version": "0.37.1",
+      "registry_source": "registry+https://github.com/rust-lang/crates.io-index",
+      "archive_filename": "mysql_async-0.37.1.crate",
+      "archive_bytes": 136536,
+      "archive_sha256": "40d11da0e2d9fad4640c9f9198ee431c6d68444568f83ef1f10f3367270071e4",
+      "existing_lock_checksum_matched": true,
+      "local_regular_files_matching_crate_archive": 63,
+      "local_source_archive_files_byte_identical": true,
+      "source_file_inventory_sha256": "e5a955a17434f0d2acd59251d355b9b6cbf2eb34cafc705f1214348b0c1cb913",
+      "ignored_cargo_cache_metadata_files": [
+        ".cargo-ok"
+      ],
+      "package_declared_vcs_revision": "ce4b27698c50fb945d8c9ff8c40a2a646be50b12",
+      "vcs_revision_independently_verified": false
+    },
+    {
+      "name": "mysql_common",
+      "version": "0.37.3",
+      "registry_source": "registry+https://github.com/rust-lang/crates.io-index",
+      "archive_filename": "mysql_common-0.37.3.crate",
+      "archive_bytes": 225271,
+      "archive_sha256": "0f27695f286b461da077b8c2f72f47feaa04ce3c3f9c0976257410e90e21208a",
+      "existing_lock_checksum_matched": true,
+      "local_regular_files_matching_crate_archive": 85,
+      "local_source_archive_files_byte_identical": true,
+      "source_file_inventory_sha256": "137b46503cbbb774cc86610b65e9489290791a7c0960548430c399fff8ff209b",
+      "ignored_cargo_cache_metadata_files": [
+        ".cargo-ok"
+      ],
+      "package_declared_vcs_revision": "fc5ce466e0d471e8974a00f93654cf9aac4891dc",
+      "vcs_revision_independently_verified": false
+    }
+  ],
+  "patch": {
+    "path": "experiments/wpdb-rpc-probe/patches/0001-mysql-async-wpdb-handshake.patch",
+    "target_crate": "mysql_async",
+    "target_version": "0.37.1",
+    "strip_components": 1,
+    "bytes": 7230,
+    "sha256": "7b8330555a2589bbb13a68a2c3e90b31f7a569d85285058248d325bf1f0d8dcd",
+    "files": [
+      {
+        "path": "src/conn/mod.rs",
+        "before": {
+          "bytes": 102954,
+          "sha256": "9f99a4231693cd683f2ce15986ed774a26715e6d745396eaabf013a249d1bce2"
+        },
+        "after": {
+          "bytes": 104105,
+          "sha256": "6b81c04ef23a98b8557198041291255f663c5d39b40c30931a5393cc3af3d05f"
+        }
+      },
+      {
+        "path": "src/opts/mod.rs",
+        "before": {
+          "bytes": 78401,
+          "sha256": "00c0a4b6c82b87f040c2267784833354ebbad9f705c047cf398e6a74cd7999e8"
+        },
+        "after": {
+          "bytes": 81129,
+          "sha256": "1de763fc164f58c87f2bcfddf5587fc0cabc9a2640659a0884113b413b30cb8d"
+        }
+      }
+    ],
+    "reviewable_source_diff_generated": true,
+    "target_crate_source_modified": false,
+    "patch_applied": false,
+    "patch_compiled": false,
+    "included_unit_tests_executed": false,
+    "included_unit_tests": [
+      "opts::test::rp_legacy_handshake_capability_defaults_are_preserved",
+      "opts::test::rp_wpdb_handshake_clears_only_selected_optional_capabilities"
+    ],
+    "archive_source_tree_regular_file_count": 63,
+    "source_tree_inventory_before_sha256": "e5a955a17434f0d2acd59251d355b9b6cbf2eb34cafc705f1214348b0c1cb913",
+    "source_tree_inventory_after_sha256": "94666cfd911233c5c60ee9e24d2c8f5311e9c89d2829a9e632c3ee259933590f",
+    "all_other_archive_source_files_must_remain_byte_identical": true
+  },
+  "candidate_connection_profile": {
+    "client_found_rows": false,
+    "multi_statements": false,
+    "local_files": false,
+    "new_option_api": "OptsBuilder only; no new URL parameter parsing",
+    "upstream_defaults_preserved": {
+      "client_found_rows": false,
+      "multi_statements": true,
+      "local_files": true
+    },
+    "other_capabilities_changed": false,
+    "multi_results_disabled": false,
+    "physical_connection_per_request": true,
+    "pool_reuse_enabled": false,
+    "local_infile_handlers_configured": false,
+    "connect_attributes_configured": false,
+    "prefer_socket": false,
+    "implicit_transport_switch_allowed": false
+  },
+  "public_api_additions": [
+    "Opts::multi_statements() -> bool",
+    "Opts::local_files() -> bool",
+    "OptsBuilder::multi_statements(bool) -> Self",
+    "OptsBuilder::local_files(bool) -> Self",
+    "Conn::raw_server_version() -> &[u8]",
+    "Conn::negotiated_capabilities() -> CapabilityFlags"
+  ],
+  "existing_public_api_contract": {
+    "sql": "AsQuery for &[u8]/Vec<u8> through Queryable::query_iter -> TextProtocol; no prepared/binary route",
+    "values": "TextProtocol Value::NULL => SQL NULL; Value::Bytes => exact non-null bytes; every other Value variant rejected by future codec",
+    "row_slot": "Row::as_ref(index)==None means missing/taken slot; never SQL NULL",
+    "columns": "QueryResult::columns/columns_ref snapshot before row consumption, including zero-row result; Column::*_ref + flags/character_set/column_length/decimals",
+    "server_version": "initial raw handshake bytes are authoritative; parsed tuple and SELECT VERSION are distinct observations",
+    "completion": "drain/drop_result or mark unusable, then await Conn::disconnect; no request-to-request pool reuse or Drop-only cleanup claim",
+    "reset": "existing Conn::reset is not used in the first physical-disconnect candidate; future reset needs independent session cleanliness proof"
+  },
+  "future_acceptance_gates": [
+    "verify original archive/whole-file before hashes, apply in fresh owned copy only, verify all whole-file after hashes",
+    "compile pinned patched crate and run the two included pure unit tests without database access",
+    "observe actual TLS/non-TLS handshake masks: FOUND_ROWS/MULTI_STATEMENTS/LOCAL_FILES off, independent MULTI_RESULTS preserved",
+    "compare native default mysqli same-value UPDATE affected_rows=0 with actual driver count; never correct counts after execution",
+    "send non-UTF8 SQL bytes unchanged via COM_QUERY and compare actual request bytes/errors; no UTF8 lossy conversion or regex rejection",
+    "compare ordered raw NULL/empty/NUL/0xff/numeric/decimal/bigunsigned rows and zero-row column metadata",
+    "preserve raw handshake server-version suffix bytes and actual negotiated capability mask without claiming semantic feature support",
+    "request-local transaction/session variables, explicit physical disconnect and fresh next request, no silent retry or unknown-COMMIT success",
+    "compare native wpdb prepare/query/public-state/result-modes/charset/error boundaries via owned PHP adapter before declaring any standard-API compatibility"
+  ],
+  "claims": {
+    "vendor_created": false,
+    "new_cargo_dependency_added": false,
+    "existing_editing_sqlx_changed": false,
+    "database_started": false,
+    "database_connected": false,
+    "php_executed": false,
+    "driver_probe_executed": false,
+    "native_comparison_passed": false,
+    "standard_wpdb_compatibility_verified": false,
+    "driver_runtime_selected_for_product": false,
+    "product_abi_selected": false,
+    "full_source_commit_attestation_verified": false,
+    "full_license_inventory_verified": false,
+    "binary_redistributed": false
+  },
+  "forbidden_shortcuts": [
+    "affected-count correction",
+    "regex SQL capability rejection",
+    "UTF8 lossy SQL/row/metadata conversion",
+    "Option taken-slot mapped to SQL NULL",
+    "native mysqli handle/result exposed to plugins",
+    "silent write retry or transport failure reclassified as SQL success"
+  ],
+  "public_api_contract_notes": {
+    "negotiated_capabilities": "standard 32-bit mask of the final serialized HandshakeResponse, stored separately from existing protocol internals; not semantic feature acceptance or MariaDB extended capabilities",
+    "raw_server_version": "exact HandshakePacket::server_version_ref bytes excluding the protocol NUL terminator; no tuple reconstruction or SELECT VERSION substitution"
+  }
+}

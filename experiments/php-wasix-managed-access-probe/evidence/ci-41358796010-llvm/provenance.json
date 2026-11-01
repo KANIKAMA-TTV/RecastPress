@@ -1,0 +1,630 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_original_managed_cgi_resource_ci_import",
+  "source_commit": "57368eeff7f53aef860290a29a665d3163fa27a2",
+  "backend": "llvm",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41358796010",
+  "artifact_id": 13105916876,
+  "artifact_zip_bytes": 130846,
+  "artifact_zip_sha256": "cd4bc878249e5c6f0315c5ed6de0fd183b0453c36b23d1736b71ce5b61a75998",
+  "pinned_stages": {
+    "php_source": "success",
+    "deps_source": "success",
+    "parser_source": "success",
+    "dependencies": "success",
+    "definitions": "success",
+    "tools": "success",
+    "build": "success",
+    "rust": "success",
+    "host_llvm": "success",
+    "units": "success",
+    "wordpress_source": "success",
+    "fiber_contract": "success",
+    "cgi_contract": "success",
+    "runtime_contract": "success",
+    "rpc_contract": "success",
+    "memory_cap": "success",
+    "operation_budget": "success"
+  },
+  "pinned_resource_outcomes": {
+    "memory": "fixed_managed_memory_cap_passed",
+    "operation": "fixed_managed_operation_budget_passed"
+  },
+  "pinned_verdicts": {
+    "fiber": "success",
+    "runtime": "success",
+    "cgi": "success",
+    "rpc": "success",
+    "memory": "success",
+    "operation": "success"
+  },
+  "original_git_source_hashes_verified": true,
+  "php_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "source_archive_acquired_by_importer": false,
+  "source_tool_or_module_binaries_reverified_by_importer": false,
+  "raw_failed_resource_observations_preserved": false,
+  "product_runtime_selected": false,
+  "full_php_compatibility_verified": false,
+  "archive_member_map": {
+    "build.json": "php-wasix-managed-access-probe/evidence/build.json",
+    "ci-stages.json": "php-wasix-managed-access-probe/evidence/ci-stages.json",
+    "linux-llvm-managed-fiber-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-fiber-contract.json",
+    "linux-llvm-managed-runtime-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-runtime-contract.json",
+    "native-cgi-fiber-contract.json": "php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json",
+    "native-cgi-runtime-contract.json": "php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json",
+    "wordpress-source.json": "php-wasix-cgi-runtime-probe/evidence/wordpress-source.json",
+    "toolchain.json": "php-wasix-cgi-build/evidence/toolchain.json",
+    "windows-cranelift-unit-contract.json": "php-wasix-host-probe/evidence/windows-cranelift-unit-contract.json",
+    "linux-llvm-unit-contract.json": "php-wasix-host-probe/evidence/linux-llvm-unit-contract.json",
+    "llvm-toolchain-verification.json": "php-wasix-host-probe/evidence/llvm-toolchain-verification.json",
+    "linux-llvm-managed-cgi-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-cgi-contract.json",
+    "native-cgi-contract.json": "php-wasix-host-probe/evidence/native-cgi-contract.json",
+    "linux-llvm-managed-rpc-contract.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-rpc-contract.json",
+    "linux-llvm-managed-memory-cap.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-memory-cap.json",
+    "linux-llvm-managed-operation-budget.json": "php-wasix-managed-access-probe/evidence/linux-llvm-managed-operation-budget.json"
+  },
+  "input_files": {
+    "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
+    "experiments/php-wasix-cgi-build/build.py": "66428ef0b96a40c0185e6bb4080d342d5beb743e7414bb441489680d8a1817e1",
+    "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-cgi-runtime-probe/import_ci_evidence.py": "e28e8f96129e68e0fbd8e674453f56613f9e79a18abf634f03ab6a410c368f61",
+    "experiments/php-wasix-cgi-runtime-probe/native_contract.py": "4981126bf27b3750fa623f520d865d6617b50aa3e499dc8c6f9b94e6132b6ada",
+    "experiments/php-wasix-cgi-runtime-probe/prepare.py": "875a70887883b199eee33f13d08ff932d2a6c65cd5192831a1f3ea46d4ae81b8",
+    "experiments/php-wasix-cgi-runtime-probe/runtime_check.py": "aef17a00fda4c8cad4651958f31815f4e01636fc9618529fe9a1e23e1f15aa4d",
+    "experiments/php-wasix-fiber-cgi-probe/build.py": "94835a38f075d8fc73530294891f6200dd986da8b2fe0314a3b6b93b7640a50a",
+    "experiments/php-wasix-fiber-cgi-probe/fiber_cgi_check.py": "9b2c618b6dacbcff5a03cd069aa7b7e3f4c159e23701ad5cb9b82d1090094c4f",
+    "experiments/php-wasix-fiber-cgi-probe/import_ci_evidence.py": "80390a89f583546bb9ab3c2afa924d929e5d5b5873f71a83634c9315da440ff9",
+    "experiments/php-wasix-fiber-cgi-probe/native_contract.py": "fbb1d1466eac3e85b2f5ff6bf10ea0a764c828230086fe0bdb99bacaca631fe7",
+    "experiments/php-wasix-fiber-cgi-probe/patch_source.py": "70d985f23d0cb24d4c6aea7db5bff9a1f18f9a87a579a8b52cff00381a3babad",
+    "experiments/php-wasix-fiber-probe/native_contract.py": "14e768a301284cb462d526491af39448a580391584052430571f4d2469850f08",
+    "experiments/php-wasix-fiber-probe/patch_source.py": "607140f77676773d34053d67c46e03241c5e1bf1dd87d871b2409469045f2793",
+    "experiments/php-wasix-host-probe/cgi_check.py": "49de8a40ef2f4bd964d1980f2f4989a2b3935d116422847cbe6e1d1f2dbd01fa",
+    "experiments/php-wasix-host-probe/check.py": "11a80feee6a4ba608dd6ffec1a1a677776cfeeb3ad399db0114e3408e8ed9fac",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/memory_check.py": "1dd73f00dbc46473babc7ad65f916c9cc6276aba598b7f4bff88617b53c8c2a8",
+    "experiments/php-wasix-host-probe/native_cgi_contract.py": "6efd7d2009221d823e0a7471791e8de75c412cefaaba1b8bd61be690a1b935c3",
+    "experiments/php-wasix-host-probe/operation_check.py": "8543ca50ba68e0aed1fbb97a4fd2de268e8847e62e1eaedaad1b093c7ea16f90",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",
+    "experiments/php-wasix-host-probe/unit_check.py": "652517686d6cfffec99874dffbb0351806fb7818ac1ca3b2092fe6ccc378c0f9",
+    "experiments/php-wasix-managed-access-probe/build.py": "8dd2db46ee1897976301876d551d2e098f5b5ea63c9c0fd94f957326f3a6c8bd",
+    "experiments/php-wasix-managed-access-probe/cgi_check.py": "4e81212de3094bef16455540f69facb65f7d60187d40592f7f2f74d1d2ea511e",
+    "experiments/php-wasix-managed-access-probe/import_cgi_evidence.py": "14f224adcd821a910122ce146f45604b8afe206357cb79c4f0bd3af4d25c37fd",
+    "experiments/php-wasix-managed-access-probe/import_ci_evidence.py": "4bd9f4b50dfaa99c59f8db6eaacb1861250058bcc38fa6c5847c6cb62e12bcaf",
+    "experiments/php-wasix-managed-access-probe/import_resource_evidence.py": "9f137cab867e7c656e5211794de8d5f704134c35da85510d8a7aea082a88f13d",
+    "experiments/php-wasix-managed-access-probe/import_rpc_evidence.py": "5b45856a3266f1c952a3cc9da863c7d40ed3a7ab2c00b06ef920b5afe3ba131b",
+    "experiments/php-wasix-managed-access-probe/managed_check.py": "981c449d0de5331fc2d524677593494676830ad77add7f7481a6fa47e74a8b47",
+    "experiments/php-wasix-managed-access-probe/memory_check.py": "ebe25d1593b860119c9d3d552e0378fe7ee4d25dcf10953ef7960448b77d3540",
+    "experiments/php-wasix-managed-access-probe/operation_check.py": "4a00098ba9a52a0637943ed2eecd245886fab0eb425019b8e901ec37baa2c30e",
+    "experiments/php-wasix-managed-access-probe/patch_source.py": "e725a0edacbd859b3f952683c85ac9ef67176f02709fcccc442f79fb259e3a67",
+    "experiments/php-wasix-managed-access-probe/rpc_check.py": "bb54cf6a1321e3d02777ecc9e7e42ec0a4de482e7b6d6a1523cfd81cc085fdcf",
+    "experiments/php-wasix-managed-access-probe/source_profile.py": "e38c16665f2e8f23f2e212f4a49bd793bca3136d381e5aaadab22e5f20f436b0",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "imported_files": {
+    "build.json": "1af7c7e3d71768004eca78f1398ee9b3a60cbd640318469a6c89fba6e0f04b2c",
+    "ci-stages.json": "e5bdcf0ee6ee1f1d726207eeea84c41140c5e5b2d2b39cebbd8cf0039b9f829e",
+    "linux-llvm-managed-fiber-contract.json": "9d95868e99cc5b232772de3ae4da7d3d041de8b0727f8d6293500ec73f960dcc",
+    "linux-llvm-managed-runtime-contract.json": "3b767ebf0510df94a8f38aa288ec73aff4039e939450828020febfd5584f7439",
+    "native-cgi-fiber-contract.json": "58ff09bac489a0e1416968255f30f217c9a76e0eba0b24ea07ae959ce64e9a04",
+    "native-cgi-runtime-contract.json": "513fb91461b0e8638c3f075c8ccae63a753dae80bd8d2713c39f722063d7a20b",
+    "wordpress-source.json": "d387245518f2ca3902b7e80b0515ea5840fca08d94b3bfc2b5e4392e441ca432",
+    "toolchain.json": "d556430d70bb11add1dbaedf8eea8d8ed57c973b19b4798bddebdade8d80f153",
+    "windows-cranelift-unit-contract.json": "746f682545efe4e4bf2a1e36ea2ff46e6459cd9f9ac3036f4fe2ba5190f6935a",
+    "linux-llvm-unit-contract.json": "755a3faa709bc6f287df8c5d2c9301c67db5ac27302ff6836035548b5131e78f",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854",
+    "linux-llvm-managed-cgi-contract.json": "16aa38e3316d2c203eff1d2195b572f3f99f457fbd4323268b7ae0d55cf2ba42",
+    "native-cgi-contract.json": "dc30a561a66fbe8d6180629f554060571d18bcfe69e4e73883040a29c6225915",
+    "linux-llvm-managed-rpc-contract.json": "b11aa30fde7c70fb98ce7e4fe5e03b4c90c725fc92c12da5134889a8aa770ee6",
+    "linux-llvm-managed-memory-cap.json": "9537eb295b0ecfc988a47ebfad74d3eac060a1dee31d210396904f6c12983d84",
+    "linux-llvm-managed-operation-budget.json": "ae7ca352485c90f503162a11f2c11710cafebdb19da2cbc79893f0c131b440e6"
+  },
+  "observations": {
+    "managed_build_passed": true,
+    "source_patch_sets_applied": 3,
+    "bounded_linux_units_passed": 37,
+    "module": {
+      "path": "target/php-wasix-managed-access-probe/php-fiber-cgi.wasm",
+      "bytes": 39150496,
+      "sha256": "d2c25aa150e1d07b183f347b0165e3c47e96dffb4557bf1d11f587881d40d1e2",
+      "wasm_header_verified": true,
+      "executed": false
+    },
+    "fiber": {
+      "comparison_passed": true,
+      "fixed_native_cases": 6,
+      "fresh_requests": 3,
+      "module_compile_calls": 1,
+      "permission_query_execution_verified": false,
+      "compile_elapsed_ms": 135150,
+      "counter_scope": "underlying Rust VirtualFile events, not guest fd/fopen counts"
+    },
+    "runtime": {
+      "comparison_passed": true,
+      "fixed_native_cases": 6,
+      "fresh_requests": 3,
+      "module_compile_calls": 1,
+      "permission_query_execution_verified": true,
+      "compile_elapsed_ms": 132304,
+      "counter_scope": "underlying Rust VirtualFile events, not guest fd/fopen counts",
+      "php_metadata_matches_actual_readonly_denial": true,
+      "observed_requests": [
+        {
+          "name": "normal_first",
+          "managed_access": {
+            "active_handles": 0,
+            "allowed": 3,
+            "closed_handles": 5,
+            "denied": 2,
+            "eof_reads": 5,
+            "finished": true,
+            "generated_bytes": 25,
+            "input_bytes": 140,
+            "invalid": 0,
+            "io_calls": 100,
+            "io_errors": 0,
+            "missing": 0,
+            "open_events": 5,
+            "pending_bytes": 0,
+            "protocol_error": null,
+            "read_bytes": 25,
+            "requests": 5,
+            "reused_transactions": 4,
+            "unmanaged": 0,
+            "unread_response_bytes": 0
+          },
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          }
+        },
+        {
+          "name": "normal_repeat",
+          "managed_access": {
+            "active_handles": 0,
+            "allowed": 3,
+            "closed_handles": 5,
+            "denied": 2,
+            "eof_reads": 5,
+            "finished": true,
+            "generated_bytes": 25,
+            "input_bytes": 140,
+            "invalid": 0,
+            "io_calls": 100,
+            "io_errors": 0,
+            "missing": 0,
+            "open_events": 5,
+            "pending_bytes": 0,
+            "protocol_error": null,
+            "read_bytes": 25,
+            "requests": 5,
+            "reused_transactions": 4,
+            "unmanaged": 0,
+            "unread_response_bytes": 0
+          },
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          }
+        },
+        {
+          "name": "normal_final",
+          "managed_access": {
+            "active_handles": 0,
+            "allowed": 3,
+            "closed_handles": 5,
+            "denied": 2,
+            "eof_reads": 5,
+            "finished": true,
+            "generated_bytes": 25,
+            "input_bytes": 140,
+            "invalid": 0,
+            "io_calls": 100,
+            "io_errors": 0,
+            "missing": 0,
+            "open_events": 5,
+            "pending_bytes": 0,
+            "protocol_error": null,
+            "read_bytes": 25,
+            "requests": 5,
+            "reused_transactions": 4,
+            "unmanaged": 0,
+            "unread_response_bytes": 0
+          },
+          "scratch_final": {
+            "closed_handles": 4,
+            "namespace_mutation_rejections": 0,
+            "open_handles": 0,
+            "ordinary_bytes_written": 12,
+            "ordinary_hex": "6f7264696e61727900ff0d0a",
+            "ordinary_set_len_calls": 0,
+            "ordinary_truncate_opens": 1,
+            "ordinary_write_calls": 1,
+            "readonly_handle_mutation_rejections": 0,
+            "readonly_hex": "726561646f6e6c7920666978747572650a",
+            "readonly_mutating_open_rejections": 4
+          }
+        }
+      ]
+    },
+    "product_runtime_selected": false,
+    "full_php_compatibility_verified": false,
+    "source_or_license_attestation_verified": false,
+    "all_resources_immediately_reclaimed": false,
+    "full_wordpress_bootstrap_executed": false,
+    "real_db": false,
+    "cgi": {
+      "comparison_passed": true,
+      "fixed_native_cases": 3,
+      "fresh_requests": 3,
+      "module_compile_calls": 1,
+      "compile_elapsed_ms": 131636,
+      "request_names": [
+        "get_cookie",
+        "post_raw_body",
+        "status_cookies_binary"
+      ],
+      "native_comparison_results": {
+        "get_cookie": {
+          "equal_to_native": true,
+          "body_comparison": "exact-JSON-types-and-values-after-declared-path-normalization"
+        },
+        "post_raw_body": {
+          "equal_to_native": true,
+          "body_comparison": "exact-JSON-types-and-values-after-declared-path-normalization"
+        },
+        "status_cookies_binary": {
+          "equal_to_native": true,
+          "body_comparison": "exact-binary-bytes"
+        }
+      },
+      "stdout_bindings": [
+        {
+          "bytes": 462,
+          "sha256": "843b38139041a24f2cd232e1896c9f2cd545c12866f67a0510ba13abcb90ee1c"
+        },
+        {
+          "bytes": 544,
+          "sha256": "6be0185aea96ec57b6711c64ade27e3996407599eff1381506bf6559ee736a97"
+        },
+        {
+          "bytes": 201,
+          "sha256": "9075ff988ad7461e931fbaa1751d85e877db25068b230c89613090bbc0145ce6"
+        }
+      ],
+      "binary_body_hex": "00ff4347490d0a",
+      "permission_query_execution_verified": false,
+      "native_path_normalization": {
+        "field": "script_filename",
+        "native_public_value": "<owned-fixture>",
+        "guest_exact_value": "/fixture/cgi_contract.php",
+        "original_value_stored": false,
+        "reason": "identical verified source bytes reside at different native and virtual paths; all other PHP fields compare exactly"
+      },
+      "native_json_serialization_bytes_compared": false,
+      "native_transport_framing_compared": false,
+      "actual_guest_cgi_wire_reparsed": true,
+      "full_php_compatibility_verified": false
+    },
+    "rpc": {
+      "comparison_passed": true,
+      "fixed_cases": 4,
+      "module_compile_calls": 1,
+      "compile_elapsed_ms": 132934,
+      "fixture": {
+        "canonical_source": "experiments/php-wasix-host-probe/src/rpc_contract.rs",
+        "case_bodies_byte_identical": true,
+        "expected_sha256": "382d54a93357a480926255d7af8d69dadcedaabd34e6dade030ba932abdf5871",
+        "guest_path": "/fixture/rpc_cgi_contract.php",
+        "observed_sha256": "382d54a93357a480926255d7af8d69dadcedaabd34e6dade030ba932abdf5871",
+        "source": "experiments/php-wasix-managed-access-probe/fixtures/rpc_cgi_contract.php",
+        "verified": true
+      },
+      "original_php_bodies_byte_identical": true,
+      "raw_cgi_stdout_preserved": true,
+      "expected_incomplete_case_accepted": false,
+      "incomplete_frame_rejected": true,
+      "permission_query_execution_verified": false,
+      "observed_cases": [
+        {
+          "name": "normal_first",
+          "nonce": 101,
+          "php_completed": true,
+          "ok": true,
+          "rpc_valid": true,
+          "expectation_met": true,
+          "stdout_bytes": 472,
+          "stdout_sha256": "baf2961f00f1b238324aa4d3984944f62111e8400275e127a0fc5d2958c53cc6",
+          "rpc": {
+            "cache_entries": 1,
+            "channel_open": false,
+            "failure": null,
+            "finished": true,
+            "operations": 5,
+            "pending_bytes": 0,
+            "real_db": false,
+            "request_bytes": 90,
+            "response_bytes": 76,
+            "response_read_bytes": 76,
+            "standard_wpdb": false
+          }
+        },
+        {
+          "name": "normal_second",
+          "nonce": 102,
+          "php_completed": true,
+          "ok": true,
+          "rpc_valid": true,
+          "expectation_met": true,
+          "stdout_bytes": 472,
+          "stdout_sha256": "4043175d63030999535e58d4e97a008496745c6902e82679b3eb856eb63c8bc4",
+          "rpc": {
+            "cache_entries": 1,
+            "channel_open": false,
+            "failure": null,
+            "finished": true,
+            "operations": 5,
+            "pending_bytes": 0,
+            "real_db": false,
+            "request_bytes": 90,
+            "response_bytes": 76,
+            "response_read_bytes": 76,
+            "standard_wpdb": false
+          }
+        },
+        {
+          "name": "incomplete_ignored",
+          "nonce": 103,
+          "php_completed": true,
+          "ok": false,
+          "rpc_valid": false,
+          "expectation_met": true,
+          "stdout_bytes": 305,
+          "stdout_sha256": "ee672ac4716e1330ac3f88fe3a0e51ce6d52e82d53cbe1d758819d7689fa3d58",
+          "rpc": {
+            "cache_entries": 0,
+            "channel_open": false,
+            "failure": "incomplete RPC frame on channel close",
+            "finished": true,
+            "operations": 0,
+            "pending_bytes": 12,
+            "real_db": false,
+            "request_bytes": 12,
+            "response_bytes": 0,
+            "response_read_bytes": 0,
+            "standard_wpdb": false
+          }
+        },
+        {
+          "name": "normal_recovery",
+          "nonce": 104,
+          "php_completed": true,
+          "ok": true,
+          "rpc_valid": true,
+          "expectation_met": true,
+          "stdout_bytes": 472,
+          "stdout_sha256": "b7662a9b6073bc25aa872657fb79ba30cc134f2e9c6b7c8d599d278636a62324",
+          "rpc": {
+            "cache_entries": 1,
+            "channel_open": false,
+            "failure": null,
+            "finished": true,
+            "operations": 5,
+            "pending_bytes": 0,
+            "real_db": false,
+            "request_bytes": 90,
+            "response_bytes": 76,
+            "response_read_bytes": 76,
+            "standard_wpdb": false
+          }
+        }
+      ],
+      "real_db": false,
+      "standard_wpdb": false,
+      "product_runtime_selected": false
+    },
+    "memory": {
+      "comparison_passed": true,
+      "fixed_cases": 4,
+      "module_compile_calls": 1,
+      "compile_elapsed_ms": 133371,
+      "fixture": {
+        "canonical_source": "experiments/php-wasix-host-probe/src/php_memory_cap.rs",
+        "case_bodies_byte_identical": true,
+        "expected_sha256": "9b9c066b75628b04569df02288b60c1d4f392f7af773bf09fc0255b191e427b7",
+        "guest_path": "/fixture/memory_cgi_contract.php",
+        "observed_sha256": "9b9c066b75628b04569df02288b60c1d4f392f7af773bf09fc0255b191e427b7",
+        "source": "experiments/php-wasix-managed-access-probe/fixtures/memory_cgi_contract.php",
+        "stderr_alias": "STDERR=php://stderr (wb), fixed CGI wrapper only",
+        "verified": true
+      },
+      "original_php_bodies_byte_identical": true,
+      "permission_query_execution_verified": false,
+      "product_runtime_selected": false,
+      "cap_bytes": 268435456,
+      "allocation_bytes": 134217728,
+      "actual_memory_snapshots": [
+        {
+          "maximum_pages": 4096,
+          "shared": true,
+          "size_pages": 2604
+        },
+        {
+          "maximum_pages": 4096,
+          "shared": true,
+          "size_pages": 2604
+        },
+        {
+          "maximum_pages": 4096,
+          "shared": true,
+          "size_pages": 2604
+        },
+        {
+          "maximum_pages": 65536,
+          "shared": true,
+          "size_pages": 6733
+        }
+      ],
+      "case_ok": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "failed_stdout_completed_json_observed": false,
+      "failed_cgi_response_accepted": false
+    },
+    "operation": {
+      "comparison_passed": true,
+      "fixed_cases": 3,
+      "module_compile_calls": 1,
+      "compile_elapsed_ms": 312170,
+      "fixture": {
+        "canonical_source": "experiments/php-wasix-host-probe/src/php_operation_budget.rs",
+        "case_bodies_byte_identical": true,
+        "expected_sha256": "455204fd5af80680dca3b32de236bb22db2a212ab91f124fc2fb02b8007a1f88",
+        "guest_path": "/fixture/operation_cgi_contract.php",
+        "observed_sha256": "455204fd5af80680dca3b32de236bb22db2a212ab91f124fc2fb02b8007a1f88",
+        "source": "experiments/php-wasix-managed-access-probe/fixtures/operation_cgi_contract.php",
+        "verified": true
+      },
+      "original_php_bodies_byte_identical": true,
+      "permission_query_execution_verified": false,
+      "product_runtime_selected": false,
+      "trial_points": 100000000,
+      "budget_reset_count": 0,
+      "start_execution_included": true,
+      "post_start_reference_points": 99999963,
+      "case_ok": [
+        true,
+        false,
+        true
+      ],
+      "observed_cases": [
+        {
+          "name": "normal_first",
+          "post_start_points": {
+            "kind": "remaining",
+            "points": 99999963
+          },
+          "start_charged_points": 37,
+          "final_points": {
+            "kind": "remaining",
+            "points": 54098949
+          },
+          "budget_exhausted": false,
+          "ready_reached": false,
+          "complete_cgi_response_verified": true,
+          "metering_handle_lifecycle": {
+            "capture_count": 1,
+            "drop_count": 1,
+            "environment_lookup_at_recycle": false,
+            "global_setter_calls": 0,
+            "globals_reconstructed": false,
+            "identity_scheme": "sha256-of-pinned-wasmer-7.2.0-Global-Debug",
+            "instance_retained": false,
+            "prior_recycle_calls": 0,
+            "prior_recycle_present": false,
+            "prior_recycle_returns": 0,
+            "recycle_global_identity_sha256": "6d6cea7e0296bdfbc7e4d2e5977184f55fbda26863426b1a341adfdc484b938a",
+            "recycle_types_verified": true,
+            "released_before_prior_recycle": true,
+            "retained_global_handles": 0,
+            "same_store_verified": true,
+            "setup_global_identity_sha256": "6d6cea7e0296bdfbc7e4d2e5977184f55fbda26863426b1a341adfdc484b938a",
+            "strategy": "setup-captured-typed-global-handles",
+            "take_count": 1
+          }
+        },
+        {
+          "name": "loop_exhausted",
+          "post_start_points": {
+            "kind": "remaining",
+            "points": 99999963
+          },
+          "start_charged_points": 37,
+          "final_points": {
+            "kind": "exhausted"
+          },
+          "budget_exhausted": true,
+          "ready_reached": true,
+          "complete_cgi_response_verified": false,
+          "metering_handle_lifecycle": {
+            "capture_count": 1,
+            "drop_count": 1,
+            "environment_lookup_at_recycle": false,
+            "global_setter_calls": 0,
+            "globals_reconstructed": false,
+            "identity_scheme": "sha256-of-pinned-wasmer-7.2.0-Global-Debug",
+            "instance_retained": false,
+            "prior_recycle_calls": 0,
+            "prior_recycle_present": false,
+            "prior_recycle_returns": 0,
+            "recycle_global_identity_sha256": "a7030204cde4bbd99501dddd08bef50af99d33eddbeb98e570f8b983c937947e",
+            "recycle_types_verified": true,
+            "released_before_prior_recycle": true,
+            "retained_global_handles": 0,
+            "same_store_verified": true,
+            "setup_global_identity_sha256": "a7030204cde4bbd99501dddd08bef50af99d33eddbeb98e570f8b983c937947e",
+            "strategy": "setup-captured-typed-global-handles",
+            "take_count": 1
+          }
+        },
+        {
+          "name": "normal_recovery",
+          "post_start_points": {
+            "kind": "remaining",
+            "points": 99999963
+          },
+          "start_charged_points": 37,
+          "final_points": {
+            "kind": "remaining",
+            "points": 54098177
+          },
+          "budget_exhausted": false,
+          "ready_reached": false,
+          "complete_cgi_response_verified": true,
+          "metering_handle_lifecycle": {
+            "capture_count": 1,
+            "drop_count": 1,
+            "environment_lookup_at_recycle": false,
+            "global_setter_calls": 0,
+            "globals_reconstructed": false,
+            "identity_scheme": "sha256-of-pinned-wasmer-7.2.0-Global-Debug",
+            "instance_retained": false,
+            "prior_recycle_calls": 0,
+            "prior_recycle_present": false,
+            "prior_recycle_returns": 0,
+            "recycle_global_identity_sha256": "cf629b6c3a7142fc658cf8693a2d54b349813df747a8feaab893630e8b4d79b4",
+            "recycle_types_verified": true,
+            "released_before_prior_recycle": true,
+            "retained_global_handles": 0,
+            "same_store_verified": true,
+            "setup_global_identity_sha256": "cf629b6c3a7142fc658cf8693a2d54b349813df747a8feaab893630e8b4d79b4",
+            "strategy": "setup-captured-typed-global-handles",
+            "take_count": 1
+          }
+        }
+      ]
+    }
+  }
+}

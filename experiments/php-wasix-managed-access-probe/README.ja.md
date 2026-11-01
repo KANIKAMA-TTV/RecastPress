@@ -67,6 +67,12 @@ source `bc628143449a924653d23845568845cd0baeb1a9`の[CI 41356526706](https://git
 
 `operation_check.py`は初期1億points、start sectionの消費、補充0、通常→loopの実Exhausted→通常回復を維持する。元NORMAL/LOOP本文を残し、CGIでは必要なSTDOUT aliasとNORMALのSAPI差だけを明示する。loopのraw READYとRunner失敗、保持したtyped Globalによる実Exhaustedを検証し、完全CGI成功と区別する。通常のCGI本文は完全応答から解析する。タイムアウトをExhaustedとは扱わない。
 
-外側のbuild期限は1200秒、memory実行は600秒、operation実行はCranelift300秒/LLVM600秒。Windowsのunit・release build、native CGIのnormal smoke、純粋なfixture/source照合を確認し、Wasmの実資源制御は次のLinux CIで判定する。RSS・合計memory・hostcallの待機・CPU時間・製品値・全資源回収は別gateであり、この2つの診断を同時に全要求へ適用したという意味ではない。
+外側のbuild期限は1200秒、memory実行は600秒、operation実行はCranelift300秒/LLVM600秒。Windowsのunit・release build、native CGIのnormal smoke、純粋なfixture/source照合を確認した。
+
+source `57368eeff7f53aef860290a29a665d3163fa27a2`の[CI 41358796010](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41358796010)で両backendとも全診断が通過した。[Cranelift](evidence/ci-41358796010-cranelift/provenance.json)・[LLVM](evidence/ci-41358796010-llvm/provenance.json)の生JSONと元Git照合を保存する。memoryは通常→期待OOM→通常回復→無cap対照の結果がtrue/false/true/trueで、actual maxは4096/4096/4096/65536pages、actual sizeは2604/2604/2604/6733pagesだった。OOMではstdout0B・完成JSONなし・応答受入falseを確認した。
+
+operationは通常のRemaining→READY後の実Exhausted→通常のRemaining回復が成立した。初期1億points・start消費・補充0とtyped Globalのcapture/take/drop検証を維持し、期限停止を成功へ付け替えていない。Linux37単体テストとFiber/CGI/runtime/RPCも同runで再通過した。
+
+RSS・合計memory・hostcallの待機・CPU時間・製品値・全資源回収は別gateであり、この2つの診断を同時に全要求へ適用したという意味ではない。
 
 全WP bootstrap、wpdb・実DB、HTTP listener、全資源回収、stack guard/free/reuse、配布条件、3配備先の受入は未完了。
