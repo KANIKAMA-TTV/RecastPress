@@ -43,6 +43,10 @@ python experiments/php-wasix-host-probe/language_check.py --llvm --record
 
 実装追加時にWindowsでFSの2単体テスト、locked/offline release build、fmtを確認した。比較器はnativeの入力hashを照合し、正常対照と、値・例外順・Fiber戻値・数値型の変更、重複JSON key・非有限数の拒否を確認した。これらはWasm上の3ケース成功を意味せず、Linuxの実行結果を別に取得する。
 
+[CI run 41295645988](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41295645988)ではLinuxのFSテスト2件・version-onlyは成功したが、言語契約は失敗した。source `64c004f`の[原観測](evidence/linux-llvm-41295645988/linux-llvm-language-contract.json)を変えずに取り込み、[事後比較](evidence/linux-llvm-41295645988/case-comparison.json)で基本値・例外の完全一致とFiberの不一致を確認した。CI中はhostのFiber失敗で全ケース比較へ進まなかったため、事後の個別比較と元の失敗判定を区別する。
+
+Fiberは`Cannot resume a fiber that is not suspended`を返した。期待は通常PHP通り維持し、3ケース全体・製品候補は合格にしない。`compile_elapsed_ms=155366`、`php_execution_elapsed_ms=61`は当該CIの単発観測である。cold compileと実行を分け、次は同じmoduleの再利用を実証する。
+
 ## 実験の制御範囲
 
 host環境・home・host directoryをguestへ渡さず、networkはUnsupportedVirtualNetworking、HTTP clientは無し。stdinは閉じ、stdout/stderrは各64KiBを超える書込みをpipeへ入れる前に拒否する。EOF回収にも期限を設ける。

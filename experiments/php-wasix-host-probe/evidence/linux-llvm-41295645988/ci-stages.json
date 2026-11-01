@@ -1,0 +1,24 @@
+{
+  "format_version": 1,
+  "scope": "independent Linux LLVM version and three-case language P0 candidate",
+  "source_commit": "64c004fd90f8c9bbb3afa9991fe0c55387e2e69c",
+  "run_id": "41295645988",
+  "run_attempt": "1",
+  "stages": {
+    "dependencies": "success",
+    "rust": "success",
+    "php": "success",
+    "cargo": "success",
+    "llvm": "success",
+    "fixture_fs": "success",
+    "probe": "success",
+    "language": "failure"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-candidate.yml": "665fea4bcc56f5834c6ca2df109037612004c2837a539426afa1c70466b38005",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388",
+    "experiments/php-runtime-candidate-probe/artifact.json": "a5a8a3aefbc6f0bd094558756ac75f0ac4208adb35ce03317d134049b7856175"
+  },
+  "wordpress_bootstrapped": false,
+  "product_runtime_selected": false
+}

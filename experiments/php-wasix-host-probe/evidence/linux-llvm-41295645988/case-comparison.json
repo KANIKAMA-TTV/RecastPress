@@ -1,0 +1,45 @@
+{
+  "format_version": 1,
+  "kind": "offline_comparison_of_captured_php_observations",
+  "source_commit": "64c004fd90f8c9bbb3afa9991fe0c55387e2e69c",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41295645988",
+  "artifact_id": 13080055217,
+  "artifact_zip_bytes": 12046,
+  "artifact_zip_sha256": "5fc96a733785993d8124b1a001e27162c80f7cea2c041f80eee4e9cdc211b1bc",
+  "original_git_source_hashes_verified": true,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_language_ci_evidence.py": "c0ab8bf813acb2a3969116adc9b416bf7b3a42c72f3476894d48d007a389d231",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "96c15ab037c4aa97371d4b721272f8ee0a1a204358fd140bebc5529ce944e0f7",
+    "experiments/php-wasix-host-probe/check.py": "3eb13e197b67a27f0e6a1de8ecf04b134007b41ecbf48557d9467a48df6d0f70"
+  },
+  "imported_files": {
+    "ci-stages.json": "7315418dfa83955029bbf3c0f0db8cb4fbd6f9efa34622e44e6c28d3dc1091fb",
+    "linux-llvm-language-contract.json": "535198300cf1ade84a68a17fac63fdd371eeda8785f4d8ca0578763df48b0ae6",
+    "linux-llvm.json": "b8e91f9d715607068a9e4132e63b0842df7034812b3f6727d39a6fc9e4082d1f",
+    "llvm-toolchain-verification.json": "0f0015f15d38178ddd94c91afd58053a31b1848193681bd52ea92f1cdd0f13a7"
+  },
+  "native_reference_sha256": "10265c9acf7935f09678911d43e3093c62bbcec868d0b236fed3714d8be7b0b2",
+  "case_results": {
+    "basic": {
+      "equal_to_native": true
+    },
+    "exceptions": {
+      "equal_to_native": true
+    },
+    "fiber": {
+      "equal_to_native": false,
+      "difference": "contract fields mismatch: fiber"
+    }
+  },
+  "all_three_cases_equal": false,
+  "ci_verdict": "failure",
+  "php_executed_by_this_analysis": false,
+  "wordpress_executed": false,
+  "product_runtime_selected": false,
+  "timing_observed_in_ci_ms": {
+    "compile_elapsed_ms": 155366,
+    "php_execution_elapsed_ms": 61
+  },
+  "timing_scope": "cold module compile versus run_wasm startup/execution/shutdown; one CI runner, not a product benchmark"
+}
