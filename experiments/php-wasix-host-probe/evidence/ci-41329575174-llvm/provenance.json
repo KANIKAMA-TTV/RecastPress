@@ -16,7 +16,7 @@
     "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
     "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
     "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
-    "experiments/php-wasix-host-probe/check.py": "ae5f79d2993284ee920ec8e7f936e86985c2c2cd0825375af02d69d97bc62916",
+    "experiments/php-wasix-host-probe/check.py": "77206d3829621b69b655c1e3b2c64c204a0e5821ecb06fd0324d634ad6de119a",
     "experiments/php-wasix-host-probe/cgi_check.py": "49de8a40ef2f4bd964d1980f2f4989a2b3935d116422847cbe6e1d1f2dbd01fa",
     "experiments/php-wasix-host-probe/memory_check.py": "1dd73f00dbc46473babc7ad65f916c9cc6276aba598b7f4bff88617b53c8c2a8",
     "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",

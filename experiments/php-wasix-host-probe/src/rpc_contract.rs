@@ -20,31 +20,31 @@ use super::rpc_fs::{
 };
 use super::{LimitedPipe, OUTPUT_LIMIT, collect_pipe, make_engine};
 
-const MOUNT: &str = "/rp-p0-rpc";
-const CHANNEL: &str = "/rp-p0-rpc/channel";
-const ENV_KEY: &str = "RP_RPC_REQUEST_MARKER";
-const LITERAL: &[u8] = b"RP_P0 CACHE_SET 7\n\0\xff";
-const INCOMPLETE_WIRE: &[u8] = b"RP_P0 CACHE_";
-const CASES: [&str; 4] = [
+pub(crate) const MOUNT: &str = "/rp-p0-rpc";
+pub(crate) const CHANNEL: &str = "/rp-p0-rpc/channel";
+pub(crate) const ENV_KEY: &str = "RP_RPC_REQUEST_MARKER";
+pub(crate) const LITERAL: &[u8] = b"RP_P0 CACHE_SET 7\n\0\xff";
+pub(crate) const INCOMPLETE_WIRE: &[u8] = b"RP_P0 CACHE_";
+pub(crate) const CASES: [&str; 4] = [
     "normal_first",
     "normal_second",
     "incomplete_ignored",
     "normal_recovery",
 ];
-const MARKERS: [&str; 4] = [
+pub(crate) const MARKERS: [&str; 4] = [
     "recastpress-v0.5-rpc-request-1",
     "recastpress-v0.5-rpc-request-2",
     "recastpress-v0.5-rpc-request-3",
     "recastpress-v0.5-rpc-request-4",
 ];
-const COMMANDS: [&[u8]; 5] = [
+pub(crate) const COMMANDS: [&[u8]; 5] = [
     b"RP_P0 CACHE_GET\n",
     b"RP_P0 CACHE_SET 7\n",
     b"RP_P0 CACHE_GET\n",
     b"RP_P0 DB_SELECT_FIXTURE\n",
     b"RP_P0 CACHE_GET\n",
 ];
-const NORMAL: &str = r#"
+pub(crate) const NORMAL: &str = r#"
 function rp_rpc($channel, $command) {
     if (!rewind($channel)) { throw new RuntimeException('RPC rewind before write failed'); }
     $wire = 'RP_P0 ' . $command . "\n";
@@ -80,7 +80,7 @@ echo json_encode(['php_version'=>PHP_VERSION,'php_int_size'=>PHP_INT_SIZE,
     'cache_after'=>$hit,'database'=>$db,'reopened_cache'=>$reopened,'channel_closed'=>true,
     'echo'=>'recastpress-v0.5-private-rpc'], JSON_THROW_ON_ERROR);
 "#;
-const INCOMPLETE: &str = r#"
+pub(crate) const INCOMPLETE: &str = r#"
 $channel = fopen('/rp-p0-rpc/channel', 'r+b');
 if ($channel === false) { throw new RuntimeException('RPC open failed'); }
 $wire = 'RP_P0 CACHE_';
@@ -133,6 +133,14 @@ pub fn describe(report: &mut Value) {
 }
 
 pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
+    verify_with_executor(bytes, report, execute)
+}
+
+pub(crate) fn verify_with_executor(
+    bytes: Vec<u8>,
+    report: &mut Value,
+    executor: fn(&Engine, Module, &HashedModuleData, usize, &mut Value) -> Result<()>,
+) -> Result<()> {
     let data = HashedModuleData::new(bytes);
     let engine = make_engine();
     let identity = format!("{:?}", engine.id());
@@ -158,7 +166,7 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
             "host_directories_mapped":false,"home_mapped":false,"http_client":false,
             "networking":"UnsupportedVirtualNetworking","private_rpc_mount":MOUNT,"rpc_channel":CHANNEL,
             "stdin":"closed-pipe","stdout_limit_bytes":OUTPUT_LIMIT,"stderr_limit_bytes":OUTPUT_LIMIT});
-        let result = execute(&engine, module.clone(), &data, index, &mut record)
+        let result = executor(&engine, module.clone(), &data, index, &mut record)
             .and_then(|()| validate(&record, index))
             .and_then(|observed| {
                 if let Some(previous) = width {
@@ -195,7 +203,7 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
     Ok(())
 }
 
-fn snapshot_value(snapshot: &Snapshot) -> Value {
+pub(crate) fn snapshot_value(snapshot: &Snapshot) -> Value {
     json!({"operations":snapshot.operations,"request_bytes":snapshot.request_bytes,
         "response_bytes":snapshot.response_bytes,"response_read_bytes":snapshot.response_read_bytes,
         "pending_bytes":snapshot.pending_bytes,

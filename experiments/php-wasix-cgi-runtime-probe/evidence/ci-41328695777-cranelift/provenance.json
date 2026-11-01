@@ -39,7 +39,7 @@
     "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
     "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
     "experiments/php-wasix-host-probe/unit_check.py": "652517686d6cfffec99874dffbb0351806fb7818ac1ca3b2092fe6ccc378c0f9",
-    "experiments/php-wasix-host-probe/check.py": "ae5f79d2993284ee920ec8e7f936e86985c2c2cd0825375af02d69d97bc62916",
+    "experiments/php-wasix-host-probe/check.py": "77206d3829621b69b655c1e3b2c64c204a0e5821ecb06fd0324d634ad6de119a",
     "experiments/php-wasix-fiber-cgi-probe/build.py": "94835a38f075d8fc73530294891f6200dd986da8b2fe0314a3b6b93b7640a50a",
     "experiments/php-wasix-fiber-cgi-probe/patch_source.py": "70d985f23d0cb24d4c6aea7db5bff9a1f18f9a87a579a8b52cff00381a3babad",
     "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",

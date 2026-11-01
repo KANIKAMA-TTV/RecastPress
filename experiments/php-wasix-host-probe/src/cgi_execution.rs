@@ -36,6 +36,25 @@ pub(crate) fn execute(
     fixed: FixedRequest,
     record: &mut Value,
 ) -> Result<()> {
+    let body = execute_response(engine, module, data, fixed, record)?;
+    ensure!(
+        body.ends_with(b"\n") && body.iter().filter(|&&b| b == b'\n').count() == 1,
+        "Fiber CGI body must be one terminated JSON line"
+    );
+    record["guest_json"] = serde_json::from_slice::<Value>(&body).context("Fiber CGI JSON body")?;
+    record["guest_json_decoded"] = json!(true);
+    Ok(())
+}
+
+/// Capture a complete successful response without imposing a body format.
+/// Each closed caller must validate its own body before accepting a request.
+pub(crate) fn execute_response(
+    engine: &Engine,
+    module: Module,
+    data: &HashedModuleData,
+    fixed: FixedRequest,
+    record: &mut Value,
+) -> Result<Vec<u8>> {
     record["guest_environment_supplied"] = json!(fixed.environment);
     let tokio_runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
@@ -142,13 +161,5 @@ pub(crate) fn execute(
         "body_bytes":response.body.len(),"body_hex":hex(&response.body),
         "body_sha256":sha(&response.body),"representation_length":response.representation_length});
     ensure!(response.status == 200, "Fiber CGI status");
-    ensure!(
-        response.body.ends_with(b"\n")
-            && response.body.iter().filter(|&&b| b == b'\n').count() == 1,
-        "Fiber CGI body must be one terminated JSON line"
-    );
-    record["guest_json"] =
-        serde_json::from_slice::<Value>(&response.body).context("Fiber CGI JSON body")?;
-    record["guest_json_decoded"] = json!(true);
-    Ok(())
+    Ok(response.body)
 }

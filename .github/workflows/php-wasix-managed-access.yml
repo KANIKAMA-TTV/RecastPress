@@ -6,6 +6,7 @@ name: PHP WASIX managed access candidate
     # All compile inputs plus fixed profile drivers; JSON imports and prose stay out.
     paths:
       - "experiments/php-wasix-managed-access-probe/fixtures/recastpress_fs_access.h"
+      - "experiments/php-wasix-managed-access-probe/fixtures/rpc_cgi_contract.php"
       - "experiments/php-wasix-managed-access-probe/patches/0001-wasi-managed-access.patch"
       - "experiments/php-wasix-host-probe/Cargo.*"
       - "experiments/php-wasix-host-probe/src/**"
@@ -61,6 +62,8 @@ name: PHP WASIX managed access candidate
       - "experiments/php-wasix-managed-access-probe/patch_source.py"
       - "experiments/php-wasix-managed-access-probe/managed_check.py"
       - "experiments/php-wasix-managed-access-probe/cgi_check.py"
+      - "experiments/php-wasix-managed-access-probe/rpc_check.py"
+      - "experiments/php-wasix-host-probe/rpc_check.py"
       - "experiments/php-wasix-managed-access-probe/manifest.json"
       - "experiments/php-wasix-managed-access-probe/patch-plan.json"
       - "experiments/php-wasix-managed-access-probe/patches/*.patch"
@@ -203,6 +206,11 @@ jobs:
         id: runtime_contract
         run: python3 experiments/php-wasix-managed-access-probe/managed_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
 
+      - name: Verify private RPC, ignored incomplete frame and normal recovery on CGI
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.units.outcome == 'success' }}
+        id: rpc_contract
+        run: python3 experiments/php-wasix-managed-access-probe/rpc_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
+
       - name: Record CI outcomes even if preparation or build failed
         if: ${{ always() }}
         env:
@@ -220,6 +228,7 @@ jobs:
           STAGE_RUNTIME_CONTRACT: ${{ steps.runtime_contract.outcome }}
           STAGE_FIBER_CONTRACT: ${{ steps.fiber_contract.outcome }}
           STAGE_CGI_CONTRACT: ${{ steps.cgi_contract.outcome }}
+          STAGE_RPC_CONTRACT: ${{ steps.rpc_contract.outcome }}
           PROBE_BACKEND: ${{ matrix.backend }}
         run: |
           python3 - <<'PY'
@@ -249,7 +258,7 @@ jobs:
               'format_version': 1,
               'scope': 'Three-patch NTS CGI build with pure Rust access queries, native Fiber and runtime comparisons; no product adoption',
               'backend': os.environ['PROBE_BACKEND'],
-              'guest_execution_verdict': 'see the separate Fiber, CGI and runtime comparison receipts',
+              'guest_execution_verdict': 'see the separate Fiber, CGI, runtime and private RPC receipts',
               'product_runtime_selected': False,
               'redistributed_binaries': False,
               'source_commit': os.environ['GITHUB_SHA'],
@@ -258,7 +267,7 @@ jobs:
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
                          for name in ['PHP_SOURCE', 'DEPS_SOURCE', 'PARSER_SOURCE',
                                       'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD',
-                                      'RUST', 'HOST_LLVM', 'UNITS', 'WORDPRESS_SOURCE', 'FIBER_CONTRACT', 'CGI_CONTRACT', 'RUNTIME_CONTRACT']},
+                                      'RUST', 'HOST_LLVM', 'UNITS', 'WORDPRESS_SOURCE', 'FIBER_CONTRACT', 'CGI_CONTRACT', 'RUNTIME_CONTRACT', 'RPC_CONTRACT']},
               'input_files': {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                               for path in inputs if path.is_file()},
           }

@@ -119,6 +119,25 @@ fn load_cgi_module(report: &mut Value) -> Result<Vec<u8>> {
     report["postopt_adapter"] = super::fiber_adapter::inspect(&bytes)?;
     Ok(bytes)
 }
+pub(crate) fn load_for_rpc(report: &mut Value) -> Result<Vec<u8>> {
+    load_cgi_module(report)
+}
+pub fn describe_rpc(report: &mut Value) {
+    super::rpc_contract::describe(report);
+    profile(report);
+    report["schema"] = json!("recastpress.php-wasix-managed-rpc-host.v0.5");
+    report["scope"] = json!("three-patch-managed-candidate-four-CGI-private-RPC-requests");
+    report["product_runtime_selected"] = json!(false);
+    report["managed_access_verified_for_fixed_cases"] = json!(false);
+    report["isolation"]["asynchronous_threading"] = json!(true);
+    report["isolation"]["deep_sleep"] = json!(false);
+    report["isolation"]["max_guest_threads"] = json!(1);
+    report["isolation"]["guest_fixture_files"] = json!(["/fixture/rpc_cgi_contract.php"]);
+    report["isolation"]["guest_readonly_mounts"] = json!(["/fixture"]);
+    report["isolation"]["guest_environment_policy"] =
+        json!("fixed CGI GET and case selector plus one fixed per-request marker");
+    super::managed_rpc_contract::describe_fixture(report);
+}
 pub fn describe_fiber(report: &mut Value) {
     super::fiber_cgi_contract::describe(report);
     profile(report);
