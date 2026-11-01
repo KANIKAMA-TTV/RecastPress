@@ -1,0 +1,45 @@
+x-runtime: &runtime
+  build:
+    context: ../..
+    dockerfile: deploy/development/Dockerfile
+    args:
+      BUILDER_IMAGE: "${RECASTPRESS_BUILDER_IMAGE:?Set a verified Rust 1.96.x Linux builder image reference}"
+      RUNTIME_IMAGE: "${RECASTPRESS_RUNTIME_IMAGE:?Set a verified ABI-compatible Linux runtime image reference}"
+  user: "65532:65532"
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  restart: "no"
+  stop_grace_period: 10s
+  # No curl/shell dependency or inherited base-image health command.
+  healthcheck:
+    disable: true
+
+services:
+  public:
+    <<: *runtime
+    command:
+      - public
+      - --listen
+      - 0.0.0.0:8080
+      - --host
+      - "${RECASTPRESS_PUBLIC_HOST:?Set the admitted Host value, for example localhost:8080}"
+      - --bundle
+      - /artifacts/public.json
+      - --receipt
+      - /artifacts/public.receipt.json
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - type: bind
+        source: "${RECASTPRESS_ARTIFACT_DIR:?Set an existing absolute directory containing only public artifacts}"
+        target: /artifacts
+        read_only: true
+        bind:
+          create_host_path: false
+
+  management:
+    <<: *runtime
+    profiles: [management]
+    network_mode: none
+    command: [management, --listen, "127.0.0.1:8081"]

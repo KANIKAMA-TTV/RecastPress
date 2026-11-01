@@ -1,0 +1,17 @@
+{
+  "format_version": 1,
+  "pages": [
+    {
+      "target": "/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "body": "<!doctype html><html lang=\"ja\"><meta charset=\"utf-8\"><title>RecastPress development</title><h1>RecastPress</h1><p>Rust公開プロセスの起動確認用ページです。WordPress互換CMSは開発中です。</p></html>"
+    },
+    {
+      "target": "/?s=rust",
+      "status": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "body": "This is a prebuilt query-route fixture, not a search implementation.\n"
+    }
+  ]
+}

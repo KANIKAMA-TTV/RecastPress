@@ -1,0 +1,16 @@
+[package]
+name = "recastpress-wasm-component-probe"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.94"
+license = "GPL-2.0-or-later"
+publish = false
+
+# Independent fixed-fixture feasibility work, not an adopted product SDK/ABI.
+[workspace]
+
+[dependencies]
+wasmtime = { version = "=36.0.19", default-features = false, features = ["std", "runtime", "cranelift", "wat", "component-model"] }
+
+[lints.rust]
+unsafe_code = "forbid"

@@ -1,0 +1,23 @@
+{
+  "format_version": 1,
+  "pages": [
+    {
+      "target": "/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "body": "<!doctype html><html lang=\"ja\"><meta charset=\"utf-8\"><title>RecastPress feeds</title><h1>RSS / Atom</h1><p>記事更新フィードの開発用サンプルです。</p><ul><li><a href=\"/feed/rss\">RSS 2.0</a></li><li><a href=\"/feed/atom\">Atom 1.0</a></li></ul></html>"
+    },
+    {
+      "target": "/feed/rss",
+      "status": 200,
+      "content_type": "application/rss+xml; charset=utf-8",
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><channel>\n<title>Site &amp; &quot;friends&quot; &lt;研究&gt;</title>\n<link>https://example.test/</link>\n<description>Description&#13;line\nnext\t&lt;&amp;&gt;</description>\n<atom:link rel=\"self\" href=\"https://example.test/feed/rss\" type=\"application/rss+xml; charset=utf-8\"/>\n<dc:creator>Feed author &amp; friends</dc:creator>\n<lastBuildDate>Mon, 26 Oct 2026 03:04:05 GMT</lastBuildDate>\n<item>\n<title>Entry &lt;title&gt; &amp; &quot;quote&quot;</title>\n<link>https://example.test/entry?x=1&amp;y=2</link>\n<guid isPermaLink=\"false\">https://example.test/entry-id?x=1&amp;y=2</guid>\n<description>&lt;p&gt;A &amp; B &amp;lt;em&amp;gt;日本語&lt;/p&gt;&#13;\n</description>\n<dc:creator>Author &apos; &amp; name</dc:creator>\n<pubDate>Thu, 01 Jan 1970 00:00:00 GMT</pubDate>\n<atom:updated>2026-10-26T03:04:05Z</atom:updated>\n</item>\n<item>\n<title>Leap-day entry</title>\n<link>https://example.test/leap</link>\n<guid isPermaLink=\"false\">https://example.test/leap-id</guid>\n<description></description>\n<dc:creator>Second author</dc:creator>\n<pubDate>Tue, 29 Feb 2000 12:34:56 GMT</pubDate>\n<atom:updated>2000-02-29T12:34:56Z</atom:updated>\n</item>\n</channel></rss>\n"
+    },
+    {
+      "target": "/feed/atom",
+      "status": 200,
+      "content_type": "application/atom+xml; charset=utf-8",
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<feed xmlns=\"http://www.w3.org/2005/Atom\">\n<id>https://example.test/feed-id</id>\n<title>Site &amp; &quot;friends&quot; &lt;研究&gt;</title>\n<updated>2026-10-26T03:04:05Z</updated>\n<author><name>Feed author &amp; friends</name>\n</author>\n<subtitle>Description&#13;line\nnext\t&lt;&amp;&gt;</subtitle>\n<link rel=\"self\" href=\"https://example.test/feed/atom\" type=\"application/atom+xml; charset=utf-8\"/>\n<link rel=\"alternate\" href=\"https://example.test/\"/>\n<entry>\n<id>https://example.test/entry-id?x=1&amp;y=2</id>\n<title>Entry &lt;title&gt; &amp; &quot;quote&quot;</title>\n<updated>2026-10-26T03:04:05Z</updated>\n<published>1970-01-01T00:00:00Z</published>\n<author><name>Author &apos; &amp; name</name>\n</author>\n<link rel=\"alternate\" href=\"https://example.test/entry?x=1&amp;y=2\"/>\n<summary type=\"html\">&lt;p&gt;A &amp; B &amp;lt;em&amp;gt;日本語&lt;/p&gt;&#13;\n</summary>\n</entry>\n<entry>\n<id>https://example.test/leap-id</id>\n<title>Leap-day entry</title>\n<updated>2000-02-29T12:34:56Z</updated>\n<published>2000-02-29T12:34:56Z</published>\n<author><name>Second author</name>\n</author>\n<link rel=\"alternate\" href=\"https://example.test/leap\"/>\n<summary type=\"html\"></summary>\n</entry>\n</feed>\n"
+    }
+  ]
+}

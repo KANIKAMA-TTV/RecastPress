@@ -1,0 +1,20 @@
+[package]
+name = "recastpress-binlog-probe"
+version = "0.0.0"
+edition = "2024"
+license = "GPL-2.0-or-later"
+publish = false
+
+# Capability experiment, kept outside the production workspace and its lockfile.
+[workspace]
+
+[dependencies]
+recastpress-core = { path = "../../crates/recastpress-core" }
+recastpress-db = { path = "../../crates/recastpress-db" }
+mysql_async = { version = "=0.37.1", default-features = false, features = ["minimal-rust", "rustls-tls", "ring", "tls12", "binlog"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+serde_json = "=1.0.154"
+
+[lints.rust]
+unsafe_code = "forbid"

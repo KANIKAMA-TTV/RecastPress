@@ -1,0 +1,16 @@
+[package]
+name = "recastpress-selected-wasm-consumer-probe"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.94"
+license = "GPL-2.0-or-later"
+publish = false
+
+[workspace]
+
+[dependencies]
+wasmtime = { version = "=36.0.19", default-features = false, features = ["std", "runtime", "cranelift", "wat", "component-model"] }
+recastpress-core = { path = "../../crates/recastpress-core" }
+
+[lints.rust]
+unsafe_code = "forbid"

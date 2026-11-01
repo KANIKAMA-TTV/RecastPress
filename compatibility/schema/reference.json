@@ -1,0 +1,42 @@
+{
+  "format_version": 1,
+  "scope": "reference_DDL_only_not_installation_or_DB_compatibility",
+  "generated_at_utc": "2026-10-27T00:44:33.983057+00:00",
+  "wordpress_version": "7.1.3",
+  "archive_sha256": "d2a09acb6a15e3b9c471d72557753c266d6f41a79ed19bfe04cbfe49e283b2a5",
+  "php_version": "8.5.12",
+  "context": {
+    "is_multisite": false,
+    "blog_id": 1,
+    "table_prefix": "wp_",
+    "charset_collate": "DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+  },
+  "tables": [
+    "wp_users",
+    "wp_usermeta",
+    "wp_termmeta",
+    "wp_terms",
+    "wp_term_taxonomy",
+    "wp_term_relationships",
+    "wp_commentmeta",
+    "wp_comments",
+    "wp_links",
+    "wp_options",
+    "wp_postmeta",
+    "wp_posts"
+  ],
+  "sql_sha256": "cabfad5a96024c18951e6193289d1b78e5767986c0e21a61e3369e9fb9bbe83c",
+  "source_path": "wp-admin/includes/schema.php",
+  "source_sha256": "a446ddd76ce401fc8173bfee4e79a98f8c3567ed3ba7560c2f167ca85e6976b0",
+  "source_line": 36,
+  "tool_files": {
+    "scripts/wp_schema_export.php": "cd75f44c935e520533cd2921acd098c436bb294700af74c756b88d55d7952cb8",
+    "scripts/reference_functions.php": "b5c096d74647fc949273cb5b9296ff8e00f1c2302c41435541eeb7d43a1950aa",
+    "scripts/export_wordpress_schema.py": "f6a404dcf304a755e62ffa609e69d083e0931c9a9d622877ca39a0387c20a6ad"
+  },
+  "limitations": [
+    "Single-site/default-prefix fixture only; custom physical placement and multisite are not established.",
+    "Charset/collation are explicit fixture inputs, not a product support decision.",
+    "No database connection, schema creation, or data migration occurs in this exporter."
+  ]
+}

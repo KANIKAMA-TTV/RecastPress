@@ -1,0 +1,16 @@
+[package]
+name = "recastpress-wasm-runtime-probe"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.94"
+license = "GPL-2.0-or-later"
+publish = false
+
+# Independent capability experiment, not a production engine or SDK decision.
+[workspace]
+
+[dependencies]
+wasmtime = { version = "=36.0.19", default-features = false, features = ["std", "runtime", "cranelift", "wat"] }
+
+[lints.rust]
+unsafe_code = "forbid"

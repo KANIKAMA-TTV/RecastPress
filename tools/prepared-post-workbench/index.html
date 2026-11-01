@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>公開用 JSON 入力ワークベンチ | RecastPress</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="input-parser.js" defer></script>
+  <script src="publication-package.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand">RECASTPRESS <span>DEVELOPMENT TOOLS</span></div>
+    <span class="local-badge">ローカル入力作成</span>
+    <h1>公開用 JSON 入力ワークベンチ</h1>
+    <p>記事の文字を整え、CLI に渡す入力ファイルを作成します。</p>
+  </header>
+
+  <main>
+    <aside class="notice" aria-label="作業範囲">
+      <strong>記事データをこのタブで編集し、JSON へ書き出します。</strong>
+      入力は送信・自動保存されません。タブを閉じる前に書き出してください。最終受理は CLI で確認します。
+    </aside>
+
+    <section class="panel import-panel" aria-labelledby="import-heading">
+      <span class="eyebrow">OPEN / JSON</span><h2 id="import-heading">保存した JSON を開く</h2>
+      <p class="hint" id="import-hint">schema 1・最大 8 MiB。ファイルはこのタブだけで読み込みます。確認後に適用するまで、編集中の内容を保持します。</p>
+      <label class="file-label" for="import-file">入力ファイル</label>
+      <input id="import-file" type="file" accept=".json,application/json" aria-describedby="import-hint import-status">
+      <p id="import-status" class="hint" role="status" aria-live="polite">ファイルは未選択です。</p>
+      <button id="cancel-import" class="button quiet" type="button" disabled>読込みを取り消す</button>
+      <div id="import-preview" hidden>
+        <ul id="import-targets"></ul>
+        <p class="hint">適用すると現在の記事一覧をすべて置き換えます。残したい内容は先に JSON へ書き出してください。読込み前の一覧へ戻す操作はありません。</p>
+        <button id="apply-import" class="button secondary" type="button" disabled>確認した内容で一覧を置き換える</button>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel articles" aria-labelledby="articles-heading">
+        <div class="panel-heading"><div><span class="eyebrow">01 / POSTS</span><h2 id="articles-heading">記事一覧 <span id="post-count" class="count"></span></h2></div></div>
+        <button id="add-post" class="button secondary wide" type="button">＋ 記事を追加</button>
+        <ol id="post-list" class="post-list" aria-label="編集する記事"></ol>
+        <div class="article-actions">
+          <button id="delete-post" class="button quiet danger" type="button">選択中の記事を削除</button>
+          <button id="undo-delete" class="button quiet" type="button" disabled>直前の削除を取り消す</button>
+          <p class="hint">最後の 1 件は削除できません。文字の編集は入力欄の通常の Undo を使えます。</p>
+        </div>
+      </section>
+
+      <section class="panel editor" aria-labelledby="editor-heading">
+        <div class="panel-heading"><div><span class="eyebrow">02 / EDIT</span><h2 id="editor-heading">記事の入力</h2></div><span class="subtle">入力値をそのまま保持</span></div>
+        <div class="field">
+          <div class="label-line"><label for="target">公開先 target</label><span id="target-bytes" class="bytes"></span></div>
+          <textarea id="target" rows="1" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="target-hint target-error"></textarea>
+          <p id="target-hint" class="hint">単一の / で始まる明示的な値。最大 8,192 UTF-8 bytes。自動で slug は作成しません。</p>
+          <p id="target-error" class="field-error"></p>
+        </div>
+        <div class="field">
+          <div class="label-line"><label for="title">タイトル <span class="optional">空欄可</span></label><span id="title-bytes" class="bytes"></span></div>
+          <textarea id="title" rows="2" spellcheck="false" aria-describedby="title-error"></textarea>
+          <p id="title-error" class="field-error"></p>
+        </div>
+        <div class="field body-field">
+          <div class="label-line"><label for="body_text">本文 <span class="optional">空欄可</span></label><span id="body_text-bytes" class="bytes"></span></div>
+          <textarea id="body_text" rows="14" spellcheck="false" aria-describedby="body-hint body_text-error"></textarea>
+          <p id="body-hint" class="hint">HTML・script・ショートコード風の文字も、そのままの文字として扱います。</p>
+          <p id="body_text-error" class="field-error"></p>
+        </div>
+      </section>
+
+      <section class="panel preview" aria-labelledby="preview-heading">
+        <div class="panel-heading"><div><span class="eyebrow">03 / TEXT PREVIEW</span><h2 id="preview-heading">文字プレビュー</h2></div></div>
+        <p class="hint preview-note">入力した文字の表示を確認します。タグも文字として表示します。</p>
+        <div class="preview-paper">
+          <code id="preview-target"></code>
+          <h3 id="preview-title"></h3>
+          <pre id="preview-body"></pre>
+          <p id="preview-empty" class="hint"></p>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel export-panel" aria-labelledby="export-heading">
+      <div class="export-main"><span class="eyebrow">04 / EXPORT</span><h2 id="export-heading">JSON 入力を書き出す</h2><p>schema 1・全記事を一覧順に出力。内部 ID は含みません。</p><p id="wire-bytes" class="wire-bytes"></p></div>
+      <div class="export-action"><button id="download" class="button primary" type="button">JSON をダウンロード</button><p class="hint">prepared-posts-input.json</p></div>
+      <div id="validation-summary" class="validation-summary" aria-live="polite" aria-atomic="true"></div>
+      <ul id="validation-errors" class="validation-errors"></ul>
+      <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">公開用の固定サンプルを読み込みました。</p>
+    </section>
+
+    <section id="package-panel" class="panel package-panel" aria-labelledby="package-heading" aria-busy="false">
+      <div><span class="eyebrow">05 / PACKAGE</span><h2 id="package-heading">公開用ファイルを ZIP にまとめる</h2>
+        <p class="hint">現在の記事を、文字として表示する固定レイアウトへ変換します。HTML 風の入力も文字のまま扱います。ZIP には bundle.json と receipt.json だけを含めます。</p>
+      </div>
+      <div class="package-actions">
+        <button id="package-prepare" class="button secondary" type="button">ZIP を準備</button>
+        <button id="package-download" class="button primary" type="button" disabled>ZIP をダウンロード</button>
+        <p class="hint">prepared-post-package.zip</p>
+      </div>
+      <p id="package-status" class="status" role="status" aria-live="polite" aria-atomic="true">現在の内容で ZIP を準備してください。入力 JSON の書出しも引き続き利用できます。</p>
+      <div class="package-next">
+        <p class="hint">保存した ZIP を解凍し、リポジトリのルートで次を実行します。path は解凍先に合わせてください。receipt はファイルの組合せを照合するためのもので、公開の承認や署名ではありません。</p>
+        <pre><code>cargo run -p recastpress-server --bin recastpress -- check-package target/prepared-post-package/bundle.json target/prepared-post-package/receipt.json</code></pre>
+        <p class="hint">ZIP の準備やダウンロード開始は、保存完了・CLI 受理・公開を意味しません。入力は送信されません。</p>
+      </div>
+    </section>
+
+    <section class="cli-panel" aria-labelledby="cli-heading">
+      <span class="eyebrow">NEXT / CLI</span><h2 id="cli-heading">CLI で最終受理を確認</h2>
+      <p>リポジトリのルートで実行します。出力先は、まだ存在しないディレクトリを指定してください。</p>
+      <pre><code>cargo run -p recastpress-server --bin recastpress -- prepare-post-package prepared-posts-input.json target/prepared-post-package</code></pre>
+      <p class="hint">ダウンロード開始は保存完了や CLI 受理を意味しません。ブラウザーの保存先・ファイル名を確認してください。HTML escape 後の出力量など、最終的な bundle の受理は CLI が判定します。</p>
+    </section>
+    <noscript><p class="notice">このローカル補助画面には JavaScript が必要です。</p></noscript>
+  </main>
+  <footer>RECASTPRESS / LOCAL INPUT TOOL <span>開発用・JSON 入力作成</span></footer>
+</body>
+</html>

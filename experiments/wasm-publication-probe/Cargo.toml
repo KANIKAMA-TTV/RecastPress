@@ -1,0 +1,17 @@
+[package]
+name = "recastpress-wasm-publication-probe"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.94"
+license = "GPL-2.0-or-later"
+publish = false
+
+[workspace]
+
+[dependencies]
+wasmtime = { version = "=36.0.19", default-features = false, features = ["std", "runtime", "cranelift", "wat", "component-model"] }
+recastpress-server = { path = "../../crates/recastpress-server" }
+serde_json = "=1.0.154"
+
+[lints.rust]
+unsafe_code = "forbid"

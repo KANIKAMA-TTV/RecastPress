@@ -1,0 +1,10 @@
+{
+  "format_version": 1,
+  "posts": [
+    {
+      "target": "/prepared-post",
+      "title": "公開用サンプル <literal>",
+      "body_text": "\n先頭の改行を含む公開用の固定サンプルです。\n<strong>このタグも文字として表示します。</strong>\n引用符: \"sample\" & 'example'"
+    }
+  ]
+}

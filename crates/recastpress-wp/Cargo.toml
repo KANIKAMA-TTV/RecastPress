@@ -1,0 +1,77 @@
+[package]
+name = "recastpress-wp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Source-tracked experimental WordPress compatibility primitives"
+
+[features]
+default = ["auth"]
+# Build-time provider separation only, not an authorization or sandbox policy.
+auth = ["dep:bcrypt", "dep:hmac", "dep:hmac_md5", "dep:sha2", "dep:base64", "dep:zeroize", "dep:md-5", "dep:subtle"]
+
+[dependencies]
+bcrypt = { version = "=0.19.3", default-features = false, features = ["alloc", "zeroize"], optional = true }
+hmac = { version = "=0.12.1", default-features = false, optional = true }
+hmac_md5 = { package = "hmac", version = "=0.13.0", default-features = false, features = ["zeroize"], optional = true }
+sha2 = { version = "=0.10.9", default-features = false, optional = true }
+base64 = { version = "=0.22.1", default-features = false, optional = true }
+zeroize = { version = "=1.9.1", default-features = false, optional = true }
+md-5 = { version = "=0.11.0", default-features = false, features = ["zeroize"], optional = true }
+subtle = { version = "=2.6.1", default-features = false, optional = true }
+
+[dev-dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "1"
+
+[[test]]
+name = "auth_cookie_contract"
+required-features = ["auth"]
+
+[[test]]
+name = "password_verify_contract"
+required-features = ["auth"]
+
+[[test]]
+name = "password_hash_contract"
+required-features = ["auth"]
+
+[[test]]
+name = "password_legacy_contract"
+required-features = ["auth"]
+
+[[test]]
+name = "password_dispatch_contract"
+required-features = ["auth"]
+
+[[test]]
+name = "password_rehash_contract"
+required-features = ["auth"]
+
+[[test]]
+name = "credential_stage_contract"
+required-features = ["auth"]
+
+[[example]]
+name = "compat_probe"
+required-features = ["auth"]
+
+[[example]]
+name = "password_generation_probe"
+required-features = ["auth"]
+
+[[example]]
+name = "legacy_password_probe"
+required-features = ["auth"]
+
+[[example]]
+name = "credential_stage_probe"
+required-features = ["auth"]
+
+[[example]]
+name = "auth_cookie_verify_probe"
+required-features = ["auth"]
+
+[lints]
+workspace = true

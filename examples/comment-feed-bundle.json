@@ -1,0 +1,23 @@
+{
+  "format_version": 1,
+  "pages": [
+    {
+      "target": "/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "body": "<!doctype html><meta charset=utf-8><title>Prepared comment feeds</title><h1>Prepared comment feeds</h1><p>Fixed public-data example; no comment selection or live publication.</p><ul><li><a href=/comments/rss>RSS 2.0</a></li><li><a href=/comments/atom>Atom 1.0</a></li></ul>"
+    },
+    {
+      "target": "/comments/rss",
+      "status": 200,
+      "content_type": "application/rss+xml; charset=utf-8",
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\"><channel>\n<title>Comments &lt;公開&gt; &amp; readers</title>\n<link>https://example.test/post</link>\n<description>Public comments&#13;\n&lt;&amp;&gt;</description>\n<atom:link rel=\"self\" href=\"https://example.test/comments/rss\" type=\"application/rss+xml; charset=utf-8\"/>\n<dc:creator>Feed author</dc:creator>\n<lastBuildDate>Tue, 29 Feb 2000 12:34:56 GMT</lastBuildDate>\n<item>\n<title>By: A &amp; B</title>\n<link>https://example.test/post?x=1&amp;y=2#comment-1</link>\n<dc:creator>A &amp; B</dc:creator>\n<pubDate>Tue, 29 Feb 2000 12:34:56 GMT</pubDate>\n<guid isPermaLink=\"false\">https://example.test/post-id#comment-1</guid>\n<description>&lt;p&gt;Summary &amp; prepared&lt;/p&gt;&#13;\n</description>\n<content:encoded>&lt;p&gt;Full 日本語 &amp; &lt;a href=&quot;relative&quot;&gt;link&lt;/a&gt;]]&gt;&lt;/p&gt;&#13;\n</content:encoded>\n</item>\n<item>\n<title>By: Second</title>\n<link>https://example.test/post#comment-2</link>\n<dc:creator>Second</dc:creator>\n<pubDate>Thu, 01 Jan 1970 00:00:00 GMT</pubDate>\n<guid isPermaLink=\"false\">https://example.test/post-id#comment-2</guid>\n<description></description>\n<content:encoded></content:encoded>\n</item>\n</channel></rss>\n"
+    },
+    {
+      "target": "/comments/atom",
+      "status": 200,
+      "content_type": "application/atom+xml; charset=utf-8",
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:thr=\"http://purl.org/syndication/thread/1.0\">\n<id>https://example.test/comments-id</id>\n<title>Comments &lt;公開&gt; &amp; readers</title>\n<subtitle>Public comments&#13;\n&lt;&amp;&gt;</subtitle>\n<updated>2000-02-29T12:34:56Z</updated>\n<author><name>Feed author</name>\n</author>\n<link rel=\"alternate\" href=\"https://example.test/post\" type=\"text/html\"/>\n<link rel=\"self\" href=\"https://example.test/comments/atom\" type=\"application/atom+xml; charset=utf-8\"/>\n<entry>\n<title>By: A &amp; B</title>\n<link rel=\"alternate\" href=\"https://example.test/post?x=1&amp;y=2#comment-1\" type=\"text/html\"/>\n<author><name>A &amp; B</name>\n</author>\n<id>https://example.test/post-id#comment-1</id>\n<updated>2000-02-29T12:34:56Z</updated>\n<published>2000-02-29T12:34:56Z</published>\n<content type=\"html\" xml:base=\"https://example.test/post?x=1&amp;y=2#comment-1\">&lt;p&gt;Full 日本語 &amp; &lt;a href=&quot;relative&quot;&gt;link&lt;/a&gt;]]&gt;&lt;/p&gt;&#13;\n</content>\n<thr:in-reply-to ref=\"https://example.test/post-id\" href=\"https://example.test/post#comments\" type=\"text/html\"/>\n</entry>\n<entry>\n<title>By: Second</title>\n<link rel=\"alternate\" href=\"https://example.test/post#comment-2\" type=\"text/html\"/>\n<author><name>Second</name>\n</author>\n<id>https://example.test/post-id#comment-2</id>\n<updated>2000-02-29T12:34:56Z</updated>\n<published>1970-01-01T00:00:00Z</published>\n<content type=\"html\" xml:base=\"https://example.test/post#comment-2\"></content>\n<thr:in-reply-to ref=\"https://example.test/post-id#comment-999\" href=\"https://example.test/post?x=3&amp;y=4#comment-999\" type=\"text/html\"/>\n</entry>\n</feed>\n"
+    }
+  ]
+}

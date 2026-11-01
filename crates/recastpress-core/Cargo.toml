@@ -1,0 +1,11 @@
+[package]
+name = "recastpress-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Core state and policy primitives for RecastPress"
+
+[lints]
+workspace = true
+
