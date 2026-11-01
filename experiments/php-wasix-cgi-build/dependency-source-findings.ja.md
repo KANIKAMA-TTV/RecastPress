@@ -9,3 +9,5 @@
 treeにはcomponent別include領域と、SQLite/zlib等のライセンス名文書が含まれる。ファイル名による抽出を、全ファイル本文のライセンス監査や、archiveの元sourceを特定した証拠にはしない。特に`libicrt.a`・`libwasix_rust_libs.a`・`libwasix_sendmail.a`について、同名で見つかるpathは`lib`/`lib-eh`のarchiveであり、名前から依存crate・version・licenseを推定しない。
 
 次に必要なのは、各archiveのビルド元commit、patch、toolchain・recipeとの対応と、含まれるcomponentのlicense/notice一覧である。取得したsourceとarchiveが対応する証拠も必要になる。28件中6件のlive map観測・17件の抽出履歴・5件の未観測/曖昧という分類は維持し、未観測分を監査対象から外さない。現時点で配布条件確認済み・製品採用済みにはしない。
+
+後続の[内部メタデータ確認](../php-static-archive-probe/README.ja.md)では3archiveを実際に取得・再hashし、このtree観測・既存CIのbyte pinと照合した。Rust member名とregistry内の版文字列候補を記録したが、前段のtree照合とは区別し、完全なsource/build/license対応の達成にはしない。
