@@ -1,0 +1,2497 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.cgi-link-audit.v0.5",
+  "observed_at_utc": "2026-11-01T16:18:47.298494+00:00",
+  "outcome": "cgi_link_observations_audited",
+  "audit_passed": true,
+  "scope": "separate post-build CGI raw-link archive observations",
+  "build_receipt_modified": false,
+  "guest_or_native_php_executed": false,
+  "linker_executed_by_auditor": false,
+  "product_runtime_selected": false,
+  "full_license_inventory_verified": false,
+  "all_archives_used_verified": false,
+  "post_binaryen_archive_contribution_verified": false,
+  "sysroot_source_build_attestation_verified": false,
+  "public_json_limit_bytes": 524288,
+  "input_files": {
+    ".github/workflows/php-wasix-cgi-build.yml": "03ab1a1c0d263621e0e7d6f7a8583fec232865e6d3cd6df622924e8653d42d4d",
+    "experiments/php-wasix-cgi-build/README.ja.md": "97bccd7e40f1d22600ad246a1e8fea7c66991534366e3c4b3ce98aced80f66b2",
+    "experiments/php-wasix-cgi-build/build.py": "66428ef0b96a40c0185e6bb4080d342d5beb743e7414bb441489680d8a1817e1",
+    "experiments/php-wasix-cgi-build/link_audit.py": "df83c879f445773bb394c98d5936a3cba03bcc7f0f92d31628884e8b3b895caa",
+    "experiments/php-wasix-cgi-build/link_map.py": "9fc3f09ff551c6a69af1e8e437df9074465030b6b330fd35d658543a347be4af",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d",
+    "experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-host-probe/cgi_check.py": "b410fc62e4357ce5daf2db2578b7ff474818d70810d5d17a03dc5d669f80b5b6",
+    "experiments/php-wasix-host-probe/check.py": "fb519271c13fbda73fb640ba70f2e7b275eb62dc0c76c7130676dd00b14eac55",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "build_provenance": {
+    "build_receipt_sha256": "beefaa45de3586044c74832a5d786ae667c9c09be8d77c348a4d55e791ff607d",
+    "toolchain_receipt_sha256": "a891ac044ec92a84dad5c4d4ae4906116a3465ca639720f8e1d07d718bd822b4",
+    "manifest_sha256": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "module_bytes": 40002084,
+    "module_sha256": "365897cd5eeb415c0904f9521e637b4b1fb36bf6b4cf8696099ad63065a784e2",
+    "source_commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+    "patch_sha256": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+    "link_capture": {
+      "map": {
+        "path": "target/php-wasix-cgi-build/link-observations/cgi.link.map",
+        "bytes": 11182777,
+        "sha256": "cbf7e49310598fbd82ca23621725214d779f6005b122a107d420d47b79c3f83c",
+        "file_type": "regular",
+        "read_completed": true,
+        "byte_limit": 67108864
+      },
+      "why_extract": {
+        "path": "target/php-wasix-cgi-build/link-observations/cgi.why-extract.tsv",
+        "bytes": 747543,
+        "sha256": "98bbb28ec8e91f0032e6faf79400b1dda2015a6ab1d107afd96bb2ee8881c9d1",
+        "file_type": "regular",
+        "read_completed": true,
+        "byte_limit": 16777216
+      },
+      "stage": "make_cgi",
+      "normalized_flags": "-Map=target/php-wasix-cgi-build/link-observations/cgi.link.map:--why-extract=target/php-wasix-cgi-build/link-observations/cgi.why-extract.tsv",
+      "actual_value_sha256": "c332dfe2fbd68b25fab1fc704e2b8d78640d687ea62e01eabcc9c61317c954f5",
+      "parsed_by_builder": false
+    },
+    "verification_scope": "same trusted job observations; not signed attestation or reproducible build"
+  },
+  "capture_bindings": {
+    "map": {
+      "path": "target/php-wasix-cgi-build/link-observations/cgi.link.map",
+      "bytes": 11182777,
+      "sha256": "cbf7e49310598fbd82ca23621725214d779f6005b122a107d420d47b79c3f83c",
+      "file_type": "regular",
+      "read_completed": true,
+      "byte_limit": 67108864
+    },
+    "why_extract": {
+      "path": "target/php-wasix-cgi-build/link-observations/cgi.why-extract.tsv",
+      "bytes": 747543,
+      "sha256": "98bbb28ec8e91f0032e6faf79400b1dda2015a6ab1d107afd96bb2ee8881c9d1",
+      "file_type": "regular",
+      "read_completed": true,
+      "byte_limit": 16777216
+    },
+    "stage": "make_cgi",
+    "normalized_flags": "-Map=target/php-wasix-cgi-build/link-observations/cgi.link.map:--why-extract=target/php-wasix-cgi-build/link-observations/cgi.why-extract.tsv",
+    "actual_value_sha256": "c332dfe2fbd68b25fab1fc704e2b8d78640d687ea62e01eabcc9c61317c954f5",
+    "parsed_by_builder": false
+  },
+  "raw_module": {
+    "path": "target/php-wasix-cgi-build/source/php/sapi/cgi/php-cgi",
+    "bytes": 108208541,
+    "sha256": "bdfed06adc28813cf247e1ef1eba620583ce4b648634cf802d2959c7647ca041"
+  },
+  "final_module": {
+    "path": "target/php-wasix-cgi-build/source/php/sapi/cgi/php-cgi.wasm",
+    "bytes": 40002084,
+    "sha256": "365897cd5eeb415c0904f9521e637b4b1fb36bf6b4cf8696099ad63065a784e2",
+    "wasm_header_verified": true,
+    "executed": false
+  },
+  "audit": {
+    "schema": "recastpress.wasm-ld-link-map-observation.v0.5",
+    "scope": "CODE/DATA raw-link map and pre-GC lazy extraction observations only",
+    "reference": {
+      "llvm_release": "21.1.206",
+      "llvm_commit": "98c00cb849c94742b2b29918bb414d236c83ae97",
+      "wasixcc_commit": "aa934ded16300ab0d5b78de6647214b85a9a7fd7"
+    },
+    "map_capture": {
+      "bytes": 11182777,
+      "sha256": "cbf7e49310598fbd82ca23621725214d779f6005b122a107d420d47b79c3f83c",
+      "lines": 117357
+    },
+    "why_extract_capture": {
+      "bytes": 747543,
+      "sha256": "98bbb28ec8e91f0032e6faf79400b1dda2015a6ab1d107afd96bb2ee8881c9d1",
+      "lines": 2747
+    },
+    "caller_supplied_raw_module_identity": {
+      "path": "target/php-wasix-cgi-build/source/php/sapi/cgi/php-cgi",
+      "bytes": 108208541,
+      "sha256": "bdfed06adc28813cf247e1ef1eba620583ce4b648634cf802d2959c7647ca041"
+    },
+    "caller_supplied_final_module_identity": {
+      "path": "target/php-wasix-cgi-build/source/php/sapi/cgi/php-cgi.wasm",
+      "bytes": 40002084,
+      "sha256": "365897cd5eeb415c0904f9521e637b4b1fb36bf6b4cf8696099ad63065a784e2",
+      "wasm_header_verified": true,
+      "executed": false
+    },
+    "caller_supplied_inventory_sha256": "563a13d81021861f02c5a08ecb01728c8de37b523851b323208e1807edf1bf1b",
+    "path_normalization": {
+      "workspace_root_recorded": false,
+      "link_cwd": "target/php-wasix-cgi-build/source/php",
+      "deps_directory": "target/php-wasix-cgi-build/source/php-wasix-deps",
+      "external_directories_redacted": true,
+      "symlinks_not_resolved": true
+    },
+    "archives": {
+      "lib-eh/libMagickCore-7.Q16HDRI.a": {
+        "bytes": 22295738,
+        "sha256": "44a1f445a2561e607a521ed829b3ef738d12e03bc8eb4d65f8701752f00ef0d9",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 272,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 1361,
+            "canonical_json_sha256": "a2772a9ce43c8ce2120ebd6a42785c744eabba72e133e56836f6afa5e04491e3"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1424,
+              "canonical_json_sha256": "55cf6c6fcdb32200a413b5c341e335026bce36f2bcea8029220aa6893d857d82"
+            },
+            "observation": {
+              "line": 1645,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickCore-7.Q16HDRI.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickCore-7.Q16HDRI.a",
+                  "external": false,
+                  "source_utf8_sha256": "200d2fdc572c0c46a92791ab674c7b741cf8b30c3611d868cff187edd342d417"
+                },
+                "member": {
+                  "text": "libMagickCore_7_Q16HDRI_la-exception.o",
+                  "source_utf8_sha256": "25677368dd79d8a9c6adc34bc8a96748ad4119224b760b3e07e9c9da49a358dc",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libMagickCore-7.Q16HDRI.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickCore-7.Q16HDRI.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickCore-7.Q16HDRI.a",
+                  "external": false,
+                  "source_utf8_sha256": "200d2fdc572c0c46a92791ab674c7b741cf8b30c3611d868cff187edd342d417"
+                },
+                "member": {
+                  "text": "libMagickCore_7_Q16HDRI_la-client.o",
+                  "source_utf8_sha256": "872c7cd2e98fe0432b3153c284058cf9dcb90a64fc50db4089df255eb4baa81f",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libMagickCore-7.Q16HDRI.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "GetClientName",
+                "source_utf8_sha256": "6e239fcdef545b387364d5068e52bc560de2da0105f0b0ba7fd64a12ef33aba4",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 271
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libMagickWand-7.Q16HDRI.a": {
+        "bytes": 4496268,
+        "sha256": "d2eedc6a5f0d7fb6f6954d77773dd6fa6cb2b20cf3b22bbbd1c6d8dedc3181bb",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 7,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 36,
+            "canonical_json_sha256": "796a4288e1e8c9ea858ae7ab55832d8049cd2b97a2d0ea5aa02e2e8f02c482d2"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1270,
+              "canonical_json_sha256": "4c47849956e214d06205256da50d3e2b3930b942e10e04eb62b55e987db403c0"
+            },
+            "observation": {
+              "line": 1934,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/imagick/imagickdraw_class.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/imagick/imagickdraw_class.o",
+                  "external": false,
+                  "source_utf8_sha256": "103ce4aa0067678537a3d9ab80b6b40a6f703c3533611e1f8634563c28c8dd6e"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickWand-7.Q16HDRI.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickWand-7.Q16HDRI.a",
+                  "external": false,
+                  "source_utf8_sha256": "7b070bdb7d85ef6553b234e1b38eb3fc162f4762157f3d981ba6356fa52f1634"
+                },
+                "member": {
+                  "text": "libMagickWand_7_Q16HDRI_la-drawing-wand.o",
+                  "source_utf8_sha256": "ffbb731a9a9bdb48a8e1ac2279f41e4c29aa2fb0d841fc19fde8ad5cc20bcf77",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libMagickWand-7.Q16HDRI.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "AcquireDrawingWand",
+                "source_utf8_sha256": "e40be42bde4aaeda941cda8ada6ace273dca7791766f7f1e6ca1d4b80c1dff17",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 6
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libcharset.a": {
+        "bytes": 7328,
+        "sha256": "1011da9d5676f58cd71e313b37c5770b30b3a1d7d804c2b3bf118b6a69b40d0e",
+        "status": "not_observed_or_ambiguous",
+        "live_map_observed": false,
+        "why_extract_observed": false,
+        "not_observed_or_ambiguous": true,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libcrypto.a": {
+        "bytes": 22475032,
+        "sha256": "1fc3a525381c5e7fe18f1f0c316cd0f31a4aaa4dd898091f68a374d4a5711292",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 794,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 3529,
+            "canonical_json_sha256": "7bbeba006479446de81b3f2b160cc740295c838969351359b3333cfd81b2b867"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1191,
+              "canonical_json_sha256": "bf4562752d31636abc908b7bd8a6f8d43c5aeaec6183cdd638ffc91583672fc8"
+            },
+            "observation": {
+              "line": 547,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/openssl/openssl.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/openssl/openssl.o",
+                  "external": false,
+                  "source_utf8_sha256": "996235c4fa460b3b2198639bb439ec7858c075a8dce6fc4c70be86db33bb8f45"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcrypto.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcrypto.a",
+                  "external": false,
+                  "source_utf8_sha256": "acf6820b4795419aeb9674ba08458842f9624df8f10d96a489e3b0287453db64"
+                },
+                "member": {
+                  "text": "libcrypto-lib-a_int.o",
+                  "source_utf8_sha256": "10947ad76648edb0f51d15a14f2bb09dc35106c9513294ee19b285a607825002",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libcrypto.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "ASN1_INTEGER_set_int64",
+                "source_utf8_sha256": "55d23c695273f7c2d05dfd57fec94e2c48031d045eb9d81d32bfab233df40d4e",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 793
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libcurl.a": {
+        "bytes": 882520,
+        "sha256": "2c8b0d85f5c18a4578a07fb19047eed6e509b5558f031b2ac35d20a1a80ae061",
+        "status": "live_map_observed",
+        "live_map_observed": true,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 1139,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 5861,
+            "canonical_json_sha256": "7e6169c0c0d884da32a4f51840e0c4679b3c975ed8099607272ab3aba18bd087"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 793,
+              "canonical_json_sha256": "f7f6d6b779fad98d535203a2aca79b31de3cc1cf1d3ba7b0dc5adcd37b3f96c2"
+            },
+            "observation": {
+              "line": 1779,
+              "address_or_index": null,
+              "file_offset": 995746,
+              "size": 51,
+              "kind": "input_chunk",
+              "section": "CODE",
+              "chunk": {
+                "text": "Curl_bufq_init",
+                "source_utf8_sha256": "33aa7f9e0fb5a2618788a2f7046f8f3a715a29322bb1cddf0f23fad117ed4d36",
+                "path_redacted": false
+              },
+              "file": {
+                "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcurl.a",
+                "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcurl.a",
+                "external": false,
+                "source_utf8_sha256": "701cb5f0c6e338564b5ecaba02e512f879e0fa21235a3e892fecca8cfbac5de9"
+              },
+              "member": {
+                "text": "bufq.c.o",
+                "source_utf8_sha256": "e36452f14c38335252c4237f1cdb136d360e0170d42b8b8c3824415bc091461d",
+                "path_redacted": false
+              },
+              "inventory_archive": "lib-eh/libcurl.a",
+              "possible_inventory_archives": [],
+              "possible_lto_generated_input": false,
+              "ambiguities": []
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 1138
+        },
+        "why_extract": {
+          "count": 99,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 496,
+            "canonical_json_sha256": "825fe20cdb5bc9e6c223fca0841134cfac3ddb49cd7d69baa448c97559a9652e"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1277,
+              "canonical_json_sha256": "811699cffb6b96e9d3e7da96219eee20bc4fa6bd8759b5a5f39f3f95572a9bbd"
+            },
+            "observation": {
+              "line": 1396,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcurl.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcurl.a",
+                  "external": false,
+                  "source_utf8_sha256": "701cb5f0c6e338564b5ecaba02e512f879e0fa21235a3e892fecca8cfbac5de9"
+                },
+                "member": {
+                  "text": "cf-socket.c.o",
+                  "source_utf8_sha256": "c51e918207c65a24d0c3f0e4320edcd890676f1ff742c4253e21a260a93b9b81",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libcurl.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcurl.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libcurl.a",
+                  "external": false,
+                  "source_utf8_sha256": "701cb5f0c6e338564b5ecaba02e512f879e0fa21235a3e892fecca8cfbac5de9"
+                },
+                "member": {
+                  "text": "bufq.c.o",
+                  "source_utf8_sha256": "e36452f14c38335252c4237f1cdb136d360e0170d42b8b8c3824415bc091461d",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libcurl.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "Curl_bufq_free",
+                "source_utf8_sha256": "3e9dab15ad51076787a5a98fc09f5cdd7efb7f0efe5abb0864b7d650175d2ce3",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 98
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libfreetype.a": {
+        "bytes": 5208636,
+        "sha256": "4aa2c4e8bcd637d3a5545ee25597c5177a470f1cf908f6d5cc7dfcb6acbc277f",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 28,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 141,
+            "canonical_json_sha256": "0b508f39f649143478cd15112cbca71747f0bbbf0f5467a9b8a1ee9786a17ce8"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1297,
+              "canonical_json_sha256": "c3c9a6a7827db199e5b4c8e578fed73fa1422cacbbd7e82bbd4fa409883ca21a"
+            },
+            "observation": {
+              "line": 1617,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libfreetype.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libfreetype.a",
+                  "external": false,
+                  "source_utf8_sha256": "3bbd82ad2b336f8c14afc1e4b4db3cb95d589d45e26d8c6266453f5fe20094cb"
+                },
+                "member": {
+                  "text": "ftinit.o",
+                  "source_utf8_sha256": "bb674c1a2f101d037c1ade563a28fa62bae97fdb3af4156bef5c283210971425",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libfreetype.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libfreetype.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libfreetype.a",
+                  "external": false,
+                  "source_utf8_sha256": "3bbd82ad2b336f8c14afc1e4b4db3cb95d589d45e26d8c6266453f5fe20094cb"
+                },
+                "member": {
+                  "text": "ftsystem.o",
+                  "source_utf8_sha256": "ea1dee467ec4042f09058eef68a4b96f3c9fc6212a54ca9d046a1033c876e5d1",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libfreetype.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "FT_New_Memory",
+                "source_utf8_sha256": "529a9558d0eecc44b41d1e1f4b88e398108af0e884ac0fe75bc732170d671580",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 27
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libiconv.a": {
+        "bytes": 1647614,
+        "sha256": "898c0d8bfab607c497f7a3232cc00002000b55e3df802f42890d7a10ed4a7070",
+        "status": "not_observed_or_ambiguous",
+        "live_map_observed": false,
+        "why_extract_observed": false,
+        "not_observed_or_ambiguous": true,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libicrt.a": {
+        "bytes": 197384,
+        "sha256": "b8751dd62ed441914761aff4a2b1dc2057be3dc90f26e4aebc8f2ac99a778283",
+        "status": "not_observed_or_ambiguous",
+        "live_map_observed": false,
+        "why_extract_observed": false,
+        "not_observed_or_ambiguous": true,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libicudata.a": {
+        "bytes": 604,
+        "sha256": "5765020339aae2a310d9d10a6b3925c72b57ad0f624dfee59751002e6c62d562",
+        "status": "live_map_observed",
+        "live_map_observed": true,
+        "why_extract_observed": false,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 1,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 7,
+            "canonical_json_sha256": "db1cdb378d31a813762c2196492c4592807e0729fd5b0d2f11d473712da446b6"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 816,
+              "canonical_json_sha256": "bad8838ce7fe9200a36aef746da6c7051d67201b2c256ccac72bb14c61625c5c"
+            },
+            "observation": {
+              "line": 89707,
+              "address_or_index": 1750976,
+              "file_offset": 26921510,
+              "size": 64,
+              "kind": "input_chunk",
+              "section": "DATA",
+              "chunk": {
+                "text": ".rodata.icudt78_dat",
+                "source_utf8_sha256": "da906f34cfe78bfd93623183459734c4ef677722622f6ae5be008d7e6e10fd99",
+                "path_redacted": false
+              },
+              "file": {
+                "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicudata.a",
+                "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicudata.a",
+                "external": false,
+                "source_utf8_sha256": "311ebf274e8f948465801612d91f69ee385da1c2d2b83df640617ef1705ff474"
+              },
+              "member": {
+                "text": "stubdata.ao",
+                "source_utf8_sha256": "721fb1474dc00e22c3da04925a8c4763ee898f8f25fc901685bd68938f474280",
+                "path_redacted": false
+              },
+              "inventory_archive": "lib-eh/libicudata.a",
+              "possible_inventory_archives": [],
+              "possible_lto_generated_input": false,
+              "ambiguities": []
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libicui18n.a": {
+        "bytes": 4720320,
+        "sha256": "97aa00d1538ca467a4d0223afd09c88f04b2a6a0ee1c58d20be4ef746a7b1337",
+        "status": "live_map_observed",
+        "live_map_observed": true,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 8103,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 45965,
+            "canonical_json_sha256": "e4811c0a0f726de85da5287afbc042d91515ab43131f4fb3d0edde7ee284672b"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 836,
+              "canonical_json_sha256": "fb65cd47841241ebfaad4d00377788190f4e6359cb1113adec53128c40c261f7"
+            },
+            "observation": {
+              "line": 3864,
+              "address_or_index": null,
+              "file_offset": 1456486,
+              "size": 9,
+              "kind": "input_chunk",
+              "section": "CODE",
+              "chunk": {
+                "text": "_ZN3icu16BuddhistCalendar16getStaticClassIDEv",
+                "source_utf8_sha256": "2773538051e07d2a7c2fba5e34ffcd4823a99501d95225f8119bca03ea647ac6",
+                "path_redacted": false
+              },
+              "file": {
+                "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicui18n.a",
+                "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicui18n.a",
+                "external": false,
+                "source_utf8_sha256": "a026e1d8c6508754da786e36093c54b80d0d0f6b025376681113acd335846d47"
+              },
+              "member": {
+                "text": "buddhcal.ao",
+                "source_utf8_sha256": "56443149ccba6b979c7fe031a50dd5d88e37a30182fd3a67955e718c63a71ec7",
+                "path_redacted": false
+              },
+              "inventory_archive": "lib-eh/libicui18n.a",
+              "possible_inventory_archives": [],
+              "possible_lto_generated_input": false,
+              "ambiguities": []
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 8102
+        },
+        "why_extract": {
+          "count": 270,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 1351,
+            "canonical_json_sha256": "91b5437c9a2cc123e8ff7515aaf7072f82c15fa7e3db549e7c9c9f54795fb3a2"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1336,
+              "canonical_json_sha256": "a2c66136dc4610eac7770d1903c064119bee30754c59a731b2c6df2680bf9241"
+            },
+            "observation": {
+              "line": 2004,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicui18n.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicui18n.a",
+                  "external": false,
+                  "source_utf8_sha256": "a026e1d8c6508754da786e36093c54b80d0d0f6b025376681113acd335846d47"
+                },
+                "member": {
+                  "text": "calendar.ao",
+                  "source_utf8_sha256": "8032e3106801653ed5a97b5a56d361912a209169dc072d86ba087b1a1f0f4d2a",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libicui18n.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicui18n.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicui18n.a",
+                  "external": false,
+                  "source_utf8_sha256": "a026e1d8c6508754da786e36093c54b80d0d0f6b025376681113acd335846d47"
+                },
+                "member": {
+                  "text": "buddhcal.ao",
+                  "source_utf8_sha256": "56443149ccba6b979c7fe031a50dd5d88e37a30182fd3a67955e718c63a71ec7",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libicui18n.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "_ZN3icu16BuddhistCalendarC1ERKNS_6LocaleER10UErrorCode",
+                "source_utf8_sha256": "6207831e2062f1a8bba0889038f17e52bf6acb759a7890dfbd76093a8f7b2150",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 269
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libicuio.a": {
+        "bytes": 53058,
+        "sha256": "3ab5bd28370ea89618814a950ff64127e01a9698a7292e12436c330bc973935d",
+        "status": "live_map_observed",
+        "live_map_observed": true,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 45,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 274,
+            "canonical_json_sha256": "b04bd31849f711f65706603383a8c05d706fc4554a617e463b8df891f66f8fdd"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 801,
+              "canonical_json_sha256": "ea956917bbc21adcaccdcc9deb9acf5b90d58a716404879f5ad283613e49e481"
+            },
+            "observation": {
+              "line": 16758,
+              "address_or_index": null,
+              "file_offset": 3065235,
+              "size": 145,
+              "kind": "input_chunk",
+              "section": "CODE",
+              "chunk": {
+                "text": "u_locbund_init",
+                "source_utf8_sha256": "62a6f54cd89cf187c973fa3204240609a8c0064d239acd963491b4814b4033b7",
+                "path_redacted": false
+              },
+              "file": {
+                "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuio.a",
+                "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuio.a",
+                "external": false,
+                "source_utf8_sha256": "41886217cadf1d4e89b9907319690e6c0c5ca6c6f674c3977b844803d0d07852"
+              },
+              "member": {
+                "text": "locbund.ao",
+                "source_utf8_sha256": "9e5078926fbf8b268ec72365784c2bb04614395aff11965740074bad8c85e951",
+                "path_redacted": false
+              },
+              "inventory_archive": "lib-eh/libicuio.a",
+              "possible_inventory_archives": [],
+              "possible_lto_generated_input": false,
+              "ambiguities": []
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 44
+        },
+        "why_extract": {
+          "count": 5,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 26,
+            "canonical_json_sha256": "a1b7eb53584a8196dee495798da1988ece955645f2da14c6f09df16ee48cebbd"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1282,
+              "canonical_json_sha256": "b0182a57bddafbc1f53f1ab5ccb2682a698d893ddabe3c3f62c0c3d5d44a29cf"
+            },
+            "observation": {
+              "line": 2278,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuio.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuio.a",
+                  "external": false,
+                  "source_utf8_sha256": "41886217cadf1d4e89b9907319690e6c0c5ca6c6f674c3977b844803d0d07852"
+                },
+                "member": {
+                  "text": "sprintf.ao",
+                  "source_utf8_sha256": "14b31d37995fb541806c6349693980543147375d10575012cf4bc8f8a0179df4",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libicuio.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuio.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuio.a",
+                  "external": false,
+                  "source_utf8_sha256": "41886217cadf1d4e89b9907319690e6c0c5ca6c6f674c3977b844803d0d07852"
+                },
+                "member": {
+                  "text": "locbund.ao",
+                  "source_utf8_sha256": "9e5078926fbf8b268ec72365784c2bb04614395aff11965740074bad8c85e951",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libicuio.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "u_locbund_init",
+                "source_utf8_sha256": "62a6f54cd89cf187c973fa3204240609a8c0064d239acd963491b4814b4033b7",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 4
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libicuuc.a": {
+        "bytes": 2614330,
+        "sha256": "85f853243650c9bc157bb7dd1feff367131dd1dd2ad51d3d751cc6eab8c183c1",
+        "status": "live_map_observed",
+        "live_map_observed": true,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 4632,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 27962,
+            "canonical_json_sha256": "5ef80b83e45698efde934c7063278d09e431fe9f5b296f96173019b49457751d"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 854,
+              "canonical_json_sha256": "eabb13a16166efe552d0a097e38ad628390895a06d56c86e7747b2d757277620"
+            },
+            "observation": {
+              "line": 16832,
+              "address_or_index": null,
+              "file_offset": 3076212,
+              "size": 846,
+              "kind": "input_chunk",
+              "section": "CODE",
+              "chunk": {
+                "text": "_ZN3icu13BreakIterator13buildInstanceERKNS_6LocaleEPKcR10UErrorCode",
+                "source_utf8_sha256": "1f1df00e20963d7c75061ae4f30beb1546246be7b380572586bf0ebe3fbc92a4",
+                "path_redacted": false
+              },
+              "file": {
+                "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuuc.a",
+                "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuuc.a",
+                "external": false,
+                "source_utf8_sha256": "66f014c455c73eb1deab8a6457636baa37c02d55be2ea1822ff94709430ae4d4"
+              },
+              "member": {
+                "text": "brkiter.ao",
+                "source_utf8_sha256": "a32e2a37f6171432b5b3ed50c4cb046871205bd733698ebc1d6568de243495cc",
+                "path_redacted": false
+              },
+              "inventory_archive": "lib-eh/libicuuc.a",
+              "possible_inventory_archives": [],
+              "possible_lto_generated_input": false,
+              "ambiguities": []
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 4631
+        },
+        "why_extract": {
+          "count": 167,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 836,
+            "canonical_json_sha256": "3a4cf9c77e6fd10ce19a6c4af30374a62907e54bd74143822f104bd59eecefdc"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1275,
+              "canonical_json_sha256": "0c0a98e7140e7c10839fac56e5c78076b437ce8a90e409d3b2f679e1c300c48b"
+            },
+            "observation": {
+              "line": 2283,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/intl/breakiterator/breakiterator_methods.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/intl/breakiterator/breakiterator_methods.o",
+                  "external": false,
+                  "source_utf8_sha256": "217b1f5122aaf14a6ead0f2b27bbe06a70f50f7c1c8caec2a8514b30246e59f9"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuuc.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libicuuc.a",
+                  "external": false,
+                  "source_utf8_sha256": "66f014c455c73eb1deab8a6457636baa37c02d55be2ea1822ff94709430ae4d4"
+                },
+                "member": {
+                  "text": "brkiter.ao",
+                  "source_utf8_sha256": "a32e2a37f6171432b5b3ed50c4cb046871205bd733698ebc1d6568de243495cc",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libicuuc.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "_ZN3icu13BreakIterator18createWordInstanceERKNS_6LocaleER10UErrorCode",
+                "source_utf8_sha256": "d310241c87021bbcda6d2a3c344020caea4150ec6e6c2cf79a0b230a8ba28ee6",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 166
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libjpeg.a": {
+        "bytes": 2699124,
+        "sha256": "66a0f594adfec2ee6084bf36f1de8c1ff32998d87957968cc55c141271a3aa7e",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 41,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 206,
+            "canonical_json_sha256": "36a41364bf166a44cb49108c7ade37f115c621c6a72da9408fd9e67c3a9e1cf8"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1174,
+              "canonical_json_sha256": "0ab546feefec11773496803fe6704eba2cce83416f5124610418908837d65cae"
+            },
+            "observation": {
+              "line": 1576,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/gd/libgd/gd_jpeg.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/gd/libgd/gd_jpeg.o",
+                  "external": false,
+                  "source_utf8_sha256": "5e5301f2cc722e5b807e2fbeaaf945232fcb259219ed4e534cf9652208f34d1c"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libjpeg.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libjpeg.a",
+                  "external": false,
+                  "source_utf8_sha256": "073b9accf8e053018e60f3bb191063f6125091344791c7926db82915568c5bb7"
+                },
+                "member": {
+                  "text": "jcapimin.o",
+                  "source_utf8_sha256": "cd219c76d6c877a2fc1cb7663212191fa534ee8fa642f74ae390f29f7b055e57",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libjpeg.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "jpeg_CreateCompress",
+                "source_utf8_sha256": "4d1650fba8f46ea47fbf8b1e63cd440d24f621904f80648d1f3ed144cf336506",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 40
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/liblzma.a": {
+        "bytes": 1049468,
+        "sha256": "92d724330424a56ce6542b62115d8eef8a05adc29f87aada541365d764ad53e8",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 50,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 219,
+            "canonical_json_sha256": "c71eb76b4bb8414b56a0f9b2471f831053af2deda3fe6aaeb41f70cd7bbc6a8a"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1287,
+              "canonical_json_sha256": "94ec3f32bed63015acb92a843bc4ec2933a47c821d57a302f996bf4ad4be877b"
+            },
+            "observation": {
+              "line": 476,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libxml2.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libxml2.a",
+                  "external": false,
+                  "source_utf8_sha256": "9b2f515da8da548f9508c1d4e0464608ad4c23bc852fd813f116e716cfc10aee"
+                },
+                "member": {
+                  "text": "libxml2_la-xzlib.o",
+                  "source_utf8_sha256": "b6ee7dcd411c9d13ff7276eb5707f135ce24328ef51cd19a13ddf10121769278",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libxml2.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/liblzma.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/liblzma.a",
+                  "external": false,
+                  "source_utf8_sha256": "73852b5fd8d105a9f0f8afe5d9d78e836d3cc80a801e4be8817692b5380d653e"
+                },
+                "member": {
+                  "text": "liblzma_la-common.o",
+                  "source_utf8_sha256": "8e699cc8311cb14b5c026b1e5b860b7ffdb2473dd4a62ec9834e2d40341f0639",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/liblzma.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "lzma_code",
+                "source_utf8_sha256": "4fa1975975a8401eec5ae54dd014df318533cb3d23b9e040ede646f73f1a36d1",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 49
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libonig.a": {
+        "bytes": 1932602,
+        "sha256": "62a607553aec01e373825987a12841ade04ed8716d3a501f24b13cf7d4caf0d8",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 42,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 211,
+            "canonical_json_sha256": "3e62f499f7995067d316b93f7f695e267d5c89c17786e607dd2962b1292fefb9"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1180,
+              "canonical_json_sha256": "57418b2e3932e50d66377f7e27427240fa377620b5b386b1c2c78a0c2027ef3a"
+            },
+            "observation": {
+              "line": 2483,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/mbstring/php_mbregex.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/mbstring/php_mbregex.o",
+                  "external": false,
+                  "source_utf8_sha256": "fc8df4668dfabbc578301ef783f9bd2b4ba354b39e5c20cc79dfe8045500ea33"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libonig.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libonig.a",
+                  "external": false,
+                  "source_utf8_sha256": "de42e0e215d34741277abe295a5d736274d6f4bbb2add6cefcefdfbc575db9fc"
+                },
+                "member": {
+                  "text": "regparse.o",
+                  "source_utf8_sha256": "80833c2d72d06765aeb3579e9cdf0b4618d98b1710a25e102fb17e08804a5f90",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libonig.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "onig_foreach_name",
+                "source_utf8_sha256": "8d19e9099b9bcd56ed262c1c35492c483fec1f50977bba7a03de68c513db18e7",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 41
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libpng.a": {
+        "bytes": 1416112,
+        "sha256": "2c34b0a0c622a626a5237de15ef028c04715fbc0dc6821f29b02adf6b23ee823",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 14,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 71,
+            "canonical_json_sha256": "ebbcda51da0bd2355c16c8338671f68426e3801e31596559db4fb4702d00fb13"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1162,
+              "canonical_json_sha256": "c895069d884de28c911cc2f7b3b1dfc4d9b590652b6870be0e56c9f0a9143817"
+            },
+            "observation": {
+              "line": 1502,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/gd/libgd/gd_png.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/gd/libgd/gd_png.o",
+                  "external": false,
+                  "source_utf8_sha256": "779a6bac1a21912cd6e87c51be82cd322c25f87d39874d2800fb3c5dc536066e"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libpng.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libpng.a",
+                  "external": false,
+                  "source_utf8_sha256": "69336cd1fd94675e2a53c0195de8d025bd1e9322a6db6db16fe9c770cebff2b8"
+                },
+                "member": {
+                  "text": "png.o",
+                  "source_utf8_sha256": "e33aea1b7d9525ab2b8c54fc3b9cd057cc255d2fcab9b5769055a9f2b16d7c93",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libpng.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "png_set_sig_bytes",
+                "source_utf8_sha256": "d95acaf59440e939d4b163986672ccf2542239da2e6b99d28e665af5e5b76a95",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 13
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libsharpyuv.a": {
+        "bytes": 77332,
+        "sha256": "02c271be6d0ddb7972cbda861db1468846791931f15e32fb68be5e03651065c6",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 4,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 21,
+            "canonical_json_sha256": "a5d2d04578908f4f07fe8fe8e5a5452b62a84d66b6fc98b0d3d81c4e90d1c066"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1344,
+              "canonical_json_sha256": "22ba0b55addc84cf28be302f11da6f6e341a511df115335d584e5f1d853fbecd"
+            },
+            "observation": {
+              "line": 1572,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libwebp.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libwebp.a",
+                  "external": false,
+                  "source_utf8_sha256": "be36cf518ffc94845f483b910a30f2a20dab623ed39de2906d56ab292f8eac15"
+                },
+                "member": {
+                  "text": "libwebpencode_la-picture_csp_enc.o",
+                  "source_utf8_sha256": "421f249c0df2d7d1a17110efd917f60265813e16cf7de4426e0d7a2b60281f02",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libwebp.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libsharpyuv.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libsharpyuv.a",
+                  "external": false,
+                  "source_utf8_sha256": "55d1eeca2400681c4a43f691e6f6621b70b82641fd7d2d3aaa45784a35f3fecf"
+                },
+                "member": {
+                  "text": "libsharpyuv_la-sharpyuv_csp.o",
+                  "source_utf8_sha256": "675658a13893f05372f4c2ae2007b120ded3636223f4942b9319439ce4c7244b",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libsharpyuv.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "SharpYuvGetConversionMatrix",
+                "source_utf8_sha256": "508b2b882272c383bca07caa0e2e1158f16257506456c9789f2a579ce0a786ea",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 3
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libsodium.a": {
+        "bytes": 1681422,
+        "sha256": "20a6062613a31d64ba8331f9a98ea17ddb92449f224a215dcc3405bd91f4c90d",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 73,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 366,
+            "canonical_json_sha256": "619f532810493dfbff6182cbbf6c6c641c2f3f2a45d12680693a158579100670"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1208,
+              "canonical_json_sha256": "e505ca1076f5f9bbf399c30b9250ef32def06e48d2805d2da78b8f7d9ca34aef"
+            },
+            "observation": {
+              "line": 2562,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/sodium/libsodium.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/sodium/libsodium.o",
+                  "external": false,
+                  "source_utf8_sha256": "97a4dea0e8473164a721ae19d53ec92873dfc8b426ca1d781fa4e0930dacd6fb"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libsodium.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libsodium.a",
+                  "external": false,
+                  "source_utf8_sha256": "df74e9f8ff055d64fa0609f7e123a49c6194d4378385be63d9127228989c6edc"
+                },
+                "member": {
+                  "text": "libsodium_la-aead_aegis128l.o",
+                  "source_utf8_sha256": "a124eb5fc773f2c25ad2749e15546d7296eaf53bf8b1909b29023a7e19dcaeb5",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libsodium.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "crypto_aead_aegis128l_keygen",
+                "source_utf8_sha256": "dbca0601a371422af6330b2dcef2c74eb26976a79fd62c2098441a73fb77688d",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 72
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libsqlite3.a": {
+        "bytes": 6311874,
+        "sha256": "21e4a4312a7a8f98d75d81a6a6bb63c279bdd8b5f1968c5b6b2f7668a4513889",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 1,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 6,
+            "canonical_json_sha256": "5cfc25eba3275bb69c78a091ca88afa14f7a4255abefd63461668a8b90c1df60"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1173,
+              "canonical_json_sha256": "d5c6ab132f3b80ba04eaba4dbd65eca61af4748b61517021491a39ef2df08580"
+            },
+            "observation": {
+              "line": 1381,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/sqlite3/sqlite3.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/sqlite3/sqlite3.o",
+                  "external": false,
+                  "source_utf8_sha256": "59223747d30316f387577345731ca6050acddc7a2a8264923a87e0404357a976"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libsqlite3.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libsqlite3.a",
+                  "external": false,
+                  "source_utf8_sha256": "a2a549430ae9f1392f39078922ca88f7b992bf29794df785eed500d6dc287167"
+                },
+                "member": {
+                  "text": "sqlite3.o",
+                  "source_utf8_sha256": "5407393553dc903b237d8d07acad84542f2e214889c0d88c514b8a209a280c01",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libsqlite3.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "sqlite3_free",
+                "source_utf8_sha256": "039cef40edac86579db1bb44d12aa5d68c7c75998613406b9633dfead4cfe624",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 0
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libssl.a": {
+        "bytes": 4744880,
+        "sha256": "290fc269625ae915e9f32acd31f58300044f48b273ec17e24eefebfcf7b1a2b4",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 40,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 162,
+            "canonical_json_sha256": "be20c5f5cc68b20aa0702e1cd29703fa951a7613e65ee87a4afe4f573bb82d2d"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1283,
+              "canonical_json_sha256": "cde693d67b7e0f41056a469739c5be66d02ccbe990153ee79119fbcaab82124f"
+            },
+            "observation": {
+              "line": 508,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libssl.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libssl.a",
+                  "external": false,
+                  "source_utf8_sha256": "71e966416cd05a120eeb4832d5b2008a96a4981b10a097b5dfedd8010d12b807"
+                },
+                "member": {
+                  "text": "libssl-lib-methods.o",
+                  "source_utf8_sha256": "47cf5f5c8fad774cb378bf5c27c95208e9da860c6cd691089015fcb93cf53e54",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libssl.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libssl.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libssl.a",
+                  "external": false,
+                  "source_utf8_sha256": "71e966416cd05a120eeb4832d5b2008a96a4981b10a097b5dfedd8010d12b807"
+                },
+                "member": {
+                  "text": "libssl-lib-d1_lib.o",
+                  "source_utf8_sha256": "8ea560840938a7ffbfa52487c38fbab7e1f9e039470feb7207db00361abece1c",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libssl.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "dtls1_new",
+                "source_utf8_sha256": "3cfef223e5e78a071094094f7f7ba71a0d66bacc9881dc6860e4464c4c5da2a9",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 39
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libtiff.a": {
+        "bytes": 2591882,
+        "sha256": "f71a68e208f6b70cce3373f3a67d937b2984d3cbfc9ece9fbf8461f292acf09c",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 39,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 196,
+            "canonical_json_sha256": "610b706d3ae85723b8f8f8737db38268544bd27a62c7bad7df49b8e8296430cb"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1364,
+              "canonical_json_sha256": "018b175549394bd456af58226c9c53918b2f0358a4192ac6ca644705d82c375c"
+            },
+            "observation": {
+              "line": 1946,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickCore-7.Q16HDRI.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libMagickCore-7.Q16HDRI.a",
+                  "external": false,
+                  "source_utf8_sha256": "200d2fdc572c0c46a92791ab674c7b741cf8b30c3611d868cff187edd342d417"
+                },
+                "member": {
+                  "text": "MagickCore_libMagickCore_7_Q16HDRI_la-tiff.o",
+                  "source_utf8_sha256": "744bc548e3841e2cbd716106fb6fdc49612675de25966e6c846e7e65f6a2e660",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libMagickCore-7.Q16HDRI.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libtiff.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libtiff.a",
+                  "external": false,
+                  "source_utf8_sha256": "fcec0b029668f2930e9ab08a23f5369f8b7fdfc30418e7214326463f115c2b09"
+                },
+                "member": {
+                  "text": "tif_aux.o",
+                  "source_utf8_sha256": "d59b7224d30ca28c5218bc37ac28a1eac882af989c39c40bf76f00b9680bc9c6",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libtiff.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "TIFFGetFieldDefaulted",
+                "source_utf8_sha256": "2fabaef90910f87e0d2513338c1a97311a5d96da9ea554fa4cbc5b387371a311",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 38
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libwasix_rust_libs.a": {
+        "bytes": 13851546,
+        "sha256": "005ea965ad05e1109fe0f22719b1becd23aa42880a6a33326b5b4342a00cf6ad",
+        "status": "not_observed_or_ambiguous",
+        "live_map_observed": false,
+        "why_extract_observed": false,
+        "not_observed_or_ambiguous": true,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libwasix_sendmail.a": {
+        "bytes": 12964844,
+        "sha256": "18927dfcf5bdaa08a9117a90f8d10417594b7abc07485296da00bb9c191be346",
+        "status": "not_observed_or_ambiguous",
+        "live_map_observed": false,
+        "why_extract_observed": false,
+        "not_observed_or_ambiguous": true,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libwebp.a": {
+        "bytes": 2482104,
+        "sha256": "670ebb6eca74a7ef9fa44f9bc63300edbc78b9405527b07aa3a70abbbd1e066b",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 55,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 276,
+            "canonical_json_sha256": "f1e6d4b830373e1d109f5be91697a29b2566103ddf83e727b9fac62698d5da93"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1317,
+              "canonical_json_sha256": "0e07c350f37565c9f132b2fa22f568a87851f44845108981ca2a7f1509ae9421"
+            },
+            "observation": {
+              "line": 1518,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libwebp.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libwebp.a",
+                  "external": false,
+                  "source_utf8_sha256": "be36cf518ffc94845f483b910a30f2a20dab623ed39de2906d56ab292f8eac15"
+                },
+                "member": {
+                  "text": "libwebpdecode_la-webp_dec.o",
+                  "source_utf8_sha256": "8aeb1a3dac26be221e03952654b33d2607615a7dfc4af6567fa111136394c646",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libwebp.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libwebp.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libwebp.a",
+                  "external": false,
+                  "source_utf8_sha256": "be36cf518ffc94845f483b910a30f2a20dab623ed39de2906d56ab292f8eac15"
+                },
+                "member": {
+                  "text": "libwebpdecode_la-buffer_dec.o",
+                  "source_utf8_sha256": "122bdf86e48445f4ddea48d143cef8f95353f6130395dded302cf429e623626f",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libwebp.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "WebPAvoidSlowMemory",
+                "source_utf8_sha256": "e0a71e59aae25d194347967c564bef174bc17cd50b97b1869da97ccf10b87ff5",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 54
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libxml2.a": {
+        "bytes": 7212900,
+        "sha256": "1f35a454c429497a702c2453d82734ac673fc954798b898ecacf59224b07a302",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 38,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 153,
+            "canonical_json_sha256": "18af8dd5ee0dd3b45b023a93ee4c295be87e081df36804bcf927326771de0226"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1194,
+              "canonical_json_sha256": "57b8112a944394d40fdf79a836b4c000929f6ac89c888e53e8badebf917f9c62"
+            },
+            "observation": {
+              "line": 414,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/dom/inner_outer_html_mixin.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/dom/inner_outer_html_mixin.o",
+                  "external": false,
+                  "source_utf8_sha256": "f3bfd8af53b689f1180d011d62d751ecac051bce7621d44832f12b0d8232718e"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libxml2.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libxml2.a",
+                  "external": false,
+                  "source_utf8_sha256": "9b2f515da8da548f9508c1d4e0464608ad4c23bc852fd813f116e716cfc10aee"
+                },
+                "member": {
+                  "text": "libxml2_la-dict.o",
+                  "source_utf8_sha256": "e7651920c859c379ab05c5162f8d11ed479d9cc0b15af0162682ab1c5f41b83a",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libxml2.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "xmlDictCreate",
+                "source_utf8_sha256": "0dcc04f2b046e43b8f882cf027491eeb6700e007d13796298392aa1b80a670bc",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 37
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libz.a": {
+        "bytes": 462456,
+        "sha256": "40114257c62a5036664f806869191ab8d52cf6af8b565221648e586b31a1ef14",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 14,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 71,
+            "canonical_json_sha256": "e0b13bd23c1a85e87ecc55179855e069c2847b3329eec559da1a166d26c6030c"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1263,
+              "canonical_json_sha256": "9621d0eaf840f31ace4f99e46d13712cb31fd35ac6cdc59bb501de3ca0241eb1"
+            },
+            "observation": {
+              "line": 1382,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libxml2.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libxml2.a",
+                  "external": false,
+                  "source_utf8_sha256": "9b2f515da8da548f9508c1d4e0464608ad4c23bc852fd813f116e716cfc10aee"
+                },
+                "member": {
+                  "text": "libxml2_la-xzlib.o",
+                  "source_utf8_sha256": "b6ee7dcd411c9d13ff7276eb5707f135ce24328ef51cd19a13ddf10121769278",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libxml2.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libz.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libz.a",
+                  "external": false,
+                  "source_utf8_sha256": "abae2ade76bdba327fbb672d24d6a8029bfccd50e12bb185c795de330d450481"
+                },
+                "member": {
+                  "text": "crc32.o",
+                  "source_utf8_sha256": "fc3884eda602f3d0e87e33efd919f78e97cda99e10ffe7bd14f4826094408411",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libz.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "crc32",
+                "source_utf8_sha256": "214a3e69051608677284355b8a04b079aee00f0fcdd64905d299f8da58a3d930",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 13
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "lib-eh/libzip.a": {
+        "bytes": 184016,
+        "sha256": "07c638af02224f1dbd45b25a0fcd8874a33ae93598e868ce9bbec04a7a0aa87c",
+        "status": "live_map_observed",
+        "live_map_observed": true,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 287,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 1727,
+            "canonical_json_sha256": "031122d90f0d8c800c74dbec28d17aa6d222625bf2ff7f884664afdb7e2a0d99"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 801,
+              "canonical_json_sha256": "b53b68f0eef4e62834b330425d7f94567034ae76c5a3ba364dad8b41514d137a"
+            },
+            "observation": {
+              "line": 24681,
+              "address_or_index": null,
+              "file_offset": 4203792,
+              "size": 8,
+              "kind": "input_chunk",
+              "section": "CODE",
+              "chunk": {
+                "text": "_zip_buffer_data",
+                "source_utf8_sha256": "4034f371d21c987c3b2ef13cf8bef52ea646c2febbcfe6382d9274409d7ff7bd",
+                "path_redacted": false
+              },
+              "file": {
+                "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libzip.a",
+                "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libzip.a",
+                "external": false,
+                "source_utf8_sha256": "52a24496e2536a2a5ad5f55891aedec7b946acb3795e3eb07d300147dff14981"
+              },
+              "member": {
+                "text": "zip_buffer.c.obj",
+                "source_utf8_sha256": "443e2b7940b115f214ff9b62b2127fe787afab78e9b74909f39ec60ea0f55cd5",
+                "path_redacted": false
+              },
+              "inventory_archive": "lib-eh/libzip.a",
+              "possible_inventory_archives": [],
+              "possible_lto_generated_input": false,
+              "ambiguities": []
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 286
+        },
+        "why_extract": {
+          "count": 100,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 501,
+            "canonical_json_sha256": "77c3030b9df4dac98e3f173cb26d62818df3dd298b3cb792e7e15ee32d7cd409"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1282,
+              "canonical_json_sha256": "aec58fefbde4f3be6cec2a6cecba770f04986d0ee8284f847281f0412c76057d"
+            },
+            "observation": {
+              "line": 2636,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libzip.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libzip.a",
+                  "external": false,
+                  "source_utf8_sha256": "52a24496e2536a2a5ad5f55891aedec7b946acb3795e3eb07d300147dff14981"
+                },
+                "member": {
+                  "text": "zip_close.c.obj",
+                  "source_utf8_sha256": "273f152cbe291c5486af4d91d6d5a1a070b50eda3c217c2e99313e4ca9925ed5",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libzip.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libzip.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/lib-eh/libzip.a",
+                  "external": false,
+                  "source_utf8_sha256": "52a24496e2536a2a5ad5f55891aedec7b946acb3795e3eb07d300147dff14981"
+                },
+                "member": {
+                  "text": "zip_buffer.c.obj",
+                  "source_utf8_sha256": "443e2b7940b115f214ff9b62b2127fe787afab78e9b74909f39ec60ea0f55cd5",
+                  "path_redacted": false
+                },
+                "inventory_archive": "lib-eh/libzip.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "_zip_buffer_new",
+                "source_utf8_sha256": "a6801d7c537a63a462716c1c57b3a9a6a458cf7130c7b6bc2d2fb40d294df3e6",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 99
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      },
+      "pgsql-eh/lib/libpq.a": {
+        "bytes": 4392304,
+        "sha256": "6a1c8f93df9ffe33f0349b2383b77939d790b33c34328ea1c34e4b1b1b8073c0",
+        "status": "why_extract_observed",
+        "live_map_observed": false,
+        "why_extract_observed": true,
+        "not_observed_or_ambiguous": false,
+        "absence_proves_nonuse": false,
+        "post_binaryen_retention_verified": false,
+        "map": {
+          "count": 0,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 2,
+            "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          },
+          "first_proof": null,
+          "additional_proofs_omitted": 0
+        },
+        "why_extract": {
+          "count": 34,
+          "line_number_list_identity": {
+            "canonical_json_bytes": 171,
+            "canonical_json_sha256": "487482b866b9816467fc30fac7ff93fb0eef8e22255a79f79ca414198dae8160"
+          },
+          "first_proof": {
+            "complete_parsed_row_identity": {
+              "canonical_json_bytes": 1176,
+              "canonical_json_sha256": "eab658c1224e7be385b0492a765fea00d227a82881d259b1b145df8a212806de"
+            },
+            "observation": {
+              "line": 2525,
+              "reference": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php/ext/pgsql/pgsql.o",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php/ext/pgsql/pgsql.o",
+                  "external": false,
+                  "source_utf8_sha256": "96a0c896032dc381f551bf8dd18a9312dd96c349cf4af355130dcf780b61b60c"
+                },
+                "member": null,
+                "inventory_archive": null,
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": [
+                  "no-exact-inventory-archive-member-identity"
+                ]
+              },
+              "extracted": {
+                "file": {
+                  "path": "target/php-wasix-cgi-build/source/php-wasix-deps/pgsql-eh/lib/libpq.a",
+                  "workspace_relative": "target/php-wasix-cgi-build/source/php-wasix-deps/pgsql-eh/lib/libpq.a",
+                  "external": false,
+                  "source_utf8_sha256": "cd2cc9eca01d9d494f0f30e7a50451697adac11b688260fae77c1dad1808972e"
+                },
+                "member": {
+                  "text": "encnames.o",
+                  "source_utf8_sha256": "03a6ed6ad430b2084ceabd923f536b6f0fb02689babfec9ee3b343500c24a1ba",
+                  "path_redacted": false
+                },
+                "inventory_archive": "pgsql-eh/lib/libpq.a",
+                "possible_inventory_archives": [],
+                "possible_lto_generated_input": false,
+                "ambiguities": []
+              },
+              "symbol": {
+                "text": "pg_encoding_to_char",
+                "source_utf8_sha256": "326536d2d08a9011a2159ae6c8154a87bb87ca84586f8f792dd8d834a6d479e2",
+                "path_redacted": false
+              }
+            },
+            "complete_parsed_row_embedded": true
+          },
+          "additional_proofs_omitted": 33
+        },
+        "ambiguous_references": {
+          "count": 0,
+          "canonical_json_bytes": 2,
+          "canonical_json_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "first": null,
+          "additional_events_omitted": 0
+        }
+      }
+    },
+    "complete_parsed_sets": {
+      "map_observations": {
+        "count": 117356,
+        "canonical_json_bytes": 62428681,
+        "canonical_json_sha256": "50eabaa1f7c1946fcbbc08700996b2807ddbb20c8b65a73607f01788d11c9145"
+      },
+      "why_extract_observations": {
+        "count": 2746,
+        "canonical_json_bytes": 3606310,
+        "canonical_json_sha256": "3f8f66dea35475bec5b8ba0496696529999fe34d75765cc8ac9e8029b3f0d152"
+      },
+      "ambiguous_observations": {
+        "count": 44463,
+        "canonical_json_bytes": 6115400,
+        "canonical_json_sha256": "4c650f4bb6e5aaf978a44526e214bff1efd1ae375b2e7df299063868ef58867a"
+      },
+      "unattributed_possible_lto_inputs": {
+        "count": 42214,
+        "canonical_json_bytes": 1274616,
+        "canonical_json_sha256": "259c65588ef415cfd8ab0fa9bfcbc5a0199d65e698969354ee08a1b8b7917cc8"
+      }
+    },
+    "complete_collector_result_identity": {
+      "canonical_json_bytes": 73529974,
+      "canonical_json_sha256": "4b1ab427acf77594166374650b8914819b3fb3224ecfc853fe48de255a82006b"
+    },
+    "global_observation_samples": {
+      "ambiguities": [
+        {
+          "source": "map",
+          "line": 17,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        },
+        {
+          "source": "map",
+          "line": 18,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        },
+        {
+          "source": "map",
+          "line": 19,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        },
+        {
+          "source": "map",
+          "line": 20,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        },
+        {
+          "source": "map",
+          "line": 21,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        },
+        {
+          "source": "map",
+          "line": 23,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        },
+        {
+          "source": "map",
+          "line": 25,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        },
+        {
+          "source": "map",
+          "line": 27,
+          "reasons": [
+            "no-exact-inventory-archive-member-identity"
+          ]
+        }
+      ],
+      "possible_lto_inputs": [
+        {
+          "source": "map",
+          "line": 25259
+        },
+        {
+          "source": "map",
+          "line": 25261
+        },
+        {
+          "source": "map",
+          "line": 25263
+        },
+        {
+          "source": "map",
+          "line": 25265
+        },
+        {
+          "source": "map",
+          "line": 25267
+        },
+        {
+          "source": "map",
+          "line": 25269
+        },
+        {
+          "source": "map",
+          "line": 25271
+        },
+        {
+          "source": "map",
+          "line": 25273
+        }
+      ],
+      "ambiguities_omitted": 44455,
+      "possible_lto_inputs_omitted": 42206
+    },
+    "full_parsed_observations_embedded": false,
+    "summary_is_not_raw_linker_output": true,
+    "same_link_invocation_attestation_verified": false,
+    "post_binaryen_archive_contribution_verified": false,
+    "all_archives_used_verified": false,
+    "full_license_inventory_verified": false,
+    "license_conclusions_made": false,
+    "limitations": [
+      "Inventory bytes/SHA and module identities are caller assertions; bind actual files and command separately.",
+      "Map rows describe the raw CGI link before Binaryen optimization, not final deployed code provenance.",
+      "Only CODE/DATA chunks carry source evidence here; GLOBAL names and other section headers do not.",
+      "why-extract records lazy extraction before GC and is not a complete eager/whole-archive input ledger.",
+      "LTO, merged chunks, copied objects, aliases and duplicate archive-member names can hide original attribution.",
+      "Not observed does not mean unused, and no source/license or legal conclusion is inferred."
+    ]
+  },
+  "source_build_tool_module_captures_unchanged_after_audit": true
+}

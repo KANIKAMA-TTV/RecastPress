@@ -1,0 +1,76 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_json_only_cgi_link_audit_import",
+  "source_commit": "6e3c66422e5bf4b92f20c231016849d816c95e6b",
+  "backend": "llvm",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41323679290",
+  "artifact_id": 13090638558,
+  "artifact_zip_bytes": 44982,
+  "artifact_zip_sha256": "53dee6e179f27c032c4702e1b9b6d462bb927422500f4d4e23fe1eb43995fa87",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "success",
+  "recorded_source_tool_module_capture_chain_cross_checked": true,
+  "source_tool_or_module_binaries_reverified_by_importer": false,
+  "php_or_linker_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "raw_map_or_tsv_acquired_by_importer": false,
+  "collector_rerun_by_importer": false,
+  "product_runtime_selected": false,
+  "full_license_inventory_verified": false,
+  "input_files": {
+    "experiments/php-wasix-cgi-build/import_link_evidence.py": "8edffc7fd117b25db54f020621cd682d5aeae7d78d1167ca3dcfca12025792ac",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/cgi_check.py": "b410fc62e4357ce5daf2db2578b7ff474818d70810d5d17a03dc5d669f80b5b6",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2"
+  },
+  "archive_member_map": {
+    "build.json": "php-wasix-cgi-build/evidence/build.json",
+    "link-audit.json": "php-wasix-cgi-build/evidence/link-audit.json",
+    "ci-stages.json": "php-wasix-cgi-build/evidence/ci-stages.json",
+    "toolchain.json": "php-wasix-cgi-build/evidence/toolchain.json",
+    "linux-llvm-cgi-contract.json": "php-wasix-host-probe/evidence/linux-llvm-cgi-contract.json",
+    "native-cgi-contract.json": "php-wasix-host-probe/evidence/native-cgi-contract.json",
+    "llvm-toolchain-verification.json": "php-wasix-host-probe/evidence/llvm-toolchain-verification.json"
+  },
+  "imported_files": {
+    "build.json": "beefaa45de3586044c74832a5d786ae667c9c09be8d77c348a4d55e791ff607d",
+    "link-audit.json": "7a91c0975715c9d9aa27487a265f98341aa6780a27e0f0e6e046a3ab53f8a6bd",
+    "ci-stages.json": "0e26e17392255655bd764c2a2d54efd474afb3f32595caf631857c084b9c5500",
+    "toolchain.json": "a891ac044ec92a84dad5c4d4ae4906116a3465ca639720f8e1d07d718bd822b4",
+    "linux-llvm-cgi-contract.json": "f1f7da8467ec07b07a50c42338a0d7d7b41ed7ea8d8aa183c114c1825c859323",
+    "native-cgi-contract.json": "569263c5950bd426bcc038856380690bdeb5e93a63dce75f70cf16e33e744077",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  },
+  "observations": {
+    "archive_count": 28,
+    "status_counts": {
+      "why_extract_observed": 17,
+      "not_observed_or_ambiguous": 5,
+      "live_map_observed": 6
+    },
+    "capture_lines": {
+      "map": 117357,
+      "why_extract": 2747
+    },
+    "embedded_first_proofs_verified": 28,
+    "complete_parsed_sets_recomputed_by_importer": false,
+    "raw_map_or_tsv_acquired_by_importer": false,
+    "unobserved_archives": [
+      "lib-eh/libcharset.a",
+      "lib-eh/libiconv.a",
+      "lib-eh/libicrt.a",
+      "lib-eh/libwasix_rust_libs.a",
+      "lib-eh/libwasix_sendmail.a"
+    ],
+    "cgi_fixed_requests_passed": 3,
+    "native_cgi_comparison_passed": true,
+    "build_module_bytes": 40002084,
+    "build_module_sha256": "365897cd5eeb415c0904f9521e637b4b1fb36bf6b4cf8696099ad63065a784e2",
+    "all_archives_used_verified": false,
+    "post_binaryen_archive_contribution_verified": false,
+    "full_license_inventory_verified": false,
+    "license_conclusions_made": false,
+    "source_build_attestation_verified": false,
+    "reproducible_build_verified": false
+  }
+}

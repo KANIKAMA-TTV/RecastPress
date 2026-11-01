@@ -52,4 +52,11 @@ buildはmake_cgiの環境だけにwasm-ldの`-Map`と`--why-extract`を指定し
 
 `link_audit.py --record`は同jobのsource/tool/patch/raw/final module/captureを再照合し、[純粋collector](link_map.py)で解析する。CODE/DATA由来のarchive(member)、GC前の抽出理由、LTO等の曖昧な入力を区別する。archive basenameだけの一致は確定利用へ昇格しない。raw captureはtarget内に留め、公開JSONは512KiB以内で各archiveの最初の根拠、全解析結果の件数/正規化SHA、明示した省略数を保存する。元absolute pathは出力しない。
 
-mapはBinaryen前の観測であり、`--why-extract`はlazy extractionの理由である。未観測を未使用・最終Wasmからの不在・配布権利の確認へ置き換えない。元archive/source/license/noticeの監査は別gateのまま。auditはPHPを再実行せずbuild receiptを変更しない独立stageとし、CGI実行結果も別保存する。この追加は静的/合成確認までで、実linkの観測は次のLinux CIで取得する。
+mapはBinaryen前の観測であり、`--why-extract`はlazy extractionの理由である。未観測を未使用・最終Wasmからの不在・配布権利の確認へ置き換えない。元archive/source/license/noticeの監査は別gateのまま。auditはPHPを再実行せずbuild receiptを変更しない独立stageとし、CGI実行結果も別保存する。実測結果は次段の記録に分ける。
+
+
+source `6e3c664`の[run 41323679290](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41323679290)では、CraneliftとLLVMの両jobがCGI3要求のnative比較と独立link auditに成功した。[Craneliftの取り込み記録](evidence/ci-41323679290-cranelift/provenance.json)と[LLVMの取り込み記録](evidence/ci-41323679290-llvm/provenance.json)に、元commitの全入力照合、ZIP全体の固定SHA、原JSONを保存する。
+
+両jobとも28archive中6件がCODE/DATAのmapで確認でき、17件が抽出履歴のみ、5件が未観測または判定不能だった。未観測側には`libicrt.a`、`libwasix_rust_libs.a`、`libwasix_sendmail.a`が含まれる。LTOやGCの段階があるため、この結果から不要・未使用・最終Wasmに不在とは判断しない。由来やライセンスが未解決のarchiveを監査済みに変える結果でもない。
+
+`import_link_evidence.py --backend cranelift`（LLVMは`--backend llvm`）は同じ固定ZIPから再検証できる。`--verify-only`は保存も行わない。取り込み時にPHP・linkerを実行せず、tool/source/moduleの実バイナリやraw map/TSVを取得しない。同jobが記録したhashの相互照合と、JSONへ埋め込まれた根拠の検証に範囲を限定する。省略された完全観測集合の再解析・Binaryen後の由来追跡・再現ビルドは主張しない。
