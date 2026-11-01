@@ -123,6 +123,12 @@ def main():
         report['build_exit_code'] = built.returncode
         if built.returncode:
             report['diagnostics'] = host.diagnostic(built.stderr, 8192)
+            require(len(built.stdout) <= 16 * 1024 * 1024, 'failed Cargo capture budget')
+            messages = [item['message']['rendered'] for line in built.stdout.splitlines()
+                        if (item := json.loads(line)).get('reason') == 'compiler-message'
+                        and item.get('message', {}).get('level') == 'error'
+                        and isinstance(item.get('message', {}).get('rendered'), str)]
+            report['compiler_error_excerpt'] = host.diagnostic('\n'.join(messages).encode('utf-8'), 8192)
         require(built.returncode == 0, 'P0 test build failed')
         executable = select_test(built.stdout)
         report['test_artifact'] = executable.relative_to(ROOT).as_posix()
@@ -140,6 +146,7 @@ def main():
         require(platform.system() in ['Linux', 'Windows'], 'only Linux and Windows unit inventories are fixed')
         expected = {'cgi_contract::cgi_response::tests::': 9, 'language_contract::tests::': 2,
                     'context_contract::tests::': 1,
+                    'fiber_adapter::tests::': 1,
                     'memory_limits::': 3, 'rpc_fs::tests::': 9,
                     'metering_limits::': 1 if platform.system() == 'Windows' else 2}
         require(len(names) == len(set(names)) == sum(expected.values()), 'unexpected test count')

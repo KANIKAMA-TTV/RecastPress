@@ -1,0 +1,131 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "aa1b1b1c9a315f3b0b812133d54fddeadb3c32e8",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41317440198",
+  "artifact_id": 13088363056,
+  "artifact_zip_bytes": 69884,
+  "artifact_zip_sha256": "c800b396ab23ab60b5b09adeaa4601aa3007325e22a53abf9b15b084831cd960",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "b27f050e5893bfe6aa31305df63b1d369b1766c1566a0fff166b58223c6790ed",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "fb519271c13fbda73fb640ba70f2e7b275eb62dc0c76c7130676dd00b14eac55",
+    "experiments/php-wasix-host-probe/cgi_check.py": "ccb55f9130dd74c767eb4cbaf0662629f61a30cba535756a1732e35f6664c010",
+    "experiments/php-wasix-host-probe/memory_check.py": "1dd73f00dbc46473babc7ad65f916c9cc6276aba598b7f4bff88617b53c8c2a8",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",
+    "experiments/php-wasix-host-probe/unit_check.py": "b107b7d9ac4de3bac74ebac29ac4fd85679341678bfb0901394bcda09fe6d0eb"
+  },
+  "imported_files": {
+    "ci-stages.json": "5fb531b0dfb18f6c058bef21f4b88dc0945815b011f9cca094a57fbaa7305a02",
+    "linux-llvm.json": "a610af182e299b899c820c745877e8a23a45be37bc46c62135127b9c5878feb4",
+    "linux-llvm-module-reuse.json": "cbacfa787b5e96fd418196f28433ec1499b583620d5b6d0d657011a9b994ac09",
+    "linux-llvm-rpc-contract.json": "9993dcfc631bde04a84b191ccaa8d0b683d224b2cb46475f4bc6c604b9f8605a",
+    "linux-llvm-php-memory-cap.json": "62bc7494dfff00c3a375caaadf1c576c911204965937cf23803dbcbfcdb1a4f0",
+    "linux-llvm-language-contract.json": "228e9666dfd326741fbfd5fe660bec33fb7a88c406b131234d7c24c28e9135e3",
+    "linux-llvm-unit-contract.json": "90b5a23cce5fd574fd9ca7a971e3c11f11e749ac6388fc9925acbed0534c511b",
+    "linux-llvm-dependency-inventory.json": "22cf6ed8c0a2dbcf0250d8fc143e947a110689df26d290d423d352fc35cd6859",
+    "linux-llvm-php-operation-budget.json": "04a69fe2ff394bcc92d4e939a108bc634dc876c1663d48264e8f9920d828f8f8",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  },
+  "observations": {
+    "module_reuse_passed": true,
+    "language_comparison_passed": false,
+    "case_results": {
+      "basic": {
+        "equal_to_native": true
+      },
+      "exceptions": {
+        "equal_to_native": true
+      },
+      "fiber": {
+        "equal_to_native": false,
+        "difference": "contract fields mismatch: fiber"
+      }
+    },
+    "compile_elapsed_ms": 104796,
+    "request_execution_elapsed_ms": [
+      56,
+      56,
+      55
+    ],
+    "counter_scope": "explicit PHP Module::new call site; internal backend operations are not instrumented",
+    "timing_scope": "one CI runner; run_wasm includes startup/shutdown; not a product latency benchmark",
+    "private_rpc_diagnostic_passed": true,
+    "php_memory_diagnostic_passed": true,
+    "incomplete_rpc_case_accepted": false,
+    "test_memory_cap_bytes": 268435456,
+    "production_memory_limit_verified": false,
+    "real_db": false,
+    "standard_wpdb": false,
+    "rpc_case_acceptance": [
+      true,
+      true,
+      false,
+      true
+    ],
+    "memory_case_execution_results": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "memory_observations": [
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 65536,
+        "shared": true,
+        "size_pages": 6734
+      }
+    ],
+    "backend": "llvm",
+    "bounded_unit_tests_passed": 26,
+    "formal_eh_wat_metering_passed": true,
+    "php_cpu_budget_verified": false,
+    "declared_license_inventory_recorded": true,
+    "legal_compatibility_evaluated": false,
+    "compiler_reachability": {
+      "wasmer-compiler-llvm": {
+        "runtime": true,
+        "build": false,
+        "dev": false
+      },
+      "wasmer-compiler-cranelift": {
+        "runtime": false,
+        "build": false,
+        "dev": false
+      }
+    },
+    "php_operation_budget_diagnostic_passed": false,
+    "operation_failure_phase": "recycle receives an instance-less env clone: final points unavailable",
+    "php_operation_cases_executed": 3,
+    "operation_raw_runner_outcomes": [
+      true,
+      false,
+      true
+    ],
+    "start_charged_points": 37,
+    "php_loop_ready_observed": true,
+    "actual_final_exhausted_observed": false
+  }
+}

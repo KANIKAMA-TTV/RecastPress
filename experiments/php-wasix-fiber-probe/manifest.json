@@ -1,0 +1,278 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.wasix-php-fiber-draft.v0.5",
+  "phase": "draft_patch_static_only",
+  "scope": "NTS wasm32 PHP 8.5.12, exactly one request per fresh WASI instance",
+  "upstream": {
+    "repository": "wasix-org/php",
+    "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+    "source_hash_basis": "UTF-8 bytes cached from primary GitHub files at the full commit; Git blob SHA-1 recomputed from those bytes; builder must independently verify its fetched source",
+    "source_tree_written": false
+  },
+  "source_patches": [
+    {
+      "path": "patches/0001-nts-fresh-wasi-zend-fibers.patch",
+      "bytes": 19479,
+      "sha256": "2c334bcfcc34cb518971a8b7965ede50032b2813fa0c426ddfde206a8105d231",
+      "files": [
+        {
+          "path": "configure.ac",
+          "change": "modify",
+          "before": {
+            "bytes": 53849,
+            "git_blob_sha1": "6fd5a92366a38c927dba8e4d1b5488d96464ca27",
+            "sha256": "349248c22ad03d509a717c79d6c17987858b8dcc8c050a640d29d357de59d353"
+          },
+          "after": {
+            "bytes": 55143,
+            "git_blob_sha1": "ae18278e7752ddd6546349766e836fde01bb0891",
+            "sha256": "cbe8ba27ade859f17de47904ecbb4a84e81472cbd4ffe5316ef6fa32590de7ce"
+          }
+        },
+        {
+          "path": "Zend/zend_fibers.c",
+          "change": "modify",
+          "before": {
+            "bytes": 34251,
+            "git_blob_sha1": "8e73330e51bbfcc4b3e150a553a32b88f4cc12a5",
+            "sha256": "4e06b55134e35c9eb6a193b9f4c5b7f02b630b10355e6bc8e2384aa9a4cf5cfb"
+          },
+          "after": {
+            "bytes": 43637,
+            "git_blob_sha1": "9c864b1617b7b58754ba823fc9a341a1c1c3d314",
+            "sha256": "0573d1250ebd8204b21b387481b89ec2c0e347825be3925d3ba7c2977804d353"
+          }
+        },
+        {
+          "path": "Zend/asm/recastpress_wasix_fiber.S",
+          "change": "add",
+          "before": null,
+          "after": {
+            "bytes": 1153,
+            "git_blob_sha1": "c7edb0570871f015c971aca30a34ea585d8500ac",
+            "sha256": "c0f44bef8e8a4d54713e3ba989be064995ae527924724edcd4bec1f8e4040c19"
+          }
+        }
+      ]
+    }
+  ],
+  "unchanged_reference_headers": [
+    {
+      "path": "Zend/zend_fibers.h",
+      "bytes": 5412,
+      "git_blob_sha1": "9442019bfa25921eea9707e8e4d3aadb078fa3fc",
+      "sha256": "bbb59432efe483d740085f8417ece5a83eb0c2e5f6ce1340ad332f7217ab5474"
+    }
+  ],
+  "fixed_assembly": {
+    "path": "fixtures/zend_wasix_fiber.S",
+    "bytes": 1153,
+    "sha256": "c0f44bef8e8a4d54713e3ba989be064995ae527924724edcd4bec1f8e4040c19",
+    "patch_destination": "Zend/asm/recastpress_wasix_fiber.S",
+    "destination_bytes_equal": true
+  },
+  "context_api_reference": {
+    "repository": "wasix-org/wasix-libc",
+    "commit": "09503b230e8acc721c1e013ca28a41bf149e4ee2",
+    "header": "libc-bottom-half/headers/public/wasix/context.h",
+    "implementation": "libc-top-half/musl/src/wasix/context.c",
+    "role": "public API reference, not a source-build attestation of the pinned sysroot archive"
+  },
+  "sysroot_source_build_attestation_verified": false,
+  "build_design": {
+    "toolchain_manifest": "experiments/php-wasix-cgi-build/manifest.json",
+    "toolchain_manifest_sha256": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "inherit_pinned_assets_only": true,
+    "reuse_cgi_source_checkout": false,
+    "configure_script": "wasix-configure-eh-64.sh",
+    "extra_configure_flags": [
+      "--enable-rp-wasix-fibers",
+      "--disable-zts"
+    ],
+    "regenerate_configure_after_patch": true,
+    "make_target": "cli",
+    "required_extra_c_cxx_flags": [
+      "-fno-lto"
+    ],
+    "assembly_extra_flags": [
+      "-fno-lto"
+    ],
+    "required_link_flags": [
+      "-Wl,--export=rp_zend_wasix_switch_raw",
+      "-Wl,--export=rp_zend_wasix_entry",
+      "-Wl,--export=rp_zend_wasix_dispatch",
+      "-Wl,--export=rp_zend_wasix_bootstrap_sp",
+      "-Wl,--export=__stack_pointer"
+    ],
+    "export_flags_applied": false,
+    "backend_macro": "ZEND_FIBER_WASIX",
+    "default_enabled": false,
+    "changed_feature": "explicit WASIX backend replaces only the opt-in fiber backend; native boost/ucontext and default WASI failure branches remain",
+    "forbidden_variants": [
+      "ZTS",
+      "wasm64",
+      "ucontext combined with WASIX",
+      "Valgrind",
+      "ASan",
+      "persistent multi-request guest",
+      "guest fork/vfork/thread spawning"
+    ]
+  },
+  "runtime_design": {
+    "engine": "wasmer 7.2.0, backend-specific Cranelift and LLVM records required",
+    "wasix": "0.702.0",
+    "enable_asynchronous_threading": true,
+    "require_engine_supports_async": true,
+    "max_threads": 1,
+    "enable_deep_sleep": false,
+    "host_environment": false,
+    "host_directories": false,
+    "network": "Unsupported",
+    "real_database": false,
+    "standard_wpdb": false,
+    "stdin": "closed finite input",
+    "stdout_limit_bytes": 65536,
+    "stderr_limit_bytes": 65536,
+    "fresh_instance_per_request": true,
+    "compile_module_reuse_allowed": true,
+    "required_host_teardown_order": "complete or fail run_wasm; drop context executor and runtime references before releasing instance memory; collect pipe EOF and owned-child reap",
+    "host_policy_integrated": false
+  },
+  "backend_design": {
+    "context_handle": "pointer to private libc-allocation descriptor, never a u64-to-void* cast",
+    "descriptor_fields": [
+      "u64 context id",
+      "owner context pointer while live",
+      "per-context transfer-pointer mailbox",
+      "physical stack header",
+      "aligned stack top",
+      "created/started/retired flags",
+      "registry link"
+    ],
+    "transfer": "existing shallow transfer ownership; receive mailbox before sender cleanup; no extra zval addref",
+    "bootstrap": "NTS single-active-context bootstrap word; assembly installs aligned target SP before the first C prologue; C dispatcher reads EG(current_fiber_context)",
+    "switch": "Wasm-local old SP -> raw wasix_32v1.context_switch(i64)->i32 -> restore old SP -> C errno processing; no target SP prechange",
+    "stack_allocator": "existing Zend page rounding, minimum, mmap usable stack and guard reservation, with WASIX-only size-wrap rejection and libc-allocated metadata",
+    "stack_size": "existing fiber.stack_size; wasm32 default 1048576 bytes; oracle comparison explicitly passes 2097152 bytes",
+    "logical_cleanup": "existing VM state, observer, zval, Throwable/bailout and suspended-GC/finally control flow retained in source",
+    "quarantine": "all descriptor and stack headers outside request ZendMM; successful, retired and failed-init allocations retained; no guest free, munmap or reuse",
+    "request_end": "cancel remaining non-main native contexts, clear owner/mailbox links, retain guest allocations beyond request and module shutdown",
+    "persistent_guard": "second zend_fiber_init in the same guest terminates with fixed request failure",
+    "unexpected_backend_errno": "fixed stderr diagnostic and _Exit(125); never a successful PHP transfer",
+    "host_trap": "not intercepted or translated to a PHP Throwable; host must preserve failed result",
+    "create_failure": "throws an initialization exception; no silent fallback; allocated guest stack stays quarantined"
+  },
+  "required_postopt_inspector": {
+    "integrated": false,
+    "before_module_compile": true,
+    "function_exports": {
+      "rp_zend_wasix_switch_raw": "(i64)->i32, 7/9 register-only switch operations",
+      "rp_zend_wasix_entry": "()->(), exactly bootstrap load/SP set/direct dispatch/unreachable/end",
+      "rp_zend_wasix_dispatch": "()->(), distinct defined C function"
+    },
+    "actual_stack_global": {
+      "name": "__stack_pointer",
+      "value_type": "i32",
+      "mutable": true
+    },
+    "bootstrap_export": {
+      "name": "rp_zend_wasix_bootstrap_sp",
+      "meaning": "immutable i32 address export of an ordinary aligned linear-memory uintptr_t word, not the SP global",
+      "entry_i32_const_must_equal_exported_address": true,
+      "alignment_bytes": 4,
+      "bytes": 4,
+      "within_initial_linear_memory": true,
+      "distinct_from_sp_global": true
+    },
+    "raw_import": {
+      "module": "wasix_32v1",
+      "name": "context_switch",
+      "signature": "(i64)->i32"
+    },
+    "reject": [
+      "switch linear-memory stores or extra calls",
+      "SP change before raw import",
+      "wrong import or function type",
+      "fake or immutable SP global",
+      "entry C call before SP installation",
+      "entry load from an unbound bootstrap address",
+      "normal context entry return",
+      "unexpected optimized instruction shapes"
+    ]
+  },
+  "first_comparison_plan": {
+    "fixed_fixture": {
+      "path": "fixtures/fiber_contract.php",
+      "sha256": "9da4b5ffb45677eaa0e81ddbac8c101c692663bf685bbc1157a4689c61c17831",
+      "schema": "recastpress.php-fiber-contract.v0.5",
+      "owner": "native oracle agent; referenced without modification"
+    },
+    "validator": "native_contract.py expected_values()/validate() in this experiment",
+    "invocation": "fixed PHP code only, -n -d fiber.stack_size=2097152; no arbitrary guest paths/code",
+    "cases": [
+      "multi_lifetime: four simultaneously suspended Fibers, one completes while others retain live recursion locals",
+      "nested: nested start/resume and current Fiber identity",
+      "values: suspend/resume value ownership and return values",
+      "throw_catch_finally: injected and unhandled exceptions, catch/finally order",
+      "suspended_gc: self-referencing suspended Fiber, GC, WeakReference and finally",
+      "api_errors: existing Fiber invalid-operation semantics"
+    ],
+    "required_backends": [
+      "Linux Cranelift 7.2.0",
+      "Linux LLVM 7.2.0"
+    ],
+    "compare": "strict native oracle semantics, warnings and no unexpected output; record observed runtime fields without replacing failed observations",
+    "separate_ini_request": {
+      "status": "planned_not_executed",
+      "cases": [
+        "valid explicit stack size applies to newly started Fibers",
+        "too-small stack fails using the existing minimum-size path",
+        "negative INI setting is rejected; capture warning and unchanged value",
+        "default size is architecture-specific and must be recorded, not normalized"
+      ]
+    },
+    "separate_oom_request": {
+      "status": "planned_not_executed",
+      "design": "inside a Fiber, memory_limit=16M then fixed str_repeat of 64MiB; compare native/patched fatal/bailout outcome and require absence of a post-allocation success marker",
+      "scope": "PHP heap OOM/bailout only; no deterministic physical C-stack exhaustion claim; own finite child required"
+    },
+    "recovery": "after every intentional failed child, run the fixed normal contract in a separate fresh WASI request",
+    "expected_values_weakened": false
+  },
+  "static_verification": {
+    "in_memory_exact_patch_apply": true,
+    "changed_base_rejected": true,
+    "truncated_patch_rejected": true,
+    "assembly_patch_matches_fixed_fixture": true,
+    "original_checkout_modified": false,
+    "c_compiled": false,
+    "assembly_assembled": false,
+    "php_or_guest_executed": false,
+    "postopt_module_inspected": false,
+    "whole_source_patch_and_post_hash_guards_verified": true,
+    "rejected_mutants": 6,
+    "existing_php_logical_control_flow_byte_identical": true,
+    "outer_switch_byte_identical_except_backend_dispatch": true
+  },
+  "claims": {
+    "php_fiber_compatible": false,
+    "product_runtime_selected": false,
+    "resource_limits_verified": false,
+    "stack_guards_verified": false,
+    "stack_free_verified": false,
+    "stack_reuse_verified": false,
+    "immediate_native_context_reclamation_verified": false,
+    "rss_or_compiler_memory_limited": false,
+    "persistent_requests_supported": false,
+    "zts_supported": false
+  },
+  "open_gates": [
+    "independently verify upstream source/blob hashes and pinned toolchain before applying",
+    "compile and inspect the actual postopt PHP Wasm; the existing two-slot inspector is insufficient for this dynamic bootstrap",
+    "run strict native/patched six-case oracle on both backends",
+    "verify PHP exception, bailout and GC behavior in the presence of canceled native continuations",
+    "prove canceled contexts do not re-enter guest code referencing logically freed PHP objects",
+    "measure quarantine growth and resulting OOM differences under many sequential Fibers",
+    "do not free quarantined storage at PHP request shutdown; no public guest join/cancellation fence was identified"
+  ]
+}

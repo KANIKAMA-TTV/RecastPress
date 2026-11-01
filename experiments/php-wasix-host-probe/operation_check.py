@@ -29,6 +29,8 @@ NORMAL_SHA = '8c6589c02c7142f7d12eedfce4294a601698e1dfdccbc3319561c35a8cf81f30'
 LOOP_SHA = 'c2452884022076d2aa1441754dd64429be1850d21b191898d186beb2f27fa111'
 READY = b'RP_PHP_OPERATION_BUDGET_READY\n'
 CASES = ['normal_first', 'loop_exhausted', 'normal_recovery']
+OBSERVER_STRATEGY = 'setup-captured-typed-global-handles'
+OBSERVER_IDENTITY = 'sha256-of-pinned-wasmer-7.2.0-Global-Debug'
 require, digest = host.require, host.digest
 
 
@@ -44,6 +46,33 @@ def expected_php():
             'echo': 'recastpress-v0.5-php-operation-budget'}
 
 
+def validate_handle_lifecycle(case):
+    lifecycle = case['metering_handle_lifecycle']
+    require(type(lifecycle) is dict and set(lifecycle) == {
+        'strategy', 'capture_count', 'take_count', 'drop_count', 'retained_global_handles',
+        'setup_global_identity_sha256', 'recycle_global_identity_sha256', 'identity_scheme',
+        'same_store_verified', 'recycle_types_verified', 'released_before_prior_recycle',
+        'prior_recycle_present', 'prior_recycle_calls', 'prior_recycle_returns',
+        'instance_retained', 'environment_lookup_at_recycle', 'globals_reconstructed', 'global_setter_calls',
+    }, 'captured-global lifecycle shape')
+    for field, expected in [
+        ('strategy', OBSERVER_STRATEGY), ('identity_scheme', OBSERVER_IDENTITY),
+        ('capture_count', 1), ('take_count', 1), ('drop_count', 1), ('retained_global_handles', 0),
+        ('same_store_verified', True), ('recycle_types_verified', True),
+        ('released_before_prior_recycle', True), ('instance_retained', False),
+        ('environment_lookup_at_recycle', False), ('globals_reconstructed', False), ('global_setter_calls', 0),
+    ]:
+        equal(lifecycle[field], expected, 'metering lifecycle ' + field)
+    identity = lifecycle['setup_global_identity_sha256']
+    require(type(identity) is str and len(identity) == 64
+            and all(character in '0123456789abcdef' for character in identity), 'opaque setup-global identity')
+    equal(lifecycle['recycle_global_identity_sha256'], identity, 'same setup/recycle global handles')
+    require(type(lifecycle['prior_recycle_present']) is bool, 'prior-recycle presence')
+    count = int(lifecycle['prior_recycle_present'])
+    equal(lifecycle['prior_recycle_calls'], count, 'prior-recycle exact forwarding')
+    equal(lifecycle['prior_recycle_returns'], count, 'prior-recycle returned')
+
+
 def validate_result(value, pid, backend):
     for field, expected in [
         ('schema', 'recastpress.php-wasix-operation-budget.v0.5'), ('process_pid', pid),
@@ -54,6 +83,8 @@ def validate_result(value, pid, backend):
         ('configured_initial_points', {'kind': 'remaining', 'points': POINTS}),
         ('start_execution_included', True), ('fresh_post_start_points_equal', True),
         ('setup_observation_phase', 'after-Instance.new-start-before-_initialize'),
+        ('final_observer_strategy', OBSERVER_STRATEGY),
+        ('final_observation_phase', 'original-recycle-store-after-guest-before-prior-recycle'),
     ]:
         equal(value[field], expected, 'host ' + field)
     start = value['module_start_function']
@@ -109,6 +140,7 @@ def validate_result(value, pid, backend):
     reference = value['post_start_reference_points']
     require(type(reference) is int and 0 < reference <= POINTS, 'valid first post-start remaining points')
     for index, case in enumerate(value['cases']):
+        validate_handle_lifecycle(case)
         loop = index == 1
         for field, expected in [
             ('name', CASES[index]), ('request_number', index + 1),

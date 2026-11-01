@@ -17,6 +17,29 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SOURCE = '071c9443ba56b2b5dd27032567ed3e7a9c8d0045'
 SPECS = {
+    '41317440198-cranelift': {
+        'run_id': '41317440198', 'backend': 'cranelift',
+        'source': 'aa1b1b1c9a315f3b0b812133d54fddeadb3c32e8',
+        'kind': 'compiler-matrix-recycle-missing', 'artifact': 13088401107, 'bytes': 69690,
+        'sha256': 'ee963280f69ac9a9a26a79dfee702520f6efb92914d749abea22cb69c3c3e39e',
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-cranelift.json', 'linux-cranelift-module-reuse.json',
+                    'linux-cranelift-rpc-contract.json', 'linux-cranelift-php-memory-cap.json',
+                    'linux-cranelift-language-contract.json', 'linux-cranelift-unit-contract.json',
+                    'linux-cranelift-dependency-inventory.json', 'linux-cranelift-php-operation-budget.json'],
+    },
+    '41317440198-llvm': {
+        'run_id': '41317440198', 'backend': 'llvm',
+        'source': 'aa1b1b1c9a315f3b0b812133d54fddeadb3c32e8',
+        'kind': 'compiler-matrix-recycle-missing', 'artifact': 13088363056, 'bytes': 69884,
+        'sha256': 'c800b396ab23ab60b5b09adeaa4601aa3007325e22a53abf9b15b084831cd960',
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-llvm.json', 'linux-llvm-module-reuse.json',
+                    'linux-llvm-rpc-contract.json', 'linux-llvm-php-memory-cap.json',
+                    'linux-llvm-language-contract.json', 'linux-llvm-unit-contract.json',
+                    'linux-llvm-dependency-inventory.json', 'linux-llvm-php-operation-budget.json',
+                    'llvm-toolchain-verification.json'],
+    },
     '41314440084-cranelift': {
         'run_id': '41314440084', 'backend': 'cranelift',
         'source': '1462082b72205096ee7549862347818aa5a789a1',
@@ -422,15 +445,16 @@ def verify_rpc_memory(data, backend='llvm', matrix=False, operation_start_reject
     return summary
 
 
-def verify_compiler_matrix(data, backend, operation_start_rejected=False):
-    summary = verify_rpc_memory(data, backend, matrix=True, operation_start_rejected=operation_start_rejected)
+def verify_compiler_matrix(data, backend, operation_start_rejected=False, operation_recycle_missing=False):
+    operation_failed = operation_start_rejected or operation_recycle_missing
+    summary = verify_rpc_memory(data, backend, matrix=True, operation_start_rejected=operation_failed)
     prefix = 'linux-' + backend
     unit, inventory = data[prefix + '-unit-contract.json'], data[prefix + '-dependency-inventory.json']
     for report in [unit, inventory]:
         verify_sources(report)
     require(unit['outcome'] == 'fixed_p0_unit_tests_passed' and unit['tests_passed'] is True
             and unit['owned_test_reaped'] is True and unit['exit_code'] == 0
-            and len(unit['listed_tests']) == (26 if operation_start_rejected else 25) and unit['backend'] == backend
+            and len(unit['listed_tests']) == (26 if operation_failed else 25) and unit['backend'] == backend
             and unit['php_executed'] is False and unit['php_cpu_budget_verified'] is False,
             'missing bounded WAT unit result')
     summaries = unit_check.validate_metering_rows(unit['wat_metering_observations'], backend, 'Linux')
@@ -457,7 +481,7 @@ def verify_compiler_matrix(data, backend, operation_start_rejected=False):
                 and llvm['llvm_config_version'] == '22.1.8'
                 and llvm['verifier_source_sha256'] == sha(reader.original(
                     'experiments/php-wasix-host-probe/prepare_host_llvm.py')), 'host LLVM identity changed')
-    summary.update(backend=backend, bounded_unit_tests_passed=26 if operation_start_rejected else 25,
+    summary.update(backend=backend, bounded_unit_tests_passed=26 if operation_failed else 25,
                    formal_eh_wat_metering_passed=True,
                    php_cpu_budget_verified=False, declared_license_inventory_recorded=True,
                    legal_compatibility_evaluated=False, compiler_reachability=reach)
@@ -476,6 +500,50 @@ def verify_compiler_matrix(data, backend, operation_start_rejected=False):
         summary.update(php_operation_budget_diagnostic_passed=False,
                        operation_failure_phase='before instantiation: Wasm start section guard',
                        php_operation_cases_executed=0)
+    if operation_recycle_missing:
+        operation = data[prefix + '-php-operation-budget.json']
+        verify_sources(operation)
+        require(operation['outcome'] == 'execution_failed' and operation['diagnostic_passed'] is False
+                and operation['owned_host_reaped'] is True and operation['exit_code'] == 1
+                and operation['observed_phases'] == ['module_compile', 'normal_first', 'loop_exhausted', 'normal_recovery'],
+                'missing-recycle diagnostic verdict changed')
+        require(operation['native_artifact_sha256'] == data[prefix + '-module-reuse.json']['native_artifact_sha256'],
+                'operation used a different host binary')
+        value = operation['native_result']
+        require(value['ok'] is False and value['phase'] == 'normal_recovery'
+                and value['start_execution_included'] is True and value['budget_reset_count'] == 0
+                and value['compiled_metering_initializers']['verified'] is True
+                and value['fresh_post_start_points_equal'] is True and value['post_start_reference_points'] == 99999963
+                and value['php_wasm_operation_budget_verified_for_fixed_cases'] is False,
+                'unobserved final counters became a budget verdict')
+        cases = value['cases']
+        require(len(cases) == 3 and [case['ok'] for case in cases] == [True, False, True], 'operation raw outcomes')
+        for index, case in enumerate(cases):
+            require(case['name'] == ['normal_first', 'loop_exhausted', 'normal_recovery'][index]
+                    and case['request_number'] == index + 1 and case['expectation_met'] is False
+                    and case['post_start_points'] == {'kind': 'remaining', 'points': 99999963}
+                    and case['start_charged_points'] == 37 and case['budget_reset_count'] == 0
+                    and case['final_points'] is None and case['budget_exhausted'] is False
+                    and case['metering_observation_error'] == 'recycle did not expose one static instance'
+                    and case['setup_observation_count'] == case['recycle_observation_count'] == 1
+                    and case['stdout_eof'] is True and case['stderr_eof'] is True
+                    and case['stdout_overflow'] is False and case['stderr_overflow'] is False
+                    and case['stderr_bytes'] == 0, 'missing final observation changed')
+            wire = bytes.fromhex(case['stdout_hex'])
+            require(len(wire) == case['stdout_bytes'] and sha(wire) == case['stdout_sha256'], 'operation raw output binding')
+            if index == 1:
+                require(wire == b'RP_PHP_OPERATION_BUDGET_READY\n' and case['ready_reached'] is True
+                        and case['php'] is None and 'ExitCode::45' in case['execution_error'], 'loop raw failure changed')
+            else:
+                expected = {'php_version':'8.5.12','version_id':80512,'php_int_size':8,'sapi':'cli','kind':'normal',
+                            'globals_before_present':False,'globals_after':'request-local','echo':'recastpress-v0.5-php-operation-budget'}
+                language_check.equal(language_check.parse_json(wire), expected, 'normal operation PHP output')
+                language_check.equal(case['php'], expected, 'decoded normal operation output')
+        summary.update(php_operation_budget_diagnostic_passed=False,
+                       operation_failure_phase='recycle receives an instance-less env clone: final points unavailable',
+                       php_operation_cases_executed=3, operation_raw_runner_outcomes=[True, False, True],
+                       start_charged_points=37, php_loop_ready_observed=True,
+                       actual_final_exhausted_observed=False)
     return summary
 
 
@@ -502,7 +570,7 @@ def main():
         archived = {name: archive.read(name) for name in names}
     for name in names - set(members.values()):
         require(spec['kind'] in ['module-reuse', 'php-memory-startup-failed', 'rpc-memory-passed',
-                                'compiler-matrix', 'compiler-matrix-start-rejected'],
+                                'compiler-matrix', 'compiler-matrix-start-rejected', 'compiler-matrix-recycle-missing'],
                 'unexpected CGI artifact member')
         require(archived[name] == reader.original(spec['directory'] + '/evidence/' + name),
                 'historical evidence changed in CI')
@@ -518,9 +586,10 @@ def main():
         summary = verify_memory_startup_failure(data)
     elif spec['kind'] == 'rpc-memory-passed':
         summary = verify_rpc_memory(data)
-    elif spec['kind'] in ['compiler-matrix', 'compiler-matrix-start-rejected']:
+    elif spec['kind'] in ['compiler-matrix', 'compiler-matrix-start-rejected', 'compiler-matrix-recycle-missing']:
         summary = verify_compiler_matrix(data, spec['backend'],
-                                        operation_start_rejected=spec['kind'] == 'compiler-matrix-start-rejected')
+                                        operation_start_rejected=spec['kind'] == 'compiler-matrix-start-rejected',
+                                        operation_recycle_missing=spec['kind'] == 'compiler-matrix-recycle-missing')
     else:
         data['_raw_toolchain'] = raw['toolchain.json']
         if spec['kind'] == 'cgi-contract':

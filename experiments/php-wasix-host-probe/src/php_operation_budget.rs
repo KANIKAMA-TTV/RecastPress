@@ -5,7 +5,7 @@ use std::fmt;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result, ensure};
@@ -14,13 +14,10 @@ use sha2::{Digest, Sha256};
 use wasmer::sys::CompilerConfig;
 use wasmer::wasmparser::Operator;
 use wasmer::{
-    AsStoreMut, Engine, ExportIndex, GlobalInit, GlobalType, Instance, Memory, Module, Mutability,
-    StoreMut, Type,
+    AsStoreMut, Engine, ExportIndex, Global, GlobalInit, GlobalType, Instance, Memory, Module,
+    Mutability, StoreMut, Type,
 };
-use wasmer_middlewares::{
-    Metering,
-    metering::{MeteringPoints, get_remaining_points},
-};
+use wasmer_middlewares::Metering;
 use wasmer_wasix::runtime::module_cache::HashedModuleData;
 use wasmer_wasix::runtime::task_manager::tokio::TokioTaskManager;
 use wasmer_wasix::runtime::task_manager::{SpawnType, TaskWasm, TaskWasmRecycleProperties};
@@ -32,6 +29,8 @@ use wasmer_wasix::{
 use super::{LimitedPipe, OUTPUT_LIMIT, collect_pipe};
 
 const POINTS: u64 = 100_000_000;
+const OBSERVER_STRATEGY: &str = "setup-captured-typed-global-handles";
+const OBSERVER_IDENTITY: &str = "sha256-of-pinned-wasmer-7.2.0-Global-Debug";
 const READY: &[u8] = b"RP_PHP_OPERATION_BUDGET_READY\n";
 const NAMES: [&str; 3] = ["normal_first", "loop_exhausted", "normal_recovery"];
 const NORMAL: &str = r#"
@@ -78,6 +77,9 @@ pub fn describe(report: &mut Value) {
     report["setup_observation_phase"] = json!("after-Instance.new-start-before-_initialize");
     report["fresh_post_start_points_equal"] = json!(false);
     report["post_start_reference_points"] = Value::Null;
+    report["final_observer_strategy"] = json!(OBSERVER_STRATEGY);
+    report["final_observation_phase"] =
+        json!("original-recycle-store-after-guest-before-prior-recycle");
     report["cost_policy"] = json!("one-point-per-original-Wasm-operator");
     report["isolation"]["guest_environment_supplied"] = json!([]);
     report["isolation"]["guest_fixture_files"] = json!([]);
@@ -190,26 +192,82 @@ fn post_start_remaining(points: &Value) -> Result<u64> {
     Ok(remaining)
 }
 
-fn read_points(store: &mut impl AsStoreMut, instance: &Instance) -> Result<Value> {
-    // The upstream getter panics on absent/wrong globals. Check their safe
-    // exported types before invoking it; an observation failure cannot pass.
-    for (name, ty) in [
-        ("wasmer_metering_remaining_points", Type::I64),
-        ("wasmer_metering_points_exhausted", Type::I32),
-    ] {
-        let global = instance
-            .exports
-            .get_global(name)
-            .context("missing metering global")?;
+/// Only integer global handles are retained, never Instance/Env/Runtime/Store.
+/// In the pinned sys backend, Global::clone copies a StoreHandle (store ID and
+/// index). StoreObjects owns both VMGlobal and VMInstance until Store drop.
+#[derive(Debug)]
+struct MeteringGlobals {
+    remaining: Global,
+    exhausted: Global,
+}
+
+impl MeteringGlobals {
+    fn capture(store: &mut impl AsStoreMut, instance: &Instance) -> Result<Self> {
+        let globals = Self {
+            remaining: instance
+                .exports
+                .get_global("wasmer_metering_remaining_points")
+                .context("missing remaining-points global")?
+                .clone(),
+            exhausted: instance
+                .exports
+                .get_global("wasmer_metering_points_exhausted")
+                .context("missing exhausted global")?
+                .clone(),
+        };
+        globals.check_types(store)?;
         ensure!(
-            global.ty(store) == GlobalType::new(ty, Mutability::Var),
-            "wrong metering global type"
+            globals.remaining != globals.exhausted,
+            "metering globals alias"
         );
+        Ok(globals)
     }
-    Ok(match get_remaining_points(store, instance) {
-        MeteringPoints::Remaining(points) => json!({"kind":"remaining","points":points}),
-        MeteringPoints::Exhausted => json!({"kind":"exhausted"}),
-    })
+
+    fn same_store(&self, store: &impl AsStoreMut) -> bool {
+        self.remaining.is_from_store(store) && self.exhausted.is_from_store(store)
+    }
+
+    fn check_types(&self, store: &impl AsStoreMut) -> Result<()> {
+        // Check identity before invoking ty/get: sys StoreHandle::get asserts
+        // its store ID. The recycle callback supplies the original owned Store.
+        ensure!(
+            self.same_store(store),
+            "metering handles belong to another Store"
+        );
+        ensure!(
+            self.remaining.ty(store) == GlobalType::new(Type::I64, Mutability::Var)
+                && self.exhausted.ty(store) == GlobalType::new(Type::I32, Mutability::Var),
+            "wrong captured metering global type"
+        );
+        Ok(())
+    }
+
+    fn identity(&self) -> String {
+        // Pinned Global Debug contains StoreHandle's store ID/index, not values.
+        // This is an opaque diagnostic binding; is_from_store is the real guard.
+        sha(format!("{:?}\n{:?}", self.remaining, self.exhausted).as_bytes())
+    }
+
+    fn read(&self, store: &mut impl AsStoreMut) -> Result<Value> {
+        self.check_types(store)?;
+        let flag = match self.exhausted.get(store) {
+            wasmer::Value::I32(flag) => flag,
+            _ => anyhow::bail!("exhausted global did not return i32"),
+        };
+        ensure!(
+            flag == 0 || flag == 1,
+            "noncanonical metering exhausted flag"
+        );
+        if flag == 1 {
+            return Ok(json!({"kind":"exhausted"}));
+        }
+        let points = match self.remaining.get(store) {
+            // Wasmer's upstream getter interprets the i64 bit pattern as u64.
+            wasmer::Value::I64(points) => points as u64,
+            _ => anyhow::bail!("remaining-points global did not return i64"),
+        };
+        Ok(json!({"kind":"remaining","points":points}))
+    }
 }
 
 #[derive(Debug, Default)]
@@ -219,8 +277,58 @@ struct Observations {
     post_start: Option<Value>,
     final_points: Option<Value>,
     error: Option<String>,
+    retained: Option<MeteringGlobals>,
+    capture_count: usize,
+    take_count: usize,
+    drop_count: usize,
+    setup_identity: Option<String>,
+    recycle_identity: Option<String>,
+    same_store_verified: bool,
+    recycle_types_verified: bool,
+    released_before_prior: bool,
+    prior_present: bool,
+    prior_calls: usize,
+    prior_returns: usize,
 }
 type SharedObservations = Arc<Mutex<Observations>>;
+
+fn lock_observations(state: &SharedObservations) -> MutexGuard<'_, Observations> {
+    match state.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => {
+            // Recover only to release retained handles and chain prior cleanup.
+            // Poisoning remains a latched diagnostic failure in the snapshot.
+            let mut guard = poisoned.into_inner();
+            guard
+                .error
+                .get_or_insert("metering observation mutex poisoned".into());
+            guard
+        }
+    }
+}
+
+fn handle_lifecycle(state: &Observations) -> Value {
+    json!({
+        "strategy":OBSERVER_STRATEGY,
+        "capture_count":state.capture_count,
+        "take_count":state.take_count,
+        "drop_count":state.drop_count,
+        "retained_global_handles":if state.retained.is_some() {2} else {0},
+        "setup_global_identity_sha256":state.setup_identity,
+        "recycle_global_identity_sha256":state.recycle_identity,
+        "identity_scheme":OBSERVER_IDENTITY,
+        "same_store_verified":state.same_store_verified,
+        "recycle_types_verified":state.recycle_types_verified,
+        "released_before_prior_recycle":state.released_before_prior,
+        "prior_recycle_present":state.prior_present,
+        "prior_recycle_calls":state.prior_calls,
+        "prior_recycle_returns":state.prior_returns,
+        "instance_retained":false,
+        "environment_lookup_at_recycle":false,
+        "globals_reconstructed":false,
+        "global_setter_calls":0
+    })
+}
 
 fn observe_setup(
     state: &SharedObservations,
@@ -228,28 +336,36 @@ fn observe_setup(
     instance: &Instance,
 ) -> Result<()> {
     {
-        let mut state = state
-            .lock()
-            .map_err(|_| anyhow::anyhow!("metering setup observation mutex poisoned"))?;
+        let mut state = lock_observations(state);
         state.setup_calls = state.setup_calls.saturating_add(1);
-        if state.setup_calls != 1 {
+        if state.setup_calls != 1 || state.retained.is_some() {
             state
                 .error
                 .get_or_insert("more than one instance setup callback".into());
             anyhow::bail!("more than one instance setup callback");
         }
     }
-    let observed = read_points(store, instance);
-    let mut state = state
-        .lock()
-        .map_err(|_| anyhow::anyhow!("metering setup observation mutex poisoned"))?;
-    match observed {
-        Ok(points) => {
-            // Instance::new already ran start. Preserve even an invalid raw
-            // observation, never replenish it or relabel it the initial value.
-            state.post_start = Some(points.clone());
-            match post_start_remaining(&points) {
-                Ok(_) => Ok(()),
+    let globals = MeteringGlobals::capture(store, instance);
+    let mut state = lock_observations(state);
+    match globals {
+        Ok(globals) => {
+            let observed = globals.read(store);
+            state.setup_identity = Some(globals.identity());
+            state.capture_count = state.capture_count.saturating_add(1);
+            // The two store-index handles form no Env/Runtime/Instance cycle.
+            // Recycle must take this exact bundle, read, then drop it once.
+            state.retained = Some(globals);
+            match observed {
+                Ok(points) => {
+                    // Instance::new already ran start; never replenish it.
+                    state.post_start = Some(points.clone());
+                    if let Err(error) = post_start_remaining(&points) {
+                        state.error.get_or_insert(format!("{error:#}"));
+                        return Err(error);
+                    }
+                    ensure!(state.error.is_none(), "metering setup observation failed");
+                    Ok(())
+                }
                 Err(error) => {
                     state.error.get_or_insert(format!("{error:#}"));
                     Err(error)
@@ -264,31 +380,66 @@ fn observe_setup(
 }
 
 fn observe_recycle(state: &SharedObservations, props: &mut TaskWasmRecycleProperties) {
-    let observed = (|| {
-        let instance = props
-            .env
-            .try_clone_instance()
-            .context("recycle did not expose one static instance")?;
-        read_points(&mut props.store, &instance)
-    })();
-    // Poisoning itself makes the later locked snapshot fail closed. Never
-    // invent Remaining/Exhausted when the observation cannot be obtained.
-    if let Ok(mut state) = state.lock() {
+    let globals = {
+        let mut state = lock_observations(state);
         state.recycle_calls = state.recycle_calls.saturating_add(1);
         if state.recycle_calls != 1 {
             state
                 .error
                 .get_or_insert("more than one recycle callback".into());
         }
-        match observed {
-            Ok(points) => {
-                if state.final_points.is_none() {
-                    state.final_points = Some(points);
-                }
+        let globals = state.retained.take();
+        if globals.is_some() {
+            state.take_count = state.take_count.saturating_add(1);
+        }
+        globals
+    };
+    let (observed, identity, same_store, types_verified, dropped) = match globals {
+        Some(globals) => {
+            let identity = globals.identity();
+            let same_store = globals.same_store(&props.store);
+            let types_verified = globals.check_types(&props.store).is_ok();
+            let observed = globals.read(&mut props.store);
+            // No Global handles are left in local/shared state when the prior
+            // callback receives ownership of this original Store.
+            drop(globals);
+            (observed, Some(identity), same_store, types_verified, true)
+        }
+        None => (
+            Err(anyhow::anyhow!(
+                "recycle has no setup-captured metering globals"
+            )),
+            None,
+            false,
+            false,
+            false,
+        ),
+    };
+    let mut state = lock_observations(state);
+    if dropped {
+        state.drop_count = state.drop_count.saturating_add(1);
+    }
+    state.recycle_identity = identity;
+    state.same_store_verified = same_store;
+    state.recycle_types_verified = types_verified;
+    state.released_before_prior = dropped && state.retained.is_none();
+    if state.setup_identity != state.recycle_identity {
+        state
+            .error
+            .get_or_insert("recycle global identity differs from setup".into());
+    }
+    match observed {
+        Ok(points) => {
+            if state.final_points.is_none() {
+                state.final_points = Some(points);
+            } else {
+                state
+                    .error
+                    .get_or_insert("more than one final-points observation".into());
             }
-            Err(error) => {
-                state.error.get_or_insert(format!("{error:#}"));
-            }
+        }
+        Err(error) => {
+            state.error.get_or_insert(format!("{error:#}"));
         }
     }
 }
@@ -329,11 +480,20 @@ impl VirtualTaskManager for MeteredTaskManager {
             return Err(WasiThreadError::Unsupported);
         }
         let previous = task.callbacks.recycle.take();
+        lock_observations(&self.observations).prior_present = previous.is_some();
         let observations = self.observations.clone();
         task.callbacks.recycle = Some(Box::new(move |mut props| {
             observe_recycle(&observations, &mut props);
+            // Observation errors are latched, never an early return that skips
+            // the original WASIX callback and its owned Store cleanup.
             if let Some(previous) = previous {
+                {
+                    let mut state = lock_observations(&observations);
+                    state.prior_calls = state.prior_calls.saturating_add(1);
+                }
                 previous(props);
+                let mut state = lock_observations(&observations);
+                state.prior_returns = state.prior_returns.saturating_add(1);
             }
         }));
         self.inner.task_wasm(task)
@@ -382,6 +542,7 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
             "setup_observation_phase":"after-Instance.new-start-before-_initialize",
             "post_start_points":null,"start_charged_points":null,"post_start_difference_from_first":null,
             "post_start_matches_first":false,"final_points":null,"setup_observation_count":0,"recycle_observation_count":0,
+            "metering_handle_lifecycle":handle_lifecycle(&Observations::default()),
             "metering_observation_error":null,"ready_reached":false,"budget_exhausted":false,"php":null,
             "guest_environment_supplied":[],"host_environment_forwarded":false,"host_directories_mapped":false,
             "home_mapped":false,"networking":"UnsupportedVirtualNetworking","http_client":false,
@@ -508,9 +669,7 @@ fn execute(
         }
     }
     {
-        let observation = observations
-            .lock()
-            .map_err(|_| anyhow::anyhow!("metering observation snapshot poisoned"))?;
+        let observation = lock_observations(&observations);
         record["setup_observation_count"] = json!(observation.setup_calls);
         record["recycle_observation_count"] = json!(observation.recycle_calls);
         record["post_start_points"] = json!(observation.post_start);
@@ -521,6 +680,7 @@ fn execute(
         }
         record["final_points"] = json!(observation.final_points);
         record["metering_observation_error"] = json!(observation.error);
+        record["metering_handle_lifecycle"] = handle_lifecycle(&observation);
         record["budget_exhausted"] =
             json!(observation.final_points == Some(json!({"kind":"exhausted"})));
     }
@@ -543,7 +703,49 @@ fn execute(
     Ok(())
 }
 
+fn validate_handle_lifecycle(record: &Value) -> Result<()> {
+    let lifecycle = &record["metering_handle_lifecycle"];
+    ensure!(
+        lifecycle["strategy"] == OBSERVER_STRATEGY
+            && lifecycle["identity_scheme"] == OBSERVER_IDENTITY
+            && lifecycle["capture_count"] == 1
+            && lifecycle["take_count"] == 1
+            && lifecycle["drop_count"] == 1
+            && lifecycle["retained_global_handles"] == 0
+            && lifecycle["same_store_verified"] == true
+            && lifecycle["recycle_types_verified"] == true
+            && lifecycle["released_before_prior_recycle"] == true
+            && lifecycle["instance_retained"] == false
+            && lifecycle["environment_lookup_at_recycle"] == false
+            && lifecycle["globals_reconstructed"] == false
+            && lifecycle["global_setter_calls"] == 0,
+        "captured metering globals were missing, reused, cross-store or not released"
+    );
+    let identity = lifecycle["setup_global_identity_sha256"]
+        .as_str()
+        .context("missing setup-global identity")?;
+    ensure!(
+        identity.len() == 64
+            && identity
+                .bytes()
+                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+            && lifecycle["recycle_global_identity_sha256"] == identity,
+        "setup/recycle global-handle identities differ"
+    );
+    let prior = lifecycle["prior_recycle_present"]
+        .as_bool()
+        .context("missing prior-recycle presence")?;
+    let expected = if prior { 1 } else { 0 };
+    ensure!(
+        lifecycle["prior_recycle_calls"] == expected
+            && lifecycle["prior_recycle_returns"] == expected,
+        "prior recycle callback was not chained exactly once"
+    );
+    Ok(())
+}
+
 fn validate(record: &Value, index: usize) -> Result<()> {
+    validate_handle_lifecycle(record)?;
     ensure!(
         record["setup_observation_count"] == 1
             && record["recycle_observation_count"] == 1

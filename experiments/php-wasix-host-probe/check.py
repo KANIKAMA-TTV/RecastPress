@@ -42,6 +42,11 @@ def compiled_inputs():
                ROOT / 'experiments/php-wasix-context-probe/fixtures/stack_adapter.c',
                ROOT / 'experiments/php-wasix-context-probe/fixtures/stack_adapter.h',
                ROOT / 'experiments/php-wasix-context-probe/fixtures/stack_adapter.S',
+               ROOT / 'experiments/php-wasix-fiber-probe/manifest.json',
+               ROOT / 'experiments/php-wasix-fiber-probe/patches/0001-nts-fresh-wasi-zend-fibers.patch',
+               ROOT / 'experiments/php-wasix-fiber-probe/fixtures/zend_wasix_fiber.S',
+               ROOT / 'experiments/php-wasix-fiber-probe/fixtures/fiber_contract.php',
+               ROOT / 'experiments/php-wasix-fiber-probe/evidence/native-fiber-contract.json',
                ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
 
 

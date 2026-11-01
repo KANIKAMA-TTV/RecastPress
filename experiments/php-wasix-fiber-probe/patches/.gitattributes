@@ -1,0 +1,2 @@
+# Unified-diff context markers are part of the pinned patch bytes.
+*.patch -whitespace

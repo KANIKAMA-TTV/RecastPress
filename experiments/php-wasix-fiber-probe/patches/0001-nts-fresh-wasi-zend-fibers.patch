@@ -1,0 +1,566 @@
+From: RecastPress P0 experiment
+Subject: [DRAFT] opt-in NTS fresh-WASI Zend Fiber context backend
+
+Not built or executed. Physical guest stacks and descriptors are quarantined
+until the host drops the WASIX executor and fresh instance; no free/reuse.
+Apply only to wasix-org/php f4bfae79d5c19028349082f707930cf0951d23b9.
+
+diff --git a/configure.ac b/configure.ac
+index 6fd5a92366a38c927dba8e4d1b5488d96464ca27..ae18278e7752ddd6546349766e836fde01bb0891 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1191,7 +1191,35 @@
+ PHP_HELP_SEPARATOR([Zend:])
+ PHP_CONFIGURE_PART([Configuring Zend])
+ 
+-AC_ARG_ENABLE([fiber-asm],
++AC_ARG_ENABLE([rp-wasix-fibers],
++  [AS_HELP_STRING([--enable-rp-wasix-fibers],
++    [Enable experimental WASIX fibers; NTS and one request per fresh WASI instance only])],
++  [PHP_RP_WASIX_FIBERS=$enableval],
++  [PHP_RP_WASIX_FIBERS=no])
++
++AS_VAR_IF([PHP_RP_WASIX_FIBERS], [yes], [
++  AS_VAR_IF([ac_cv_have_decl___wasi__], [yes], [],
++    [AC_MSG_ERROR([WASIX Fiber candidate requires a WASI target])])
++  AS_VAR_IF([PHP_THREAD_SAFETY], [yes],
++    [AC_MSG_ERROR([WASIX Fiber candidate does not support ZTS])])
++  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
++#include <stdint.h>
++#include <wasix/context.h>
++#if !defined(__wasm32__)
++# error WASIX Fiber candidate requires wasm32
++#endif
++_Static_assert(sizeof(void *) == 4, "wasm32 pointers required");
++_Static_assert(sizeof(wasix_context_id_t) == 8, "u64 context IDs required");
++  ]], [[
++    wasix_context_id_t id = wasix_context_main;
++    (void) id;
++  ]])], [],
++    [AC_MSG_ERROR([WASIX Fiber candidate requires the wasm32 public context API])])
++  AC_DEFINE([ZEND_FIBER_WASIX], [1],
++    [Define only for the experimental NTS/fresh-instance WASIX Fiber backend.])
++])
++
++AC_ARG_ENABLE([fiber-asm],
+   [AS_HELP_STRING([--disable-fiber-asm],
+     [Disable the use of boost fiber assembly files])],
+   [fiber_asm=$enableval], [fiber_asm='yes'])
+@@ -1292,8 +1320,11 @@
+   [fiber_asm_cflag="-DSHADOW_STACK_SYSCALL=1"],
+   [fiber_asm_cflag="-DSHADOW_STACK_SYSCALL=0"])
+ 
+-if test "$fiber_asm" = 'yes'; then
+-  AC_MSG_CHECKING([for fiber switching context])
++if test "$PHP_RP_WASIX_FIBERS" = 'yes'; then
++  AC_MSG_NOTICE([using experimental NTS/fresh-instance WASIX Fiber backend])
++  PHP_ADD_SOURCES([Zend/asm], [recastpress_wasix_fiber.S], [-fno-lto])
++elif test "$fiber_asm" = 'yes'; then
++  AC_MSG_CHECKING([for fiber switching context])
+   PHP_ADD_SOURCES([Zend/asm],
+     [make_${fiber_asm_file}.S jump_${fiber_asm_file}.S],
+     [$fiber_asm_cflag])
+diff --git a/Zend/zend_fibers.c b/Zend/zend_fibers.c
+index 8e73330e51bbfcc4b3e150a553a32b88f4cc12a5..9c864b1617b7b58754ba823fc9a341a1c1c3d314 100644
+--- a/Zend/zend_fibers.c
++++ b/Zend/zend_fibers.c
+@@ -32,7 +32,23 @@
+ #include "zend_generators.h"
+ 
+ #include "zend_fibers.h"
+-#include "zend_fibers_arginfo.h"
++#include "zend_fibers_arginfo.h"
++
++#ifdef ZEND_FIBER_WASIX
++# include <errno.h>
++# include <stdint.h>
++# include <stdio.h>
++# include <stdlib.h>
++# include <wasix/context.h>
++# if !defined(__wasi__) || !defined(__wasm32__) || defined(ZTS) || defined(ZEND_FIBER_UCONTEXT)
++#  error "WASIX Fiber candidate requires wasm32 WASI NTS with no ucontext"
++# endif
++# if defined(HAVE_VALGRIND) || defined(__SANITIZE_ADDRESS__)
++#  error "WASIX Fiber candidate does not support Valgrind or ASan"
++# endif
++_Static_assert(sizeof(void *) == 4, "WASIX Fiber candidate requires wasm32 pointers");
++_Static_assert(sizeof(wasix_context_id_t) == 8, "WASIX context IDs must remain u64");
++#endif
+ 
+ #ifdef HAVE_VALGRIND
+ # include <valgrind/valgrind.h>
+@@ -80,7 +96,11 @@
+ #endif
+ 
+ /* Encapsulates the fiber C stack with extension for debugging tools. */
+-struct _zend_fiber_stack {
++struct _zend_fiber_stack {
++#ifdef ZEND_FIBER_WASIX
++	zend_fiber_stack *rp_next;
++	bool rp_quarantined;
++#endif
+ 	void *pointer;
+ 	size_t size;
+ 
+@@ -154,9 +174,9 @@
+ #endif
+ }
+ 
+-#ifdef ZEND_FIBER_UCONTEXT
+-ZEND_TLS zend_fiber_transfer *transfer_data;
+-#else
++#ifdef ZEND_FIBER_UCONTEXT
++ZEND_TLS zend_fiber_transfer *transfer_data;
++#elif !defined(ZEND_FIBER_WASIX)
+ /* boost_context_data is our customized definition of struct transfer_t as
+  * provided by boost.context in fcontext.hpp:
+  *
+@@ -177,7 +197,194 @@
+ extern ZEND_INDIRECT_RETURN boost_context_data jump_fcontext(void *to, zend_fiber_transfer *transfer);
+ #endif
+ 
+-ZEND_API zend_class_entry *zend_ce_fiber;
++#ifdef ZEND_FIBER_WASIX
++/* Experimental backend: exactly one NTS request per fresh WASI instance.
++ * Neither native coroutine destruction nor guest allocations are joined/freed
++ * here. Drop the WASIX executor BEFORE dropping the instance and its memory. */
++typedef struct _rp_zend_wasix_context {
++	wasix_context_id_t id;
++	zend_fiber_context *owner;
++	zend_fiber_transfer *mailbox;
++	zend_fiber_stack *stack;
++	uintptr_t stack_top;
++	bool created;
++	bool started;
++	bool retired;
++	struct _rp_zend_wasix_context *next;
++} rp_zend_wasix_context;
++
++static rp_zend_wasix_context *rp_zend_wasix_contexts;
++static zend_fiber_stack *rp_zend_wasix_stacks;
++static bool rp_zend_wasix_request_seen;
++
++/* Public linker name for the stackless assembly load, not a Wasm global. */
++volatile uintptr_t rp_zend_wasix_bootstrap_sp;
++extern void rp_zend_wasix_entry(void);
++extern uint32_t rp_zend_wasix_switch_raw(wasix_context_id_t target);
++static ZEND_NORETURN void zend_fiber_trampoline(void);
++
++static ZEND_NORETURN void rp_zend_wasix_fail(const char *reason)
++{
++	/* Backend invariant failures are whole-request failures, not PHP throws.
++	 * A raw host trap never returns here and must remain a failed host result. */
++	fprintf(stderr, "recastpress-wasix-fiber: %s\n", reason);
++	_Exit(125);
++}
++
++static rp_zend_wasix_context *rp_zend_wasix_descriptor(zend_fiber_context *context)
++{
++	rp_zend_wasix_context *descriptor = context ? context->handle : NULL;
++	if (!descriptor || descriptor->owner != context || !descriptor->created || descriptor->retired) {
++		rp_zend_wasix_fail("invalid-context-descriptor");
++	}
++	return descriptor;
++}
++
++static zend_fiber_transfer rp_zend_wasix_receive(rp_zend_wasix_context *descriptor)
++{
++	if (!descriptor->mailbox || descriptor->retired) {
++		rp_zend_wasix_fail("missing-transfer");
++	}
++	/* Transfer ownership exactly like ucontext: shallow copy before cleanup
++	 * of the sending context. Do not introduce an additional zval addref. */
++	zend_fiber_transfer transfer = *descriptor->mailbox;
++	descriptor->mailbox = NULL;
++	return transfer;
++}
++
++static void rp_zend_wasix_begin(zend_fiber_context *main_context)
++{
++	if (rp_zend_wasix_request_seen || rp_zend_wasix_contexts || rp_zend_wasix_stacks) {
++		rp_zend_wasix_fail("fresh-instance-required");
++	}
++	rp_zend_wasix_request_seen = true;
++	rp_zend_wasix_context *descriptor = calloc(1, sizeof(*descriptor));
++	if (!descriptor) {
++		rp_zend_wasix_fail("main-descriptor-allocation");
++	}
++	descriptor->id = wasix_context_main;
++	if (descriptor->id != 0) {
++		rp_zend_wasix_fail("unexpected-main-id");
++	}
++	descriptor->owner = main_context;
++	descriptor->created = true;
++	descriptor->started = true;
++	descriptor->next = rp_zend_wasix_contexts;
++	rp_zend_wasix_contexts = descriptor;
++	main_context->handle = descriptor; /* Never cast the u64 ID to void*. */
++}
++
++static zend_result rp_zend_wasix_create(zend_fiber_context *context)
++{
++	rp_zend_wasix_context *descriptor = calloc(1, sizeof(*descriptor));
++	if (!descriptor) {
++		context->stack->rp_quarantined = true;
++		zend_throw_exception_ex(NULL, 0, "Fiber context descriptor allocation failed");
++		return FAILURE; /* The already mapped stack stays quarantined. */
++	}
++	descriptor->next = rp_zend_wasix_contexts;
++	rp_zend_wasix_contexts = descriptor;
++	descriptor->stack = context->stack;
++	descriptor->stack_top = ((uintptr_t) context->stack->pointer + context->stack->size) & ~(uintptr_t) 15;
++	descriptor->retired = true;
++	if (descriptor->stack_top <= (uintptr_t) context->stack->pointer) {
++		rp_zend_wasix_fail("invalid-stack-top");
++	}
++	if (wasix_context_create(&descriptor->id, rp_zend_wasix_entry) != 0) {
++		int error = errno;
++		context->stack->rp_quarantined = true;
++		zend_throw_exception_ex(NULL, 0, "Fiber context create failed (%d)", error);
++		return FAILURE; /* No free/reuse, including failed init allocations. */
++	}
++	if (descriptor->id == wasix_context_main) {
++		rp_zend_wasix_fail("created-main-id");
++	}
++	descriptor->owner = context;
++	descriptor->created = true;
++	descriptor->retired = false;
++	context->handle = descriptor;
++	return SUCCESS;
++}
++
++static void rp_zend_wasix_switch(zend_fiber_context *from, zend_fiber_context *to, zend_fiber_transfer *transfer)
++{
++	rp_zend_wasix_context *source = rp_zend_wasix_descriptor(from);
++	rp_zend_wasix_context *target = rp_zend_wasix_descriptor(to);
++	if (source == target || target->mailbox) {
++		rp_zend_wasix_fail("invalid-transfer-target");
++	}
++	target->mailbox = transfer;
++	if (!target->started) {
++		if (!target->stack || !target->stack_top) {
++			rp_zend_wasix_fail("missing-bootstrap-stack");
++		}
++		rp_zend_wasix_bootstrap_sp = target->stack_top;
++		target->started = true;
++	}
++	uint32_t error = rp_zend_wasix_switch_raw(target->id);
++	/* The assembly restores our own SP before any C read, spill or errno
++	 * conversion. Never treat an errno result as a completed transfer. */
++	if (error) {
++		errno = (int) error;
++		rp_zend_wasix_fail("context-switch-error");
++	}
++	if (EG(current_fiber_context) != from) {
++		rp_zend_wasix_fail("wrong-resumed-context");
++	}
++	*transfer = rp_zend_wasix_receive(source);
++}
++
++static void rp_zend_wasix_cancel(zend_fiber_context *context)
++{
++	rp_zend_wasix_context *descriptor = rp_zend_wasix_descriptor(context);
++	if (context == EG(current_fiber_context) || descriptor->id == wasix_context_main) {
++		rp_zend_wasix_fail("destroy-active-or-main");
++	}
++	if (wasix_context_destroy(descriptor->id) != 0) {
++		rp_zend_wasix_fail("context-destroy-error");
++	}
++	descriptor->retired = true;
++	descriptor->mailbox = NULL;
++	/* Wasmer cancellation is deferred. Keep the descriptor and physical stack
++	 * outside ZendMM, but do not retain a freed PHP object as a live owner. */
++	descriptor->owner = NULL;
++}
++
++static void rp_zend_wasix_end(zend_fiber_context *main_context)
++{
++	if (EG(current_fiber_context) != main_context) {
++		rp_zend_wasix_fail("shutdown-outside-main");
++	}
++	for (rp_zend_wasix_context *descriptor = rp_zend_wasix_contexts; descriptor; descriptor = descriptor->next) {
++		if (descriptor->created && !descriptor->retired && descriptor->id != wasix_context_main) {
++			if (wasix_context_destroy(descriptor->id) != 0) {
++				rp_zend_wasix_fail("shutdown-context-destroy-error");
++			}
++		}
++		descriptor->retired = true;
++		descriptor->mailbox = NULL;
++		descriptor->owner = NULL;
++		if (descriptor->stack) {
++			descriptor->stack->rp_quarantined = true;
++		}
++	}
++	/* Deliberately retain all descriptors and stacks through PHP request and
++	 * module shutdown. emalloc/efree storage would die before WASIX executor
++	 * cancellation finishes. A second request in this guest is rejected. */
++}
++
++/* Called ONLY after the assembly has installed the target's linear SP. */
++ZEND_NORETURN void rp_zend_wasix_dispatch(void)
++{
++	rp_zend_wasix_context *descriptor = rp_zend_wasix_descriptor(EG(current_fiber_context));
++	if (!descriptor->started || !descriptor->stack || descriptor->stack_top != rp_zend_wasix_bootstrap_sp) {
++		rp_zend_wasix_fail("invalid-bootstrap-context");
++	}
++	zend_fiber_trampoline();
++}
++#endif
++
++ZEND_API zend_class_entry *zend_ce_fiber;
+ static zend_class_entry *zend_ce_fiber_error;
+ 
+ static zend_object_handlers zend_fiber_handlers;
+@@ -219,7 +426,25 @@
+ 		return NULL;
+ 	}
+ 
+-	const size_t stack_size = (size + page_size - 1) / page_size * page_size;
++#ifdef ZEND_FIBER_WASIX
++	/* Keep Zend page rounding/INI sizing, but reject wasm32 wraparound. */
++	if (ZEND_FIBER_GUARD_PAGES > SIZE_MAX / page_size
++		|| page_size - 1 > SIZE_MAX - ZEND_FIBER_GUARD_PAGES * page_size
++		|| size > SIZE_MAX - ZEND_FIBER_GUARD_PAGES * page_size - (page_size - 1)) {
++		zend_throw_exception_ex(NULL, 0, "Fiber stack size is too large");
++		return NULL;
++	}
++	/* Register even failed allocations outside the request ZendMM heap. */
++	zend_fiber_stack *stack = calloc(1, sizeof(*stack));
++	if (!stack) {
++		zend_throw_exception_ex(NULL, 0, "Fiber stack metadata allocation failed");
++		return NULL;
++	}
++	stack->rp_quarantined = true;
++	stack->rp_next = rp_zend_wasix_stacks;
++	rp_zend_wasix_stacks = stack;
++#endif
++	const size_t stack_size = (size + page_size - 1) / page_size * page_size;
+ 	const size_t alloc_size = stack_size + ZEND_FIBER_GUARD_PAGES * page_size;
+ 
+ #ifdef ZEND_WIN32
+@@ -270,7 +495,11 @@
+ # endif
+ #endif
+ 
+-	zend_fiber_stack *stack = emalloc(sizeof(zend_fiber_stack));
++#ifndef ZEND_FIBER_WASIX
++	zend_fiber_stack *stack = emalloc(sizeof(zend_fiber_stack));
++#else
++	stack->rp_quarantined = false;
++#endif
+ 
+ 	stack->pointer = (void *) ((uintptr_t) pointer + ZEND_FIBER_GUARD_PAGES * page_size);
+ 	stack->size = stack_size;
+@@ -305,34 +534,42 @@
+ 	return stack;
+ }
+ 
+-static void zend_fiber_stack_free(zend_fiber_stack *stack)
+-{
+-#ifdef VALGRIND_STACK_DEREGISTER
+-	VALGRIND_STACK_DEREGISTER(stack->valgrind_stack_id);
+-#endif
+-
+-	const size_t page_size = zend_fiber_get_page_size();
+-
+-	void *pointer = (void *) ((uintptr_t) stack->pointer - ZEND_FIBER_GUARD_PAGES * page_size);
+-
+-#ifdef __SANITIZE_ADDRESS__
+-	/* If another mmap happens after unmapping, it may trigger the stale stack red zones
+-	 * so we have to unpoison it before unmapping. */
+-	ASAN_UNPOISON_MEMORY_REGION(pointer, stack->size + ZEND_FIBER_GUARD_PAGES * page_size);
+-#endif
+-
+-#ifdef ZEND_WIN32
+-	VirtualFree(pointer, 0, MEM_RELEASE);
+-#else
+-	munmap(pointer, stack->size + ZEND_FIBER_GUARD_PAGES * page_size);
+-#endif
+-
+-#if !defined(ZEND_FIBER_UCONTEXT) && BOOST_CONTEXT_SHADOW_STACK
+-	munmap(stack->ss_base, stack->ss_size);
+-#endif
+-
+-	efree(stack);
+-}
++static void zend_fiber_stack_free(zend_fiber_stack *stack)
++{
++#ifdef ZEND_FIBER_WASIX
++	if (!stack || !stack->pointer || stack->rp_quarantined) {
++		rp_zend_wasix_fail("invalid-stack-retirement");
++	}
++	/* Logical PHP cleanup has already run. No munmap/efree/free/reuse. */
++	stack->rp_quarantined = true;
++#else
++#ifdef VALGRIND_STACK_DEREGISTER
++	VALGRIND_STACK_DEREGISTER(stack->valgrind_stack_id);
++#endif
++
++	const size_t page_size = zend_fiber_get_page_size();
++
++	void *pointer = (void *) ((uintptr_t) stack->pointer - ZEND_FIBER_GUARD_PAGES * page_size);
++
++#ifdef __SANITIZE_ADDRESS__
++	/* If another mmap happens after unmapping, it may trigger the stale stack red zones
++	 * so we have to unpoison it before unmapping. */
++	ASAN_UNPOISON_MEMORY_REGION(pointer, stack->size + ZEND_FIBER_GUARD_PAGES * page_size);
++#endif
++
++#ifdef ZEND_WIN32
++	VirtualFree(pointer, 0, MEM_RELEASE);
++#else
++	munmap(pointer, stack->size + ZEND_FIBER_GUARD_PAGES * page_size);
++#endif
++
++#if !defined(ZEND_FIBER_UCONTEXT) && BOOST_CONTEXT_SHADOW_STACK
++	munmap(stack->ss_base, stack->ss_size);
++#endif
++
++	efree(stack);
++#endif
++}
+ 
+ #ifdef ZEND_CHECK_STACK_LIMIT
+ ZEND_API void* zend_fiber_stack_limit(zend_fiber_stack *stack)
+@@ -358,15 +595,17 @@
+ }
+ #endif
+ 
+-#ifdef ZEND_FIBER_UCONTEXT
+-static ZEND_NORETURN void zend_fiber_trampoline(void)
++#if defined(ZEND_FIBER_UCONTEXT) || defined(ZEND_FIBER_WASIX)
++static ZEND_NORETURN void zend_fiber_trampoline(void)
+ #else
+ static ZEND_NORETURN void zend_fiber_trampoline(boost_context_data data)
+ #endif
+ {
+ 	/* Initialize transfer struct with a copy of passed data. */
+-#ifdef ZEND_FIBER_UCONTEXT
+-	zend_fiber_transfer transfer = *transfer_data;
++#ifdef ZEND_FIBER_WASIX
++	zend_fiber_transfer transfer = rp_zend_wasix_receive(rp_zend_wasix_descriptor(EG(current_fiber_context)));
++#elif defined(ZEND_FIBER_UCONTEXT)
++	zend_fiber_transfer transfer = *transfer_data;
+ #else
+ 	zend_fiber_transfer transfer = *data.transfer;
+ #endif
+@@ -377,8 +616,8 @@
+ 	__sanitizer_finish_switch_fiber(NULL, &from->stack->asan_pointer, &from->stack->asan_size);
+ #endif
+ 
+-#ifndef ZEND_FIBER_UCONTEXT
+-	/* Get the context that resumed us and update its handle to allow for symmetric coroutines. */
++#if !defined(ZEND_FIBER_UCONTEXT) && !defined(ZEND_FIBER_WASIX)
++	/* Get the context that resumed us and update its handle to allow for symmetric coroutines. */
+ 	from->handle = data.handle;
+ #endif
+ 
+@@ -423,8 +662,12 @@
+ 		return FAILURE;
+ 	}
+ 
+-#ifdef ZEND_FIBER_UCONTEXT
+-	ucontext_t *handle = &context->stack->ucontext;
++#ifdef ZEND_FIBER_WASIX
++	if (rp_zend_wasix_create(context) != SUCCESS) {
++		return FAILURE;
++	}
++#elif defined(ZEND_FIBER_UCONTEXT)
++	ucontext_t *handle = &context->stack->ucontext;
+ 
+ 	getcontext(handle);
+ 
+@@ -464,8 +707,12 @@
+ 	return SUCCESS;
+ }
+ 
+-ZEND_API void zend_fiber_destroy_context(zend_fiber_context *context)
+-{
++ZEND_API void zend_fiber_destroy_context(zend_fiber_context *context)
++{
++#ifdef ZEND_FIBER_WASIX
++	/* Cancel before any PHP/extension cleanup can free its referenced state. */
++	rp_zend_wasix_cancel(context);
++#endif
+ 	zend_observer_fiber_destroy_notify(context);
+ 
+ 	if (context->cleanup) {
+@@ -518,8 +765,10 @@
+ 		to->stack->asan_size);
+ #endif
+ 
+-#ifdef ZEND_FIBER_UCONTEXT
+-	transfer_data = transfer;
++#ifdef ZEND_FIBER_WASIX
++	rp_zend_wasix_switch(from, to, transfer);
++#elif defined(ZEND_FIBER_UCONTEXT)
++	transfer_data = transfer;
+ 
+ 	swapcontext(from->handle, to->handle);
+ 
+@@ -1142,15 +1391,21 @@
+ 
+ 	context->status = ZEND_FIBER_STATUS_RUNNING;
+ 
+-	EG(main_fiber_context) = context;
+-	EG(current_fiber_context) = context;
++	EG(main_fiber_context) = context;
++	EG(current_fiber_context) = context;
++#ifdef ZEND_FIBER_WASIX
++	rp_zend_wasix_begin(context);
++#endif
+ 	EG(active_fiber) = NULL;
+ 
+ 	zend_fiber_switch_blocking = 0;
+ }
+ 
+-void zend_fiber_shutdown(void)
+-{
++void zend_fiber_shutdown(void)
++{
++#ifdef ZEND_FIBER_WASIX
++	rp_zend_wasix_end(EG(main_fiber_context));
++#endif
+ #if defined(__SANITIZE_ADDRESS__) || defined(ZEND_FIBER_UCONTEXT)
+ 	efree(EG(main_fiber_context)->stack);
+ #endif
+diff --git a/Zend/asm/recastpress_wasix_fiber.S b/Zend/asm/recastpress_wasix_fiber.S
+new file mode 100644
+index 0000000000000000000000000000000000000000..c7edb0570871f015c971aca30a34ea585d8500ac
+--- /dev/null
++++ b/Zend/asm/recastpress_wasix_fiber.S
+@@ -0,0 +1,34 @@
++/* Closed NTS/fresh-WASI Zend Fiber candidate; not a general PHP ABI.
++ * Final post-optimizer bodies must be inspected before guest execution.
++ * The bootstrap word is ordinary linear memory; __stack_pointer is the real
++ * mutable Wasm global. Never call C or store to the linear stack before entry
++ * installs its own SP. Never change to the target SP in the switch shim. */
++.globaltype __stack_pointer, i32
++.functype rp_zend_wasix_import_switch (i64) -> (i32)
++.import_module rp_zend_wasix_import_switch, wasix_32v1
++.import_name rp_zend_wasix_import_switch, context_switch
++.functype rp_zend_wasix_dispatch () -> ()
++
++.globl rp_zend_wasix_switch_raw
++rp_zend_wasix_switch_raw:
++  .functype rp_zend_wasix_switch_raw (i64) -> (i32)
++  .local i32, i32
++  global.get __stack_pointer
++  local.set 1
++  local.get 0
++  call rp_zend_wasix_import_switch
++  local.set 2
++  local.get 1
++  global.set __stack_pointer
++  local.get 2
++  end_function
++
++.globl rp_zend_wasix_entry
++rp_zend_wasix_entry:
++  .functype rp_zend_wasix_entry () -> ()
++  i32.const rp_zend_wasix_bootstrap_sp
++  i32.load 0
++  global.set __stack_pointer
++  call rp_zend_wasix_dispatch
++  unreachable
++  end_function
