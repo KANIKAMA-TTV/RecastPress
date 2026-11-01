@@ -1,0 +1,296 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.php-wasix-dependency-source-inventory.v0.5",
+  "observed_at_utc": "2026-11-01T18:49:18Z",
+  "repository": "wasix-org/php-wasix-deps",
+  "commit": "b77ecbede97aba2df32c86eaeb54ff9f5e44f543",
+  "tree_api": "https://api.github.com/repos/wasix-org/php-wasix-deps/git/trees/b77ecbede97aba2df32c86eaeb54ff9f5e44f543?recursive=1",
+  "recursive_tree_truncated": false,
+  "recursive_tree_entry_count": 6005,
+  "selection": "all fixed EH static archives, all root blobs, basename LICENSE/COPYING/NOTICE (case-insensitive, optional extension)",
+  "selected_tree_entries": [
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "2292692363abb1986b25b4505d30aa98e60c24eb",
+      "bytes": 233
+    },
+    {
+      "path": "include/sqlite/LICENSE.md",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "f68a6c175f0b72086c313a9dbd9f2ec8d87525dd",
+      "bytes": 263
+    },
+    {
+      "path": "include/sqlite/autoconf/tea/license.terms",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "723c4cd3c6e91a9f86ee9fe667923a316ba17d03",
+      "bytes": 257
+    },
+    {
+      "path": "include/zlib/LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "b517acd5764a11fbf78da7897cedc126c8bb9038",
+      "bytes": 1002
+    },
+    {
+      "path": "lib-eh/libMagickCore-7.Q16HDRI.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "b4f1cfc7250e0a1a4bff7bb029720b5989ff3952",
+      "bytes": 22295738,
+      "sha256_recorded_by_both_ci_builders": "44a1f445a2561e607a521ed829b3ef738d12e03bc8eb4d65f8701752f00ef0d9"
+    },
+    {
+      "path": "lib-eh/libMagickWand-7.Q16HDRI.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "a24b17dd8aa2e724f4eae4ce8b961ef139e27db4",
+      "bytes": 4496268,
+      "sha256_recorded_by_both_ci_builders": "d2eedc6a5f0d7fb6f6954d77773dd6fa6cb2b20cf3b22bbbd1c6d8dedc3181bb"
+    },
+    {
+      "path": "lib-eh/libcharset.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "88057c49b32cb74687134c146d056e9634277246",
+      "bytes": 7328,
+      "sha256_recorded_by_both_ci_builders": "1011da9d5676f58cd71e313b37c5770b30b3a1d7d804c2b3bf118b6a69b40d0e"
+    },
+    {
+      "path": "lib-eh/libcrypto.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "686e52b2b36680546702983d5b1669fa02489c70",
+      "bytes": 22475032,
+      "sha256_recorded_by_both_ci_builders": "1fc3a525381c5e7fe18f1f0c316cd0f31a4aaa4dd898091f68a374d4a5711292"
+    },
+    {
+      "path": "lib-eh/libcurl.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "eadf95f014ed62bc6a9ac1d8053e8bd9ec8fa418",
+      "bytes": 882520,
+      "sha256_recorded_by_both_ci_builders": "2c8b0d85f5c18a4578a07fb19047eed6e509b5558f031b2ac35d20a1a80ae061"
+    },
+    {
+      "path": "lib-eh/libfreetype.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "0349fe851e9a2e37ea9a3135c826f1b0bd99585b",
+      "bytes": 5208636,
+      "sha256_recorded_by_both_ci_builders": "4aa2c4e8bcd637d3a5545ee25597c5177a470f1cf908f6d5cc7dfcb6acbc277f"
+    },
+    {
+      "path": "lib-eh/libiconv.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "80b233556cda970162fd19fa915498aa35b7944b",
+      "bytes": 1647614,
+      "sha256_recorded_by_both_ci_builders": "898c0d8bfab607c497f7a3232cc00002000b55e3df802f42890d7a10ed4a7070"
+    },
+    {
+      "path": "lib-eh/libicrt.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "9c9186925dc24ff5083376f3ded021192ebcea89",
+      "bytes": 197384,
+      "sha256_recorded_by_both_ci_builders": "b8751dd62ed441914761aff4a2b1dc2057be3dc90f26e4aebc8f2ac99a778283"
+    },
+    {
+      "path": "lib-eh/libicudata.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "a749b15d8b6350d604b64a925ef186e7f46bc0fa",
+      "bytes": 604,
+      "sha256_recorded_by_both_ci_builders": "5765020339aae2a310d9d10a6b3925c72b57ad0f624dfee59751002e6c62d562"
+    },
+    {
+      "path": "lib-eh/libicui18n.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "42b6a022ca609b02dcfb56abde867e421c25cdd8",
+      "bytes": 4720320,
+      "sha256_recorded_by_both_ci_builders": "97aa00d1538ca467a4d0223afd09c88f04b2a6a0ee1c58d20be4ef746a7b1337"
+    },
+    {
+      "path": "lib-eh/libicuio.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "4920e3944c366f30f7b6c8fd17f1dcb6fcf1b9dd",
+      "bytes": 53058,
+      "sha256_recorded_by_both_ci_builders": "3ab5bd28370ea89618814a950ff64127e01a9698a7292e12436c330bc973935d"
+    },
+    {
+      "path": "lib-eh/libicuuc.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "631ce25be67dbe46ce7b7cd420a8e4f03b0f801f",
+      "bytes": 2614330,
+      "sha256_recorded_by_both_ci_builders": "85f853243650c9bc157bb7dd1feff367131dd1dd2ad51d3d751cc6eab8c183c1"
+    },
+    {
+      "path": "lib-eh/libjpeg.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "f0bc3abf64ab1ad624afa47abf4163ba0cb90878",
+      "bytes": 2699124,
+      "sha256_recorded_by_both_ci_builders": "66a0f594adfec2ee6084bf36f1de8c1ff32998d87957968cc55c141271a3aa7e"
+    },
+    {
+      "path": "lib-eh/liblzma.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "f43d51d5f9ff081ccb77614e4234608506f4f552",
+      "bytes": 1049468,
+      "sha256_recorded_by_both_ci_builders": "92d724330424a56ce6542b62115d8eef8a05adc29f87aada541365d764ad53e8"
+    },
+    {
+      "path": "lib-eh/libonig.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "b086f2d69fb1b6c48743875ba3aa60dea1283bcf",
+      "bytes": 1932602,
+      "sha256_recorded_by_both_ci_builders": "62a607553aec01e373825987a12841ade04ed8716d3a501f24b13cf7d4caf0d8"
+    },
+    {
+      "path": "lib-eh/libpng.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "e1e0540653059d15df7aef529710b7eca6865f6d",
+      "bytes": 1416112,
+      "sha256_recorded_by_both_ci_builders": "2c34b0a0c622a626a5237de15ef028c04715fbc0dc6821f29b02adf6b23ee823"
+    },
+    {
+      "path": "lib-eh/libsharpyuv.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "a7c0b7fdc370a659f15f9b27445b388aaf35cc39",
+      "bytes": 77332,
+      "sha256_recorded_by_both_ci_builders": "02c271be6d0ddb7972cbda861db1468846791931f15e32fb68be5e03651065c6"
+    },
+    {
+      "path": "lib-eh/libsodium.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "92f2c5125b233b6fde95dd2c350c093fa48ab4fc",
+      "bytes": 1681422,
+      "sha256_recorded_by_both_ci_builders": "20a6062613a31d64ba8331f9a98ea17ddb92449f224a215dcc3405bd91f4c90d"
+    },
+    {
+      "path": "lib-eh/libsqlite3.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "1df85a6a2aa003b6619bf7345673461207cd1d6f",
+      "bytes": 6311874,
+      "sha256_recorded_by_both_ci_builders": "21e4a4312a7a8f98d75d81a6a6bb63c279bdd8b5f1968c5b6b2f7668a4513889"
+    },
+    {
+      "path": "lib-eh/libssl.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "b65aaf58f61ff86934481670d4406b7918089e4c",
+      "bytes": 4744880,
+      "sha256_recorded_by_both_ci_builders": "290fc269625ae915e9f32acd31f58300044f48b273ec17e24eefebfcf7b1a2b4"
+    },
+    {
+      "path": "lib-eh/libtiff.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "5a234cf0950873bd973549bf0c49b52f09bc080a",
+      "bytes": 2591882,
+      "sha256_recorded_by_both_ci_builders": "f71a68e208f6b70cce3373f3a67d937b2984d3cbfc9ece9fbf8461f292acf09c"
+    },
+    {
+      "path": "lib-eh/libwasix_rust_libs.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "8a8ca936d18a130447c83990f14ad066505640bb",
+      "bytes": 13851546,
+      "sha256_recorded_by_both_ci_builders": "005ea965ad05e1109fe0f22719b1becd23aa42880a6a33326b5b4342a00cf6ad"
+    },
+    {
+      "path": "lib-eh/libwasix_sendmail.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "209aebfa9641c49c135a762520dbec0543611cfa",
+      "bytes": 12964844,
+      "sha256_recorded_by_both_ci_builders": "18927dfcf5bdaa08a9117a90f8d10417594b7abc07485296da00bb9c191be346"
+    },
+    {
+      "path": "lib-eh/libwebp.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "698d744e40ac551ad5e30ce7949ff6e1b3232ad9",
+      "bytes": 2482104,
+      "sha256_recorded_by_both_ci_builders": "670ebb6eca74a7ef9fa44f9bc63300edbc78b9405527b07aa3a70abbbd1e066b"
+    },
+    {
+      "path": "lib-eh/libxml2.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "ad59000cc5eb6b92dd6a8aeeb62655bf2c20321c",
+      "bytes": 7212900,
+      "sha256_recorded_by_both_ci_builders": "1f35a454c429497a702c2453d82734ac673fc954798b898ecacf59224b07a302"
+    },
+    {
+      "path": "lib-eh/libz.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "3c0b7ea887ee2a3fbee42fa90dae2dfb6bd4708b",
+      "bytes": 462456,
+      "sha256_recorded_by_both_ci_builders": "40114257c62a5036664f806869191ab8d52cf6af8b565221648e586b31a1ef14"
+    },
+    {
+      "path": "lib-eh/libzip.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "aa153fe71b3af5a7f692250e3a7a16ec3762f712",
+      "bytes": 184016,
+      "sha256_recorded_by_both_ci_builders": "07c638af02224f1dbd45b25a0fcd8874a33ae93598e868ce9bbec04a7a0aa87c"
+    },
+    {
+      "path": "pgsql-eh/lib/libpq.a",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob_sha1": "1fa58f8231ac51058fa5745eab6fcaa79462cc72",
+      "bytes": 4392304,
+      "sha256_recorded_by_both_ci_builders": "6a1c8f93df9ffe33f0349b2383b77939d790b33c34328ea1c34e4b1b1b8073c0"
+    }
+  ],
+  "scope": "GitHub API tree metadata linked to existing source-bound CI archive identities; not source/build/license attestation",
+  "binaries_acquired": false,
+  "prebuilt_archives_rebuilt": false,
+  "full_license_inventory_verified": false,
+  "archive_source_commits_verified": false,
+  "redistribution_approved": false,
+  "product_runtime_selected": false,
+  "api_reported_sha": "b77ecbede97aba2df32c86eaeb54ff9f5e44f543",
+  "source_bound_ci_receipts": [
+    {
+      "path": "experiments/php-wasix-cgi-build/evidence/ci-41323679290-cranelift/build.json",
+      "sha256": "1aa035857e678e0f9c5b81461026060885637637417d66110c682b8f26519252",
+      "source_commit": "6e3c66422e5bf4b92f20c231016849d816c95e6b",
+      "run_id": "41323679290",
+      "backend": "cranelift"
+    },
+    {
+      "path": "experiments/php-wasix-cgi-build/evidence/ci-41323679290-llvm/build.json",
+      "sha256": "beefaa45de3586044c74832a5d786ae667c9c09be8d77c348a4d55e791ff607d",
+      "source_commit": "6e3c66422e5bf4b92f20c231016849d816c95e6b",
+      "run_id": "41323679290",
+      "backend": "llvm"
+    }
+  ],
+  "fixed_eh_archive_inventory_count": 28,
+  "api_archive_path_and_size_match_both_ci_receipts": true,
+  "archive_bytes_independently_rehashed_here": false,
+  "filename_inventory_only_not_full_text_license_search": true,
+  "top_level_files": [
+    "README.md"
+  ]
+}
