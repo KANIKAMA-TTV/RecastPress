@@ -1,6 +1,10 @@
 use anyhow::{Context, Result, ensure};
 use sha2::{Digest, Sha256};
-use std::{path::Path, sync::mpsc, thread, time::Duration};
+use std::{
+    path::Path,
+    sync::mpsc,
+    time::{Duration, Instant},
+};
 use wasmtime::{
     Config, Engine, Linker, Module, ResourceLimiter, Store, StoreLimits, StoreLimitsBuilder, Trap,
 };
@@ -10,14 +14,18 @@ use wasmtime_wasi::{
     preview1::{self, WasiP1Ctx},
 };
 
-mod file_bridge;
-use file_bridge::Bridge;
+mod cgi_response;
+mod descriptor_bridge;
+mod epoch;
+mod parallel;
+mod wasi_rpc;
+use descriptor_bridge::Bridge;
 
 const FIXTURE_SHA256: &str = "4fd2e8c42ae529ba72f88a0f1e46de1fc69a4b4f01e01fedd65ca966b8ffe6fa";
 const FIXTURE_BYTES: u64 = 6_259_973;
 const FUEL: u64 = 200_000_000;
 const MEMORY: usize = 256 * 1024 * 1024;
-const OUTPUT: usize = file_bridge::OUTPUT_LIMIT;
+const OUTPUT: usize = descriptor_bridge::OUTPUT_LIMIT;
 const BODY: &[u8] = b"rp\0\xff\r\nbody";
 const WORDPRESS_FIXTURE: &str = include_str!("../wordpress-fixture.json");
 
@@ -69,6 +77,9 @@ struct State {
     wasi: WasiP1Ctx,
     limits: StoreLimits,
     memory_denials: usize,
+    bridge: Bridge,
+    channel_fd: Option<u32>,
+    delegates: Option<wasi_rpc::Delegates>,
 }
 impl ResourceLimiter for State {
     fn memory_growing(
@@ -107,37 +118,6 @@ impl ResourceLimiter for State {
     }
 }
 
-// Cancel and join each finished request's deadline thread.
-struct Deadline {
-    cancel: mpsc::Sender<()>,
-    thread: Option<thread::JoinHandle<()>>,
-}
-impl Deadline {
-    fn new(engine: Engine, duration: Duration) -> Self {
-        let (cancel, receiver) = mpsc::channel();
-        let thread = thread::spawn(move || {
-            if matches!(
-                receiver.recv_timeout(duration),
-                Err(mpsc::RecvTimeoutError::Timeout)
-            ) {
-                engine.increment_epoch();
-            }
-        });
-        Self {
-            cancel,
-            thread: Some(thread),
-        }
-    }
-}
-impl Drop for Deadline {
-    fn drop(&mut self) {
-        let _ = self.cancel.send(());
-        if let Some(thread) = self.thread.take() {
-            let _ = thread.join();
-        }
-    }
-}
-
 struct Run {
     exit: Result<()>,
     stdout: Vec<u8>,
@@ -147,7 +127,7 @@ struct Run {
     memory_denials: usize,
 }
 impl Run {
-    fn completed_body(&self) -> Result<&[u8]> {
+    fn completed_response(&self) -> Result<cgi_response::Response> {
         // Never publish a partially successful guest result.
         self.exit
             .as_ref()
@@ -155,19 +135,10 @@ impl Run {
         ensure!(self.stdout.len() < OUTPUT, "response output limit");
         ensure!(self.stderr.len() < 8192, "stderr output limit");
         self.bridge.validate()?;
-        let split = self
-            .stdout
-            .windows(4)
-            .position(|bytes| bytes == b"\r\n\r\n")
-            .map(|position| position + 4)
-            .or_else(|| {
-                self.stdout
-                    .windows(2)
-                    .position(|bytes| bytes == b"\n\n")
-                    .map(|position| position + 2)
-            })
-            .context("missing complete CGI headers")?;
-        Ok(&self.stdout[split..])
+        cgi_response::parse(&self.stdout)
+    }
+    fn completed_body(&self) -> Result<Vec<u8>> {
+        Ok(self.completed_response()?.body)
     }
 }
 
@@ -179,7 +150,20 @@ fn run(
     fuel: u64,
     timeout: Duration,
 ) -> Result<Run> {
+    run_observed(engine, module, mode, nonce, fuel, timeout, None)
+}
+
+fn run_observed(
+    engine: &Engine,
+    module: &Module,
+    mode: &str,
+    nonce: u64,
+    fuel: u64,
+    timeout: Duration,
+    mut ready: Option<mpsc::Sender<u64>>,
+) -> Result<Run> {
     let stderr = MemoryOutputPipe::new(8192);
+    let stdout = MemoryOutputPipe::new(OUTPUT);
     let bridge = Bridge::new(nonce)?;
     let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("fixtures");
     ensure!(
@@ -222,18 +206,18 @@ fn run(
         .allow_udp(false)
         .allow_ip_name_lookup(false)
         .stdin(MemoryInputPipe::new(BODY))
-        .stdout(bridge.output())
+        .stdout(stdout.clone())
         .stderr(stderr.clone());
+    builder.preopened_dir(
+        bridge.directory(),
+        "/rp-p0-rpc",
+        DirPerms::READ | DirPerms::MUTATE,
+        FilePerms::READ | FilePerms::WRITE,
+    )?;
     builder.preopened_dir(&fixtures, "/site", DirPerms::READ, FilePerms::READ)?;
     builder.preopened_dir(
         wordpress_directory(),
         "/wp-core",
-        DirPerms::READ,
-        FilePerms::READ,
-    )?;
-    builder.preopened_dir(
-        bridge.directory(),
-        "/rp-p0-rpc",
         DirPerms::READ,
         FilePerms::READ,
     )?;
@@ -244,22 +228,39 @@ fn run(
             limits: StoreLimitsBuilder::new()
                 .memory_size(MEMORY)
                 .table_elements(100_000)
-                .instances(1)
+                .instances(2)
                 .memories(1)
                 .tables(1)
                 .trap_on_grow_failure(true)
                 .build(),
             memory_denials: 0,
+            bridge: bridge.clone(),
+            channel_fd: None,
+            delegates: None,
         },
     );
     store.limiter(|state| state);
     store.set_fuel(fuel)?;
     store.set_epoch_deadline(1);
+    let deadline = Instant::now()
+        .checked_add(timeout)
+        .context("request deadline overflow")?;
+    store.epoch_deadline_callback(move |_| {
+        if let Some(sender) = ready.take() {
+            let _ = sender.send(nonce);
+        }
+        if Instant::now() >= deadline {
+            Err(Trap::Interrupt.into())
+        } else {
+            Ok(wasmtime::UpdateDeadline::Continue(1))
+        }
+    });
     let mut linker = Linker::new(engine);
     preview1::add_to_linker_sync(&mut linker, |state: &mut State| &mut state.wasi)?;
-    let _deadline = Deadline::new(engine.clone(), timeout);
+    let original = wasi_rpc::intercept(&mut linker, &mut store)?;
     let exit = (|| {
         let instance = linker.instantiate(&mut store, module)?;
+        wasi_rpc::bind(&mut store, instance, original)?;
         let start = instance.get_typed_func::<(), ()>(&mut store, "_start")?;
         match start.call(&mut store, ()) {
             Err(error)
@@ -279,11 +280,10 @@ fn run(
         "guest created a file in its read-only preopen"
     );
     drop(store); // Dispose PHP globals, streams, handles, and memory on every path.
-    let stdout = bridge.captured();
     bridge.cleanup()?;
     Ok(Run {
         exit,
-        stdout,
+        stdout: stdout.contents().to_vec(),
         stderr: stderr.contents().to_vec(),
         bridge,
         fuel_left,
@@ -300,7 +300,7 @@ fn check_basic(engine: &Engine, module: &Module, nonce: u64) -> Result<()> {
             String::from_utf8_lossy(&run.stderr)
         )
     })?;
-    let value: serde_json::Value = serde_json::from_slice(body).context("PHP response JSON")?;
+    let value: serde_json::Value = serde_json::from_slice(&body).context("PHP response JSON")?;
     ensure!(
         value["version"] == "8.2.6",
         "wrong PHP interpreter version: {value}"
@@ -334,6 +334,10 @@ fn check_basic(engine: &Engine, module: &Module, nonce: u64) -> Result<()> {
     );
     run.bridge.check_calls(4)?;
     ensure!(
+        value["rpc_output_empty"] == true,
+        "RPC escaped into buffered PHP output"
+    );
+    ensure!(
         value["wp_hooks_initially_empty"] == true,
         "WP hooks leaked between requests"
     );
@@ -348,6 +352,116 @@ fn check_basic(engine: &Engine, module: &Module, nonce: u64) -> Result<()> {
     ensure!(
         value["wp_null_result"] == true,
         "WP null/sentinel semantics failed"
+    );
+    Ok(())
+}
+
+fn check_descriptor_bridge(engine: &Engine, module: &Module) -> Result<()> {
+    let literal = run(
+        engine,
+        module,
+        "literal",
+        5100,
+        FUEL,
+        Duration::from_secs(5),
+    )?;
+    ensure!(
+        literal.completed_body()? == b"RP_P0 CACHE_SET 7\n\0\xff",
+        "literal output was interpreted as an RPC or changed"
+    );
+    literal.bridge.check_calls(0)?;
+    for mode in ["fragmented_rpc", "reopen_rpc"] {
+        let response = run(engine, module, mode, 5101, FUEL, Duration::from_secs(5))?;
+        let body = response.completed_body()?;
+        let value: serde_json::Value = serde_json::from_slice(&body)?;
+        ensure!(
+            value["set"] == true && value["value"] == 7,
+            "descriptor protocol failed: {mode}"
+        );
+        response.bridge.check_calls(2)?;
+    }
+    Ok(())
+}
+
+fn check_cgi_responses(engine: &Engine, module: &Module) -> Result<()> {
+    let metadata = run(
+        engine,
+        module,
+        "response_metadata",
+        5200,
+        FUEL,
+        Duration::from_secs(5),
+    )?;
+    let response = metadata.completed_response()?;
+    ensure!(
+        response.status == 201 && response.body == b"ok\0\xffbody",
+        "CGI status/binary body mismatch"
+    );
+    let cookies: Vec<_> = response
+        .headers
+        .iter()
+        .filter(|(name, _)| name == "set-cookie")
+        .map(|(_, value)| value.as_slice())
+        .collect();
+    ensure!(
+        cookies
+            == [
+                b"first=1; Path=/; HttpOnly".as_slice(),
+                b"second=2; Path=/; SameSite=Lax".as_slice()
+            ],
+        "CGI cookies were combined or changed"
+    );
+    ensure!(
+        !response
+            .headers
+            .iter()
+            .any(|(name, _)| name == "status" || name == "content-length"),
+        "CGI framing leaked into transport headers"
+    );
+    let redirect = run(
+        engine,
+        module,
+        "redirect_metadata",
+        5201,
+        FUEL,
+        Duration::from_secs(5),
+    )?
+    .completed_response()?;
+    ensure!(
+        redirect.status == 307
+            && redirect
+                .headers
+                .iter()
+                .any(|(name, value)| name == "location" && value == b"/next?lang=ja"),
+        "CGI redirect mismatch"
+    );
+    let empty = run(
+        engine,
+        module,
+        "no_content",
+        5202,
+        FUEL,
+        Duration::from_secs(5),
+    )?
+    .completed_response()?;
+    ensure!(
+        empty.status == 204 && empty.body.is_empty(),
+        "204 CGI response mismatch"
+    );
+    let cached = run(
+        engine,
+        module,
+        "not_modified",
+        5203,
+        FUEL,
+        Duration::from_secs(5),
+    )?
+    .completed_response()?;
+    ensure!(
+        cached.status == 304
+            && cached.body.is_empty()
+            && cached.representation_length == Some(1234),
+        "304 representation length mismatch"
     );
     Ok(())
 }
@@ -391,6 +505,7 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
     if trace {
         eprintln!("P0: module compiled in {:?}", started.elapsed());
     }
+    let _clock = epoch::EpochClock::new(engine.clone())?;
     for import in module.imports() {
         ensure!(
             import.module() == "wasi_snapshot_preview1",
@@ -407,6 +522,8 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         eprintln!("P0: second basic request");
     }
     check_basic(&engine, &module, 8229)?;
+    check_descriptor_bridge(&engine, &module)?;
+    check_cgi_responses(&engine, &module)?;
     let mut checks = vec![
         "real_php_wasi",
         "binary_input",
@@ -423,6 +540,14 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         "wp_actions_shared_object",
         "wp_null_sentinel",
         "wp_request_hook_cleanup",
+        "rpc_output_buffer_independent",
+        "literal_stdout_preserved",
+        "fragmented_rpc",
+        "rpc_descriptor_reopen",
+        "cgi_status_and_cookies",
+        "cgi_redirect",
+        "cgi_no_content",
+        "cgi_not_modified",
     ];
     for (mode, fuel, timeout, trap) in [
         ("fuel", FUEL, Duration::from_secs(5), Some(Trap::OutOfFuel)),
@@ -436,6 +561,11 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         ("output", FUEL, Duration::from_secs(5), None),
         ("memory", FUEL, Duration::from_secs(5), None),
         ("bad_rpc", FUEL, Duration::from_secs(5), None),
+        ("rpc_oversize", FUEL, Duration::from_secs(5), None),
+        ("rpc_incomplete", FUEL, Duration::from_secs(5), None),
+        ("cgi_wrong_length", FUEL, Duration::from_secs(5), None),
+        ("cgi_hop_header", FUEL, Duration::from_secs(5), None),
+        ("cgi_header_limit", FUEL, Duration::from_secs(5), None),
     ] {
         if trace {
             eprintln!("P0: failure/recovery fixture {mode}");
@@ -469,6 +599,24 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
                 ensure!(result.exit.is_err(), "unknown RPC did not trap");
                 result.bridge.check_calls(1)?;
             }
+            "rpc_oversize" => {
+                ensure!(result.exit.is_err(), "oversized RPC did not trap");
+                result.bridge.check_calls(0)?;
+            }
+            "rpc_incomplete" => {
+                ensure!(
+                    result.exit.is_ok() && result.bridge.validate().is_err(),
+                    "incomplete frame did not fail after PHP completion"
+                );
+                result.bridge.check_calls(0)?;
+            }
+            "cgi_wrong_length" | "cgi_hop_header" | "cgi_header_limit" => {
+                ensure!(
+                    result.exit.is_ok(),
+                    "CGI rejection fixture did not complete normally: {mode}"
+                );
+                result.bridge.check_calls(0)?;
+            }
             _ => {}
         }
         if let Some(trap) = trap {
@@ -482,16 +630,26 @@ fn verify(trace: bool) -> Result<serde_json::Value> {
         check_basic(&engine, &module, 9441)?;
         checks.push(mode);
     }
+    if trace {
+        eprintln!("P0: parallel request isolation and independent deadlines");
+    }
+    parallel::verify(&engine, &module)?;
+    checks.extend([
+        "parallel_request_isolation",
+        "independent_request_deadlines",
+        "normal_request_during_sibling_timeout",
+    ]);
     Ok(serde_json::json!({
-        "format_version":2,"milestone":"v0.5-P0-experiment","php_version":"8.2.6",
+        "format_version":3,"milestone":"v0.5-P0-experiment","php_version":"8.2.6",
         "process_pid": std::process::id(),
         "artifact_sha256":FIXTURE_SHA256,"wasmtime_version":"36.0.19",
         "cranelift_opt_level":"none",
-        "checks":checks,"recovery_requests":6,"memory_limit_bytes":MEMORY,
+        "checks":checks,"recovery_requests":11,"memory_limit_bytes":MEMORY,
+        "parallel_requests":parallel::PARALLEL_REQUESTS,"shared_epoch_tick_ms":epoch::TICK_MILLIS,
         "stdout_limit_bytes":OUTPUT,"fuel_per_request":FUEL,
         "product_ready":false,"wordpress_bootstrapped":false,"real_database_connected":false,
         "wordpress_hook_version":"7.1.3","wordpress_hooks_executed":true,
-        "bridge":"fixed-fixture stdout commands/read-only reply file; not the product ABI"
+        "bridge":"fixed-fixture dedicated WASI descriptor channel; not the product ABI"
     }))
 }
 

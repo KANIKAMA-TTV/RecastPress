@@ -1,6 +1,6 @@
 # v0.5 P0：RustからPHP WASIを直接実行する実験
 
-既存のWAT実験とは別に、実際のPHPインタプリタのWasmをRustで動かす。独立workspaceで実証し、本体の依存や既存仕様書は変更しない。2026-11-01、Windows x86_64で21項目と失敗後の正常要求6回を検証し、[実行証跡](evidence/native.json)へ保存した。製品P0の通過を示すものではない。
+既存のWAT実験とは別に、実際のPHPインタプリタのWasmをRustで動かす。独立workspaceで実証し、本体の依存や既存仕様書は変更しない。2026-11-01、Windows x86_64で37項目、失敗後の正常要求11回、4件の並列要求、CGI解析の単体テスト9件を検証し、[実行証跡](evidence/native.json)へ保存した。製品P0の通過を示すものではない。
 
 ## 実行
 
@@ -20,11 +20,17 @@ WordPress 7.1.3の参照ソースは既存の取得手順を使う。[wordpress-
 - 同じ要求内のPHP object共有と、要求ごとのglobal・Cookie・Rust側cache状態の分離。
 - WordPress本体のfilter順序と追加引数、actionによるobject共有、nullとsentinel、要求ごとのhook状態の分離。
 - PHPが要求した時点でRustを呼び、cache更新・読取りと固定DB fixture結果をPHPへ返す往復。
-- 読取り専用の公開fixtureディレクトリだけを渡し、外部ファイル・書込み・親環境の参照を拒む。
+- 出力バッファ内からのRPC、分割書込み、descriptorの閉鎖・再オープン。通常出力のRPC風文字列とbinaryをそのまま本文に保持する。
+- 公開fixtureとWPソースを読取り専用で渡し、外部ファイル・公開ソースへの書込み・親環境の参照を拒む。RPCは要求ごとの専用作業領域を使う。
 - fuel・epoch・Wasmメモリ・応答出力の上限、PHP fatal、未知RPCの失敗と、各失敗後の正常要求。
+- RPCのサイズ超過・未完了フレーム、不正CGI長・hop-by-hop header・header上限の拒否と復帰。
+- PHPのstatus、個別のSet-Cookie、binary本文、redirect、204、304の解析。通常のContent-Lengthは実本文長と照合し、304の長さ情報は検証待ちのmetadataに分ける。
+- 4要求でのPHP・WP・Rust状態の隔離、異なる期限の2要求の独立した中断、長要求中の正常要求。
 - 実行が完了する前の出力を成功結果として取り出せないこと。
 
-RPCは、PHPがstdoutへコマンドを出してflushし、Rustが書き出す専用の読取り専用replyファイルをPHPが読む、固定入力用の実証経路である。取得したCGI成果物では`php://stdin`と`php://stderr`を開けなかったため、この実験ではファイル経由を使う。PHPの出力バッファがコマンドを捕捉する構成には使えず、製品のABIへ転用しない。実DB、SQL処理、標準wpdbは未実装で、別テーマ・別プラグインの完全な隔離も提供しない。
+RPCは専用ファイルのdescriptorへの書込みをRustが受け取り、同じファイルを通じて結果を返す固定入力用の実証経路である。公開stdoutは通信に使わない。`path_open`・`fd_write`・`fd_close`を必要な範囲で仲介し、その他の操作は元のWASI実装へ渡す。PHPメモリを共有する小さな[転送module](fixtures/wasi-forwarder.wat)を介し、元のWASIへ正しいcaller memoryを渡す。
+
+RPC領域は最初のpreopen、fd 3に固定し、WASI側で書込み可能な要求専用領域を設ける。受信は最大128B・16 iovec、各フレームは改行を含め最大128B、最大8操作であり、終了時には未完了フレームを拒否してStore・通信ファイル・要求ディレクトリを回収する。これらは試験値で、任意PHPや悪意ある拡張向けの境界、SQL用の通信仕様、製品ABIとして採用しない。実DB、標準wpdb、別テーマ・別プラグインの完全な隔離は未実装。
 
 ## 判定の境界
 
@@ -32,7 +38,9 @@ PHP成果物は[upstreamの2023年リリース](https://github.com/vmware-labs/w
 
 `evidence/native.json`は実行したソース・lock・fixture設定・実行ファイルのハッシュと観測範囲を記録する。`evidence/dependencies.json`は解決された依存のライセンス宣言であり、監査の完了を意味しない。`--record`を使って成功した場合だけ生成する。
 
-メモリ上限はWasm linear memoryに対するもので、Rust・コンパイラ・WASIの割当てやprocess全体のRSSを含まない。epochはguest実行を中断するが、停止しないhost呼出しの監督には別の仕組みが必要となる。この実験は逐次実行であり、同じengineのepochを要求ごとに進めるタイマーは並列workerへ転用できない。Storeの破棄はDB rollbackやRSS返却の証明ではない。
+メモリ上限はWasm linear memoryに対するもので、Rust・コンパイラ・WASIの割当てやprocess全体のRSSを含まない。engineごとに10ms周期の時計を共有し、各Storeが自分のInstant期限を判定する。要求ごとにengine全体を中断する方式は使わない。epochはguest実行を中断するが、停止しないhost呼出しの監督には別の仕組みが必要となる。Storeの破棄はDB rollbackやRSS返却の証明ではない。
+
+CGI parserは完成後の出力だけを扱う。headerは16KiB・64件まで、不正な制御文字・折返し・重複Status・曖昧な長さ等を拒否する。Content-LengthとStatusをtransport用headerから除き、204の本文・長さ指定を拒否する。304のrepresentation長は、HTTP側で照合するまで送信しない。[RFC 9110 §8.6](https://www.rfc-editor.org/rfc/rfc9110.html#section-8.6)に合わせた取扱いであり、実HTTPへの送信やHEAD処理はまだ実証していない。
 
 CGIのPHP fatalは終了コード255を使い、この版のWASI側では有効な終了コード範囲外としてエラーになる。これも失敗として回収し、正常応答へ変換しない。製品でのPHPエラー・HTTP status対応は追加の検証が必要となる。
 

@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import sys
 
 HERE = Path(__file__).resolve().parent
@@ -25,7 +26,12 @@ CHECKS = [
     'live_rust_cache_callback', 'live_rust_db_fixture_callback', 'fresh_request_state',
     'read_only_preopen', 'outside_file_denied', 'no_inherited_environment',
     'wp_filter_chain', 'wp_actions_shared_object', 'wp_null_sentinel', 'wp_request_hook_cleanup',
+    'rpc_output_buffer_independent', 'literal_stdout_preserved', 'fragmented_rpc', 'rpc_descriptor_reopen',
+    'cgi_status_and_cookies', 'cgi_redirect', 'cgi_no_content', 'cgi_not_modified',
     'fuel', 'epoch', 'fatal', 'output', 'memory', 'bad_rpc',
+    'rpc_oversize', 'rpc_incomplete',
+    'cgi_wrong_length', 'cgi_hop_header', 'cgi_header_limit',
+    'parallel_request_isolation', 'independent_request_deadlines', 'normal_request_during_sibling_timeout',
 ]
 
 
@@ -83,16 +89,17 @@ def validate_result(pid, completed):
     require(type(wire) is bytes and len(wire) <= 4096 and wire.endswith(b'\n') and wire.count(b'\n') == 1 and wire.startswith(PREFIX), 'invalid native probe response')
     value = parse_json(wire[len(PREFIX):])
     expected = {
-        'format_version': 2, 'milestone': 'v0.5-P0-experiment', 'php_version': '8.2.6',
+        'format_version': 3, 'milestone': 'v0.5-P0-experiment', 'php_version': '8.2.6',
         'process_pid': pid,
         'artifact_sha256': '4fd2e8c42ae529ba72f88a0f1e46de1fc69a4b4f01e01fedd65ca966b8ffe6fa',
-        'wasmtime_version': '36.0.19', 'checks': CHECKS, 'recovery_requests': 6,
+        'wasmtime_version': '36.0.19', 'checks': CHECKS, 'recovery_requests': 11,
+        'parallel_requests': 4, 'shared_epoch_tick_ms': 10,
         'cranelift_opt_level': 'none',
         'memory_limit_bytes': 256 * 1024 * 1024, 'stdout_limit_bytes': 64 * 1024,
         'fuel_per_request': 200_000_000, 'product_ready': False,
         'wordpress_bootstrapped': False, 'real_database_connected': False,
         'wordpress_hook_version': '7.1.3', 'wordpress_hooks_executed': True,
-        'bridge': 'fixed-fixture stdout commands/read-only reply file; not the product ABI',
+        'bridge': 'fixed-fixture dedicated WASI descriptor channel; not the product ABI',
     }
     require(type(value) is dict and set(value) == set(expected), 'unexpected result fields')
     for key, item in expected.items():
@@ -115,10 +122,19 @@ def main():
             # Only fixed fixture output; no application data or inherited guest environment.
             print(completed.stderr.decode('utf-8', errors='replace')[:16384], file=sys.stderr)
         native = validate_result(pid, completed)
+        _, tested = owned_probe.run_captured_probe([
+            'cargo', 'test', '--manifest-path', str(HERE / 'Cargo.toml'),
+            '--release', '--target-dir', str(TARGET), '--offline', '--locked',
+            'cgi_response::tests', '--', '--color=never',
+        ], environment, timeout=600)
+        require(tested.returncode == 0 and len(tested.stdout) <= 65536 and len(tested.stderr) <= 1024 * 1024, 'CGI unit tests failed')
+        test_names = re.findall(rb'^test (cgi_response::tests::[a-z_]+) \.\.\. ok$', tested.stdout, re.MULTILINE)
+        require(len(test_names) == len(set(test_names)) == 9 and b'test result: ok. 9 passed; 0 failed;' in tested.stdout, 'CGI unit test scope mismatch')
     finally:
         owned_probe.reap_owned_probes()
     inputs = [HERE / name for name in ['Cargo.toml', 'Cargo.lock', 'fixture.json', 'wordpress-fixture.json', 'prepare_fixture.py', 'check.py', 'outside.txt']]
     inputs += sorted((HERE / 'src').glob('*.rs')) + sorted((HERE / 'fixtures').glob('*.php'))
+    inputs += sorted((HERE / 'fixtures').glob('*.wat'))
     inputs += [ROOT / 'scripts' / 'owned_probe.py', ROOT / 'scripts' / 'dependency_inventory.py']
     observation = {
         'format_version': 1,
@@ -128,6 +144,7 @@ def main():
         'native_artifact': artifact.relative_to(ROOT).as_posix(),
         'native_artifact_sha256': digest(artifact),
         'result': native,
+        'cgi_unit_tests': [name.decode('ascii') for name in sorted(test_names)],
         'wordpress_reference': json.loads((HERE / 'wordpress-fixture.json').read_text(encoding='utf-8')),
         'limitations': [
             'P0 experiment, not P0 product acceptance or an engine/license adoption decision.',
@@ -146,7 +163,7 @@ def main():
         directory.mkdir(exist_ok=True)
         (directory / 'dependencies.json').write_text(json.dumps(declarations, indent=2, ensure_ascii=True) + '\n', encoding='utf-8', newline='\n')
         (directory / 'native.json').write_text(json.dumps(observation, indent=2, ensure_ascii=True) + '\n', encoding='utf-8', newline='\n')
-    print(f'PHP WASI P0 experiment passed: {len(CHECKS)} checks, 6 post-failure recovery requests.')
+    print(f'PHP WASI P0 experiment passed: {len(CHECKS)} checks, 11 post-failure recovery requests, 4 parallel requests, 9 CGI unit tests.')
     print('Scope: experimental Rust-hosted PHP; production runtime, WordPress and real DB remain open.')
 
 

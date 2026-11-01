@@ -10,7 +10,7 @@ publish = false
 [workspace]
 
 [dependencies]
-wasmtime = { version = "=36.0.19", default-features = false, features = ["std", "runtime", "cranelift"] }
+wasmtime = { version = "=36.0.19", default-features = false, features = ["std", "runtime", "cranelift", "wat"] }
 wasmtime-wasi = "=36.0.19"
 wasmtime-wasi-io = "=36.0.19"
 sha2 = "=0.10.9"
