@@ -1,0 +1,57 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_fixed_fiber_corpus",
+  "source_commit": "24c0b57ab583337cbe42fbda5f3daec6b9849658",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41320732582",
+  "artifact_id": 13089890519,
+  "artifact_zip_bytes": 43665,
+  "artifact_zip_sha256": "622a3927c09e7a2c066ffe664ec83fa07fef5ccfa2a3de11e22855e52e5ba67f",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "success",
+  "observations": {
+    "php_source_patch_applied": true,
+    "php_module_bytes": 39082257,
+    "php_module_sha256": "9e84115221b07558e4814995db1b6a428ba7ac4b7485a962f0dd67adbb244272",
+    "postopt_adapter_verified": true,
+    "bounded_linux_units_passed": 27,
+    "fixed_native_cases": 6,
+    "fresh_wasi_instances": 3,
+    "module_compile_calls": 1,
+    "compile_elapsed_ms": 105241,
+    "guest_execution_elapsed_ms": [
+      81,
+      53,
+      55
+    ],
+    "full_php_compatibility_verified": false,
+    "physical_stack_free_or_reuse_verified": false,
+    "all_resources_immediately_reclaimed": false,
+    "product_runtime_selected": false
+  },
+  "php_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "product_runtime_selected": false,
+  "input_files": {
+    "experiments/php-wasix-fiber-probe/import_ci_evidence.py": "dbe3287f01ad975e91b6bcb257a5f869a17cbb10e0c4e750bc7fc59f6cee7f19",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-fiber-probe/fiber_check.py": "cd85df7242636becdc1bb7a9b4626857859d939bc12c2884ec4ad78eed2c3ea3",
+    "experiments/php-wasix-fiber-probe/native_contract.py": "14e768a301284cb462d526491af39448a580391584052430571f4d2469850f08",
+    "experiments/php-wasix-fiber-probe/build.py": "b1aaaea4379d966bdde8493ff5979884e546c85544c7dbeaf51e0765a63bc774",
+    "experiments/php-wasix-fiber-probe/patch_source.py": "607140f77676773d34053d67c46e03241c5e1bf1dd87d871b2409469045f2793",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-host-probe/check.py": "fb519271c13fbda73fb640ba70f2e7b275eb62dc0c76c7130676dd00b14eac55",
+    "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "imported_files": {
+    "build.json": "b5b5c3e332c5bddf5dc2c020fb1df6926a113811b691c55cd4516b43299940d5",
+    "ci-stages.json": "28f6289149951c62837416b5e35cc6f151abf51819c26a1756aeb5ddb0c0abde",
+    "native-fiber-contract.json": "243ac46e0aff1cf2a476e3208a35ac0739978d141815096757ec29b1d65779ce",
+    "toolchain.json": "065989d389d1eaa2e276fc63060ccf2a5e8b93d7dabd2d83efa30cf49613d95d",
+    "windows-cranelift-unit-contract.json": "18cc44beb135716f7b07d58769a53d08854178dd57b217ed829a0b0ec0224db7",
+    "linux-llvm-fiber-contract.json": "b24416f6c3b42aefe654d2f55ae8496105564872af45d81b31ed7fcef579355e",
+    "linux-llvm-unit-contract.json": "67477990dc78cd9f3eb0821463d78379330aad084de03224e8949ab06021ba8e",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  }
+}

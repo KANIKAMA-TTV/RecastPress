@@ -1,0 +1,39 @@
+{
+  "format_version": 1,
+  "scope": "Opt-in NTS PHP Fiber build, exact postopt inspection and native six-case comparison; not product adoption",
+  "backend": "cranelift",
+  "guest_execution_verdict": "see the separate Fiber comparison receipt",
+  "product_runtime_selected": false,
+  "redistributed_binaries": false,
+  "source_commit": "a05a2ca1e795e64dacbb2ee0845b6fdc9464da2a",
+  "run_id": "41320223325",
+  "run_attempt": "1",
+  "stages": {
+    "php_source": "success",
+    "deps_source": "success",
+    "parser_source": "success",
+    "dependencies": "success",
+    "definitions": "success",
+    "tools": "success",
+    "build": "failure",
+    "rust": "skipped",
+    "host_llvm": "skipped",
+    "units": "skipped",
+    "fiber_contract": "skipped"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-fiber.yml": "60d7f68da964bbaa0e3b6bb93ddde23237803b1ba2311b13204f5f3b756ffc00",
+    "experiments/php-wasix-fiber-probe/build.py": "1ab91ab6c2387128ea9166ef17b8e802812959d65facf28aae626bd5bd22d394",
+    "experiments/php-wasix-fiber-probe/fiber_check.py": "4de32e0f3b4f554abad6451615818962b175251aa9924f5b3ad2cf2b9c929916",
+    "experiments/php-wasix-fiber-probe/native_contract.py": "14e768a301284cb462d526491af39448a580391584052430571f4d2469850f08",
+    "experiments/php-wasix-fiber-probe/patch_source.py": "607140f77676773d34053d67c46e03241c5e1bf1dd87d871b2409469045f2793",
+    "experiments/php-wasix-fiber-probe/manifest.json": "81cd79838d653453e27e2bb69ad3afefbbd01293846372080e2db8eb134b5c87",
+    "experiments/php-wasix-fiber-probe/patches/0001-nts-fresh-wasi-zend-fibers.patch": "2c334bcfcc34cb518971a8b7965ede50032b2813fa0c426ddfde206a8105d231",
+    "experiments/php-wasix-fiber-probe/fixtures/fiber_contract.php": "9da4b5ffb45677eaa0e81ddbac8c101c692663bf685bbc1157a4689c61c17831",
+    "experiments/php-wasix-fiber-probe/fixtures/zend_wasix_fiber.S": "c0f44bef8e8a4d54713e3ba989be064995ae527924724edcd4bec1f8e4040c19",
+    "experiments/php-wasix-fiber-probe/evidence/native-fiber-contract.json": "243ac46e0aff1cf2a476e3208a35ac0739978d141815096757ec29b1d65779ce",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388",
+    "experiments/php-wasix-host-probe/prepare_host_llvm.py": "47cdd0336d6e0652486c15a03dc8ec83f709dd5538b36f0e423c0ac0873d8761",
+    "experiments/php-wasix-host-probe/unit_check.py": "b107b7d9ac4de3bac74ebac29ac4fd85679341678bfb0901394bcda09fe6d0eb"
+  }
+}

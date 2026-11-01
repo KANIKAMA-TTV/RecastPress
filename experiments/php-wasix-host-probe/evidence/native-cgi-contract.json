@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "observed_at_utc": "2026-11-01T15:07:12.389562+00:00",
+  "observed_at_utc": "2026-11-01T15:52:26.379757+00:00",
   "role": "native CGI comparison oracle only; never a Wasm or product fallback",
   "outcome": "native_cgi_contract_passed",
   "wasm_executed": false,
@@ -79,15 +79,15 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 23700,
+      "owned_process_pid": 14444,
       "exit_code": 0,
-      "elapsed_ms": 113,
+      "elapsed_ms": 225,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
-      "stdout_bytes": 573,
+      "stdout_bytes": 572,
       "stderr_bytes": 0,
-      "stdout_sha256": "84e25f0efd4d8eef134d28110074f8844bfd83beecb73a6059c392afca10aa84",
+      "stdout_sha256": "391ed5958d6d27bdc7f081c7292ee43a7608a3824eb9aebf8876cfe333a6a9fc",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -102,8 +102,8 @@
             "value_hex": "6170706c69636174696f6e2f6a736f6e"
           }
         ],
-        "body_bytes": 492,
-        "body_sha256": "947d145138de97781c151e874310a9666f64ba5d89fae17817eaee9ffc917228",
+        "body_bytes": 491,
+        "body_sha256": "3e70a7f79d74e307aa673d1c7e5366181f1d42480339d2ac9a25957e7b7316e5",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -118,7 +118,7 @@
         },
         {
           "name": "content-length",
-          "value_hex": "343932"
+          "value_hex": "343931"
         }
       ],
       "comparison_php": {
@@ -238,15 +238,15 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 18300,
+      "owned_process_pid": 25500,
       "exit_code": 0,
-      "elapsed_ms": 107,
+      "elapsed_ms": 218,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
-      "stdout_bytes": 655,
+      "stdout_bytes": 654,
       "stderr_bytes": 0,
-      "stdout_sha256": "c15502d793de09daa23e50785d069cd7fac8384458740aa57e8b38d25d2044e1",
+      "stdout_sha256": "12e17ed381371e847bf4957cb7e60bb5ef9908d19d745828f2088ede1e7602dd",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -261,8 +261,8 @@
             "value_hex": "6170706c69636174696f6e2f6a736f6e"
           }
         ],
-        "body_bytes": 574,
-        "body_sha256": "3cbea5923a44e0f3ca882c9c664f16944da1d427b31ecdf27426dccc82098549",
+        "body_bytes": 573,
+        "body_sha256": "ac50ec7dc6e337498d70a4e503723b02953c2152573c64d39289c0a8002b3865",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -277,7 +277,7 @@
         },
         {
           "name": "content-length",
-          "value_hex": "353734"
+          "value_hex": "353733"
         }
       ],
       "comparison_php": {
@@ -401,9 +401,9 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 24316,
+      "owned_process_pid": 4612,
       "exit_code": 0,
-      "elapsed_ms": 107,
+      "elapsed_ms": 196,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
@@ -570,7 +570,7 @@
     "executed": false
   },
   "fixture_copy": {
-    "path": "target/php-wasix-host-probe/native-cgi-contract/12472-56de69f03fd24b748e92fefeb44f965c/cgi_contract.php",
+    "path": "target/php-wasix-host-probe/native-cgi-contract/2440-4c9a689abb794707b4fc447cc0accfb4/cgi_contract.php",
     "sha256": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
     "bytes": 1573
   },
@@ -594,13 +594,13 @@
   "input_files": {
     "experiments/php-wasix-host-probe/native_cgi_contract.py": "6efd7d2009221d823e0a7471791e8de75c412cefaaba1b8bd61be690a1b935c3",
     "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
-    "experiments/php-wasix-host-probe/cgi_check.py": "ccb55f9130dd74c767eb4cbaf0662629f61a30cba535756a1732e35f6664c010",
+    "experiments/php-wasix-host-probe/cgi_check.py": "b410fc62e4357ce5daf2db2578b7ff474818d70810d5d17a03dc5d669f80b5b6",
     "experiments/php-wasix-host-probe/check.py": "fb519271c13fbda73fb640ba70f2e7b275eb62dc0c76c7130676dd00b14eac55",
     "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
     "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
     "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",
     "experiments/php-wasi-host-probe/wordpress-fixture.json": "f25b298591e266cb2eaa8001807ff89aff44c60d46bade4224f7834ba0385543",
-    "experiments/php-wasix-cgi-build/build.py": "cd79682626052d796ed0b60c178d7ec60bb6b160dd8b7dee1865831747597085",
+    "experiments/php-wasix-cgi-build/build.py": "66428ef0b96a40c0185e6bb4080d342d5beb743e7414bb441489680d8a1817e1",
     "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
     "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d"
   }

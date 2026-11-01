@@ -127,6 +127,11 @@ jobs:
         id: cgi_contract
         run: python3 experiments/php-wasix-host-probe/cgi_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
 
+      - name: Audit raw-link archive observations without rerunning PHP
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        id: link_audit
+        run: python3 experiments/php-wasix-cgi-build/link_audit.py --record
+
       - name: Record CI outcomes even if preparation or build failed
         if: ${{ always() }}
         env:
@@ -140,6 +145,7 @@ jobs:
           STAGE_RUST: ${{ steps.rust.outcome }}
           STAGE_HOST_LLVM: ${{ steps.host_llvm.outcome }}
           STAGE_CGI_CONTRACT: ${{ steps.cgi_contract.outcome }}
+          STAGE_LINK_AUDIT: ${{ steps.link_audit.outcome }}
           PROBE_BACKEND: ${{ matrix.backend }}
         run: |
           python3 - <<'PY'
@@ -171,7 +177,7 @@ jobs:
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
                          for name in ['PHP_SOURCE', 'DEPS_SOURCE', 'PARSER_SOURCE',
                                       'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD',
-                                      'RUST', 'HOST_LLVM', 'CGI_CONTRACT']},
+                                      'RUST', 'HOST_LLVM', 'CGI_CONTRACT', 'LINK_AUDIT']},
               'input_files': {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                               for path in inputs if path.is_file()},
           }

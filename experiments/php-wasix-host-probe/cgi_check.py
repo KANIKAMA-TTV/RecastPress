@@ -163,11 +163,13 @@ def verify_build():
     equal(raw.stat().st_size, receipt['raw_cgi_wasm']['bytes'], 'raw module size')
     equal(digest(raw), receipt['raw_cgi_wasm']['sha256'], 'raw module SHA')
     equal(digest(FIXTURE), FIXTURE_SHA, 'fixed CGI fixture')
+    captures = cgi_build.verify_link_capture(receipt, manifest)
     return {'build_receipt_sha256': receipt_sha, 'toolchain_receipt_sha256': tool_sha,
             'manifest_sha256': digest(BUILD / 'manifest.json'),
             'module_bytes': receipt['cgi_wasm']['bytes'], 'module_sha256': receipt['cgi_wasm']['sha256'],
             'source_commit': manifest['sources']['php']['commit'],
             'patch_sha256': manifest['source_patches'][0]['sha256'],
+            'link_capture': captures,
             'verification_scope': 'same trusted job observations; not signed attestation or reproducible build'}
 
 

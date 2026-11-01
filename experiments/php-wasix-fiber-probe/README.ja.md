@@ -33,6 +33,14 @@ python experiments/php-wasix-fiber-probe/fiber_check.py --record
 
 Rustの`--fiber-contract`は専用build receipt/生成物を照合し、元の公式CLI artifactを読む前に分岐する。compile前に最終Wasmの3定義関数・ABI・非alias、mutable i32 SP、bootstrap address、7/9命令switch、6命令entryを検査する。parser専用の正常2形と危険な79変形の拒否はWindowsで確認したが、これはPHP実行ではない。
 
-Linuxの[独立CI](../../.github/workflows/php-wasix-fiber.yml)は両compilerで生成物を作り、compile1回・fresh環境3回で通常PHPの同じ6ケースを厳密比較する。所有Rust processはcompile込み600秒で回収する。失敗時も生出力と失敗phaseを保持し、JSON記録だけをアップロードする。PHPの実ビルド・移植版の6ケース実行は次のCIで確認する段階である。[manifest](manifest.json)のstatic verificationはpatch起案時点の観測であり、後続のbuild/execution receiptへ成功を移さない。
+Linuxの[独立CI](../../.github/workflows/php-wasix-fiber.yml)は両compilerで生成物を作り、compile1回・fresh環境3回で通常PHPの同じ6ケースを厳密比較する。所有Rust processはcompile込み600秒で回収する。失敗時も生出力と失敗phaseを保持し、JSON記録だけをアップロードする。[manifest](manifest.json)のstatic verificationはpatch起案時点の観測であり、実ビルド・実行は下記の別receiptで判定する。
 
-source `a05a2ca`の初回CI `41320223325`は両backendともtool/source/patch照合を通過したが、configureのC compiler確認で停止した。PHP make・module生成・guest実行へは進んでいない。adapter専用exportはconfigureの小さいconftestには存在しないため、指定をmake_cli時だけへ限定して再診断する。最初の記録にはconfig.log内の実link診断が無く、初回の具体的なlinker error自体を確認したとは主張しない。次のfailure時にはその限定excerptも記録する。
+source `a05a2ca`の初回CI `41320223325`は[Cranelift](evidence/ci-41320223325-cranelift/provenance.json)・[LLVM](evidence/ci-41320223325-llvm/provenance.json)ともtool/source/patch照合を通過したが、configureのC compiler確認で停止した。PHP make・module生成・guest実行へは進んでいない。adapter専用exportはconfigureの小さいconftestには存在しないため、指定をmake_cli時だけへ限定して再診断する。最初の記録にはconfig.log内の実link診断が無く、初回の具体的なlinker error自体を確認したとは主張しない。次のfailure時にはその限定excerptも記録する。
+
+## 固定6ケースの実行結果
+
+source `24c0b57`の[Cranelift記録](evidence/ci-41320732582-cranelift/provenance.json)と[LLVM記録](evidence/ci-41320732582-llvm/provenance.json)は、PHPの実ビルド、最終Wasm検査、Linux27 unit、6ケースをfresh3環境で比較する診断がすべて通った。最終Wasmは各39,082,257Bで、9命令switch/6命令entryとbootstrap addressの一致をcompile前に検査した。複数Fiberの終了順、値、例外/finally、suspend中cycle GC/WeakReference、API errorのnative値/型/traceを変更していない。
+
+両jobの最終SHAは異なるため、bit再現buildとはしない。1つのcompile済みmoduleをcloneして3つの要求状態を作った成立実証であり、製品性能・全PHP/WP互換性の値でもない。通常PHP実行やコンパイル済みWasmバイナリをimporterが取得・再実行した記録へ読み替えず、固定ZIP・元Git入力・同jobの生成物/生出力を照合した履歴として保持する。
+
+この試作の取消し完了、要求中に論理破棄されたPHP状態の寿命、stack guard、guest内free/reuse、OOM/INIの追加条件、全thread/FD/RSS回収、配布権利、正式3環境は未受入である。通常PHPの6ケース成功でそのgateを置き換えない。

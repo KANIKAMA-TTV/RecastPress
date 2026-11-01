@@ -51,11 +51,20 @@ def read_fixed(path, limit):
     return wire
 
 
-def verify_native_reference(oracle=None):
+def validation_source(path, read_source=None):
+    """Use current bytes by default; pinned importers may supply original Git bytes."""
+    if read_source is None:
+        return read_fixed(path, 256 * 1024)
+    wire = read_source(path.relative_to(ROOT).as_posix())
+    require(type(wire) is bytes and 0 < len(wire) <= 256 * 1024, 'historical validation source type/budget')
+    return wire
+
+
+def verify_native_reference(oracle=None, read_source=None):
     # Pure receipt/source checks: never call the Windows-only observe(),
     # verify_package() or any native PHP entry point in the Linux CI helper.
     if oracle is None:
-        oracle = parse_json(read_fixed(ORACLE, 256 * 1024))
+        oracle = parse_json(validation_source(ORACLE, read_source))
     for key, expected in [('format_version', 1), ('schema', 'recastpress.native-fiber-reference.v0.5'),
             ('outcome', 'native_fiber_contract_passed'), ('native_contract_passed', True), ('exit_code', 0),
             ('owned_host_reaped', True), ('owned_process_cleanup_completed', True), ('owned_scratch_reclaimed', True),
@@ -68,10 +77,13 @@ def verify_native_reference(oracle=None):
             'product_runtime_selected', 'wordpress_executed', 'native_oom_executed', 'memory_limit_verified']:
         equal(oracle[key], False, 'native unclaimed scope ' + key)
     equal(oracle['platform'], {'system': 'Windows', 'machine': 'AMD64'}, 'native reference platform')
-    equal(oracle['input_files'], native.source_hashes(), 'complete native source bindings')
+    names = [HERE / 'native_contract.py', FIXTURE, native.COMMON, ROOT / 'scripts/owned_probe.py', native.native.WP_MANIFEST]
+    expected_sources = {p.relative_to(ROOT).as_posix():hashlib.sha256(validation_source(p, read_source)).hexdigest() for p in names}
+    equal(oracle['input_files'], expected_sources, 'complete native source bindings')
     equal(oracle['expected_case_names'], native.CASES, 'native fixed case names')
-    equal(oracle['fixture'], {'path': FIXTURE.relative_to(ROOT).as_posix(), 'bytes': FIXTURE.stat().st_size,
-        'sha256': digest(FIXTURE)}, 'native fixed fixture identity')
+    fixture = validation_source(FIXTURE, read_source)
+    equal(oracle['fixture'], {'path': FIXTURE.relative_to(ROOT).as_posix(), 'bytes': len(fixture),
+        'sha256': hashlib.sha256(fixture).hexdigest()}, 'native fixed fixture identity')
     equal(oracle['command'], ['.reference/php-8.5.12/php.exe', '-n', '-d', 'fiber.stack_size=2097152',
         FIXTURE.relative_to(ROOT).as_posix()], 'native closed CLI command')
     package = oracle['native_reference']
@@ -98,13 +110,25 @@ def verify_native_reference(oracle=None):
     return oracle
 
 
-def validate_provenance(provenance):
+def validate_provenance(provenance, read_source=None, build_inputs=None):
+    if read_source is None:
+        require(build_inputs is None, 'current validation derives its own source input set')
+        expected_inputs = builder.input_hashes()
+    else:
+        require(type(build_inputs) is dict and build_inputs, 'historical importer must derive the original complete input set')
+        expected_inputs = build_inputs
+        for name, expected in build_inputs.items():
+            equal(hashlib.sha256(read_source(name)).hexdigest(), expected, 'historical builder input')
+    source_digest = lambda path:hashlib.sha256(validation_source(path, read_source)).hexdigest()
+    manifest = parse_json(validation_source(HERE / 'manifest.json', read_source))
+    patch = manifest['source_patches'][0]
+    equal(source_digest(HERE / patch['path']), patch['sha256'], 'builder pinned patch bytes')
     observed = provenance['builder_provenance']
     for key, expected in [('build_receipt_sha256', provenance['build_receipt_sha256']),
             ('module_bytes', provenance['module']['bytes']), ('module_sha256', provenance['module']['sha256']),
-            ('variant', VARIANT), ('manifest_sha256', digest(HERE / 'manifest.json')),
-            ('patch_sha256', builder.patch_source.PATCH_SHA),
-            ('assembly_sha256', digest(HERE / 'fixtures/zend_wasix_fiber.S')), ('input_files', builder.input_hashes())]:
+            ('variant', VARIANT), ('manifest_sha256', source_digest(HERE / 'manifest.json')),
+            ('patch_sha256', patch['sha256']),
+            ('assembly_sha256', source_digest(HERE / 'fixtures/zend_wasix_fiber.S')), ('input_files', expected_inputs)]:
         equal(observed[key], expected, 'builder/wrapper provenance ' + key)
     identity = provenance['module']
     equal(identity['path'], MODULE.relative_to(ROOT).as_posix(), 'provenance fixed module path')
@@ -196,8 +220,8 @@ def verify_build():
     return provenance
 
 
-def validate_result(value, pid, backend, provenance):
-    validate_provenance(provenance)
+def validate_result(value, pid, backend, provenance, read_source=None, build_inputs=None):
+    validate_provenance(provenance, read_source, build_inputs)
     require('error' not in value, 'failed host result must not become success')
     for key, expected in [('schema', 'recastpress.php-wasix-fiber-host.v0.5'), ('process_pid', pid),
             ('engine', 'wasmer-7.2.0/' + backend), ('wasmer_wasix', '0.702.0'),
@@ -222,8 +246,8 @@ def validate_result(value, pid, backend, provenance):
     equal(value['build_receipt']['verified'], True, 'host receipt verified')
     equal(value['build_receipt']['path'], RECEIPT.relative_to(ROOT).as_posix(), 'fixed host build receipt path')
     equal(value['build_receipt']['full_source_tool_chain_verified_by_host'], False, 'external chain ownership')
-    equal(value['source_files'], [{'path': p.relative_to(ROOT).as_posix(), 'bytes': p.stat().st_size,
-        'sha256': digest(p), 'verified': True} for p in [HERE / 'manifest.json',
+    equal(value['source_files'], [{'path': p.relative_to(ROOT).as_posix(), 'bytes': len(validation_source(p, read_source)),
+        'sha256': hashlib.sha256(validation_source(p, read_source)).hexdigest(), 'verified': True} for p in [HERE / 'manifest.json',
         HERE / 'patches/0001-nts-fresh-wasi-zend-fibers.patch', HERE / 'fixtures/zend_wasix_fiber.S',
         FIXTURE, ORACLE]], 'compiled source/oracle identities')
     policy = value['isolation']
@@ -233,15 +257,15 @@ def validate_result(value, pid, backend, provenance):
         'http_client': False, 'stdin': 'closed-pipe', 'stdout_limit_bytes': 65536, 'stderr_limit_bytes': 65536,
         'other_virtual_root_writes_forbidden': False}, 'Fiber runtime capability policy')
     validate_inspection(value['postopt_adapter'], provenance['module'])
-    oracle = verify_native_reference()
-    equal(value['native_oracle'], {'sha256': digest(ORACLE), 'expected_case_count': 6,
+    oracle = verify_native_reference(read_source=read_source)
+    equal(value['native_oracle'], {'sha256': hashlib.sha256(validation_source(ORACLE, read_source)).hexdigest(), 'expected_case_count': 6,
         'expected_values_weakened': False}, 'strict native oracle binding')
     require(type(value['compile_elapsed_ms']) is int and value['compile_elapsed_ms'] >= 0, 'compile span')
     require(type(value['cases']) is list and len(value['cases']) == 3, 'three fresh Fiber instances')
     equal(value['exceptions_executed'], True, 'fixed corpus exception execution')
     equal(value['exception_support']['execution_verdict'], 'fixed-fiber-corpus-passed', 'fixed exception scope')
     equal(value['integer_width_matches_native'], True, 'fixed PHP integer width')
-    program = FIXTURE.read_bytes()
+    program = validation_source(FIXTURE, read_source)
     require(program.startswith(b'<?php'), 'fixed Fiber PHP tag')
     for index, name in enumerate(['normal_first', 'normal_repeat', 'normal_final']):
         case = value['cases'][index]

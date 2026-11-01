@@ -45,3 +45,11 @@ CIは準備後に`build.py --record`で由来、ツール検証、configure生�
 RPC追加後のsource `e9a2e6c`も[run 41305668059](evidence/ci-41305668059/provenance.json)でbuildと3要求のnative比較が成功した。このrunの実物hashとraw記録を別保存し、以前の結果で代用しない。
 
 source `a0cbade`からはhostをmatrix化し、[Cranelift](evidence/ci-41310853946-cranelift/provenance.json)と[LLVM](evidence/ci-41310853946-llvm/provenance.json)で同じ3ケースがnativeと一致した。CGIのsource/configure/patchは共通、host LLVM archiveはLLVM jobだけに取得する。各job生成物は個別hashで結び付け、両job間のbit一致や再現ビルドは未確認のまま保持する。
+
+## raw linkに入ったarchiveの観測
+
+buildはmake_cgiの環境だけにwasm-ldの`-Map`と`--why-extract`を指定し、configureのconftestとoptimizerへは渡さない。元のPHP28archive/configure/patch/optimizer profileを保ち、raw map/TSVのregular file・byte数・SHAと、各stageへのflag有無を記録する。captureが失敗すれば、makeのexit0を残したまま別phaseの失敗とする。
+
+`link_audit.py --record`は同jobのsource/tool/patch/raw/final module/captureを再照合し、[純粋collector](link_map.py)で解析する。CODE/DATA由来のarchive(member)、GC前の抽出理由、LTO等の曖昧な入力を区別する。archive basenameだけの一致は確定利用へ昇格しない。raw captureはtarget内に留め、公開JSONは512KiB以内で各archiveの最初の根拠、全解析結果の件数/正規化SHA、明示した省略数を保存する。元absolute pathは出力しない。
+
+mapはBinaryen前の観測であり、`--why-extract`はlazy extractionの理由である。未観測を未使用・最終Wasmからの不在・配布権利の確認へ置き換えない。元archive/source/license/noticeの監査は別gateのまま。auditはPHPを再実行せずbuild receiptを変更しない独立stageとし、CGI実行結果も別保存する。この追加は静的/合成確認までで、実linkの観測は次のLinux CIで取得する。

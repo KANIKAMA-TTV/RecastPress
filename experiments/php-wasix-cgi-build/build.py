@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import stat
 import subprocess
 import time
 
@@ -18,6 +19,84 @@ import patch_source
 
 HERE, ROOT, WORK = prepare.HERE, prepare.ROOT, prepare.WORK
 require, digest = prepare.require, prepare.digest
+LINK_CAPTURES = {
+    'map': ('link-observations/cgi.link.map', 64 * 1024 * 1024),
+    'why_extract': ('link-observations/cgi.why-extract.tsv', 16 * 1024 * 1024),
+}
+
+
+def exact(actual, expected):
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(expected, dict):
+        return set(actual) == set(expected) and all(exact(actual[key], value) for key, value in expected.items())
+    if isinstance(expected, list):
+        return len(actual) == len(expected) and all(exact(left, right) for left, right in zip(actual, expected))
+    return actual == expected
+
+
+def capture_path(name):
+    path = WORK.joinpath(*prepare.relative_parts(LINK_CAPTURES[name][0]))
+    require(WORK.resolve() == WORK and path.resolve() == path and path.is_relative_to(WORK),
+            'link capture resolves outside the fixed owned directory')
+    return path
+
+
+def link_flags():
+    return '-Map=' + str(capture_path('map')) + ':--why-extract=' + str(capture_path('why_extract'))
+
+
+def public_link_flags():
+    return '-Map=' + capture_path('map').relative_to(ROOT).as_posix() + ':--why-extract=' + capture_path('why_extract').relative_to(ROOT).as_posix()
+
+
+def observe_link_capture(name):
+    """Hash a bounded regular file without parsing or making audit judgments."""
+    path = capture_path(name)
+    limit = LINK_CAPTURES[name][1]
+    metadata = path.stat()
+    require(not path.is_symlink() and stat.S_ISREG(metadata.st_mode) and 0 < metadata.st_size <= limit,
+            'link capture type/byte budget: ' + name)
+    value, total = hashlib.sha256(), 0
+    with path.open('rb') as source:
+        require(stat.S_ISREG(os.fstat(source.fileno()).st_mode), 'link capture is not a regular file')
+        while True:
+            block = source.read(min(1024 * 1024, limit + 1 - total))
+            if not block:
+                break
+            total += len(block)
+            require(total <= limit, 'link capture grew past hard limit')
+            value.update(block)
+    require(total == metadata.st_size and path.stat().st_size == total, 'link capture changed while hashing')
+    return {'path': path.relative_to(ROOT).as_posix(), 'bytes': total, 'sha256': value.hexdigest(),
+            'file_type': 'regular', 'read_completed': True, 'byte_limit': limit}
+
+
+def verify_link_capture(receipt, manifest):
+    """Read-only capture binding, complementary to the existing build checker.
+
+    No collector or syntax/semantic audit is run here. Caller must verify the
+    normal source/tool/configuration/module chain independently as before.
+    """
+    expected = {'scope': 'make_cgi_only', 'normalized_flags': public_link_flags(),
+        'actual_value_sha256': hashlib.sha256(link_flags().encode('utf-8')).hexdigest(),
+        'configure_flags_absent': True, 'optimize_flags_absent': True, 'parsed_by_builder': False}
+    observed = receipt['link_capture']
+    require(set(observed) == set(expected) | {'map', 'why_extract'}, 'unexpected link capture fields')
+    require(all(type(observed[key]) is type(value) and observed[key] == value for key, value in expected.items()),
+            'link capture stage/flags/scope binding changed')
+    for name in LINK_CAPTURES:
+        require(exact(observed[name], observe_link_capture(name)), 'captured raw linker text changed: ' + name)
+    steps = receipt['build_steps']
+    require([row['name'] for row in steps] == ['configure', 'make_cgi', 'optimize_cgi'], 'link capture build stage ordering')
+    for row in steps:
+        present = row['name'] == 'make_cgi'
+        flags = {'present': present, 'actual_value_sha256': expected['actual_value_sha256'] if present else None}
+        require(exact(row['linker_flags_environment'], flags), 'link flags escaped the final CGI make stage')
+    require(manifest['build']['make_target'] == 'cgi', 'link capture is limited to the fixed CGI target')
+    return {'map': observed['map'], 'why_extract': observed['why_extract'],
+            'stage': 'make_cgi', 'normalized_flags': expected['normalized_flags'],
+            'actual_value_sha256': expected['actual_value_sha256'], 'parsed_by_builder': False}
 
 
 def checked_output(command, cwd, environment):
@@ -129,6 +208,11 @@ def run_step(report, name, command, cwd, environment, record=False):
     report['outcome'] = 'build_in_progress'
     started = time.monotonic()
     step = {'name': name, 'command': command, 'completed': False}
+    supplied = environment.get('WASIXCC_LINKER_FLAGS')
+    expected = link_flags() if name == 'make_cgi' else None
+    require(supplied == expected, 'linker diagnostic flags must be absent except during make_cgi')
+    step['linker_flags_environment'] = {'present': supplied is not None,
+        'actual_value_sha256': hashlib.sha256(supplied.encode('utf-8')).hexdigest() if supplied is not None else None}
     report['build_steps'].append(step)
     if record:
         report['generated_configuration_files'] = configuration_files(cwd)
@@ -165,6 +249,11 @@ def main():
             return 0
         require(platform.system() == 'Linux' and platform.machine() in ('x86_64', 'AMD64'), 'build pins Linux x86-64 only')
         environment = prepare.tool_environment()
+        require('WASIXCC_LINKER_FLAGS' not in environment, 'configure must not inherit link-map flags')
+        for name in LINK_CAPTURES:
+            path = capture_path(name)
+            require(not path.exists() and not path.is_symlink(), 'stale or dangling link capture refused')
+        capture_path('map').parent.mkdir(parents=True, exist_ok=True)
         report['toolchain_receipt_sha256'] = verify_tools(manifest)
         report['sources'] = verify_sources(manifest, environment)
         php = prepare.owned_path(manifest['sources']['php']['directory'])
@@ -197,7 +286,20 @@ def main():
                                            'cli_disabled': False, 'make_target': 'cgi', 'make_jobs': 2}
         apply_source_patches(php, manifest, report, environment, args.record)
         run_step(report, 'configure', ['bash', manifest['build']['configure_script']], php, environment, args.record)
-        run_step(report, 'make_cgi', ['make', '-j2', 'PHP=' + str(host_php), 'cgi'], php, environment, args.record)
+        # Keep autoconf probe links and the existing optimizer environment
+        # unchanged. Only the final CGI make sees raw wasm-ld diagnostics flags.
+        make_environment = environment.copy()
+        make_environment['WASIXCC_LINKER_FLAGS'] = link_flags()
+        report['link_capture'] = {'scope': 'make_cgi_only', 'normalized_flags': public_link_flags(),
+            'actual_value_sha256': hashlib.sha256(link_flags().encode('utf-8')).hexdigest(),
+            'configure_flags_absent': True, 'optimize_flags_absent': True, 'parsed_by_builder': False}
+        run_step(report, 'make_cgi', ['make', '-j2', 'PHP=' + str(host_php), 'cgi'], php, make_environment, args.record)
+        report['phase'] = 'link_capture'
+        for name in LINK_CAPTURES:
+            report['link_capture'][name] = observe_link_capture(name)
+        if args.record:
+            # Preserve actual captures even if the later optimizer/audit fails.
+            prepare.write_report('build.json', report)
         raw = php / manifest['build']['raw_output']
         with raw.open('rb') as source:
             require(source.read(8) == b'\0asm\x01\0\0\0', 'CGI link did not produce a WebAssembly v1 module')
@@ -214,7 +316,7 @@ def main():
         report['phase'] = 'build_complete'
         passed = True
     except (Exception, KeyboardInterrupt) as error:
-        report['outcome'] = 'build_failed'
+        report['outcome'] = 'link_capture_failed' if report['phase'] == 'link_capture' else 'build_failed'
         report['diagnostics'] = str(error)[:8192]
     finally:
         if php is not None:

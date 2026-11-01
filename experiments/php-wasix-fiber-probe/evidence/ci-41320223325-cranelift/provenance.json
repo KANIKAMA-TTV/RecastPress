@@ -1,0 +1,37 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_first_fiber_configure_failure",
+  "source_commit": "a05a2ca1e795e64dacbb2ee0845b6fdc9464da2a",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41320223325",
+  "artifact_id": 13089117018,
+  "artifact_zip_bytes": 27366,
+  "artifact_zip_sha256": "85ab104ae2d6f022fff7585f1d9da3311b13cdea1ff138c23f29c6a1d5ab7407",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "observations": {
+    "configure_exit_code": 77,
+    "patch_applied": true,
+    "tool_archive_pins_verified": true,
+    "php_make_executed": false,
+    "wasm_module_generated": false,
+    "php_guest_executed": false,
+    "exact_linker_error_observed": false,
+    "full_config_log_acquired": false,
+    "scope": "compiler-check failure preserved; PHP-only exports were present, but first config.log was not captured"
+  },
+  "php_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "product_runtime_selected": false,
+  "input_files": {
+    "experiments/php-wasix-fiber-probe/import_ci_evidence.py": "dbe3287f01ad975e91b6bcb257a5f869a17cbb10e0c4e750bc7fc59f6cee7f19",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2"
+  },
+  "imported_files": {
+    "build.json": "d1f00fa3395771c0d34cf1fd92b9537dd26b975f40caedf13c178442ef635d9e",
+    "ci-stages.json": "18603bc8a6bfdbb0fe8608fb91f0e2f2f46f5aa0845cd92c4d273db490920e00",
+    "native-fiber-contract.json": "243ac46e0aff1cf2a476e3208a35ac0739978d141815096757ec29b1d65779ce",
+    "toolchain.json": "dfa73f72e6da834f84a831b9cb982af7d6df931e45fac212d68483f1760b9c33",
+    "windows-cranelift-unit-contract.json": "18cc44beb135716f7b07d58769a53d08854178dd57b217ed829a0b0ec0224db7"
+  }
+}

@@ -4,7 +4,14 @@ name: PHP WASIX Fiber prototype
   push:
     branches: ["dev/v0.5"]
     paths:
-      - "experiments/php-wasix-fiber-probe/**"
+      - "experiments/php-wasix-fiber-probe/build.py"
+      - "experiments/php-wasix-fiber-probe/patch_source.py"
+      - "experiments/php-wasix-fiber-probe/fiber_check.py"
+      - "experiments/php-wasix-fiber-probe/native_contract.py"
+      - "experiments/php-wasix-fiber-probe/manifest.json"
+      - "experiments/php-wasix-fiber-probe/fixtures/**"
+      - "experiments/php-wasix-fiber-probe/patches/*.patch"
+      - "experiments/php-wasix-fiber-probe/evidence/native-fiber-contract.json"
       - "experiments/php-wasix-cgi-build/prepare.py"
       - "experiments/php-wasix-cgi-build/manifest.json"
       - "experiments/php-wasix-host-probe/Cargo.*"
@@ -12,6 +19,8 @@ name: PHP WASIX Fiber prototype
       - "experiments/php-wasix-host-probe/fixtures/cgi_contract.php"
       - "experiments/php-wasix-host-probe/cgi_check.py"
       - "experiments/php-wasix-host-probe/check.py"
+      - "experiments/php-wasix-host-probe/unit_check.py"
+      - "experiments/php-wasix-host-probe/language_check.py"
       - "experiments/php-wasix-context-probe/manifest.json"
       - "experiments/php-wasix-context-probe/fixtures/context_contract.c"
       - "experiments/php-wasix-host-probe/prepare_host_llvm.py"

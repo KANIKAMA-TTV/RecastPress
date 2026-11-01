@@ -157,11 +157,13 @@ python experiments/php-wasix-host-probe/operation_check.py --llvm --record
 
 `--php-operation-budget`だけにMeteringを適用し、公式PHP moduleを1回compileして、正常→READY後の無限loop→正常回復を3つの新規環境で実行する。試験値は100,000,000 pointsで、compile済みglobal初期値を公開型から照合し、start section後の残量と終了時の実`Remaining`/`Exhausted`を別々に取得する。起動消費量とfresh間の残量一致を確認し、途中で予算を補充しない。setup/recycleの観測は各1回、loopはREADY・Runner実error・実Exhausted・EOFをすべて要求し、caseの`ok=false`を保持する。
 
-他modeのengineは非instrumentのままにし、snapshot再開・deep sleepを使う経路はこの診断で拒否する。startはlocalのWasm関数だけを許可し、start中のtrapや観測欠落は失敗とする。所有hostの外側期限は300秒で、期限切れだけでは予算による中断としない。Windowsでのビルド・26 unit（Fiber assembly parserを含む）とchecker改変拒否は確認済みだが、修正後の実PHP3ケースはLinux CI待ちである。CPU時間・PHP opcode数・hostcall待機・RSS・製品の予算値・Fiber適合はこの試験で確定しない。
+他modeのengineは非instrumentのままにし、snapshot再開・deep sleepを使う経路はこの診断で拒否する。startはlocalのWasm関数だけを許可し、start中のtrapや観測欠落は失敗とする。所有hostの外側期限は300秒で、期限切れだけでは予算による中断としない。Windowsでのビルド・26 unit（Fiber assembly parserを含む）とchecker改変拒否に続き、下記のLinux両backendで実PHP3ケースを確認した。CPU時間・PHP opcode数・hostcall待機・RSS・製品の予算値・Fiber適合はこの試験で確定しない。
 
 source `1462082`の初回は[Cranelift](evidence/ci-41314440084-cranelift/provenance.json)と[LLVM](evidence/ci-41314440084-llvm/provenance.json)の両方で、start sectionを拒否するguardによりinstance生成前に停止した。compile成功を予算中断の成功とせず、3ケースは未実行のまま記録する。これを受け、startも同じ初期予算を消費する扱いへ修正した。
 
 source `aa1b1b1`の[Cranelift](evidence/ci-41317440198-cranelift/provenance.json)と[LLVM](evidence/ci-41317440198-llvm/provenance.json)は3ケースを実行し、start消費37 points、fresh間で同じ残量、Runner結果`[true,false,true]`とloopのREADYを観測した。ただしrecycleへ渡るenvはinstanceを持たないcloneであり、最終残量は全てnullだった。終了順だけの問題とせず、ExitCode45だけでExhaustedと扱わず、診断は失敗のまま保存する。setupでtyped Global handleだけを保持し、元Storeとの一致/型を照合して実値を読み、旧recycleへ渡す前にhandleをdropする修正を次に検証する。Instance/Envの保持、global再構築やsetterによる予算補充は行わない。
+
+source `a05a2ca`の[Cranelift](evidence/ci-41320223203-cranelift/provenance.json)と[LLVM](evidence/ci-41320223203-llvm/provenance.json)は、1回compileした公式PHPをfresh3環境で実行し、正常時の実Remaining、loopのREADY/Runner失敗/実Exhausted、正常回復をすべて確認した。Globalのcapture/take/dropは各1回で、型/同じ元Storeを照合し、保持数0・setter0を記録した。start消費37 pointsも初期100,000,000 pointsへ含まれる。Linux27 unitも通過したが、元の公式artifactのFiber不一致でCI全体はfailureのままである。新しいFiber source試作は別workflowの判定を使う。
 
 ## 宣言された依存ライセンスの棚卸し
 
