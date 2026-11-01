@@ -630,4 +630,3 @@ if __name__ == '__main__':
     except (Exception, KeyboardInterrupt) as error:
         print('Managed access evidence import failed: ' + str(error), file=sys.stderr)
         sys.exit(1)
-

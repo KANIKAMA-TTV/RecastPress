@@ -63,7 +63,7 @@
     "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
     "experiments/php-wasix-host-probe/unit_check.py": "652517686d6cfffec99874dffbb0351806fb7818ac1ca3b2092fe6ccc378c0f9",
     "experiments/php-wasix-managed-access-probe/build.py": "8dd2db46ee1897976301876d551d2e098f5b5ea63c9c0fd94f957326f3a6c8bd",
-    "experiments/php-wasix-managed-access-probe/import_ci_evidence.py": "60c75ff7e36d00c4f98bce34a3caccdeb41d59ad864ad3404f3979d8e0df21a3",
+    "experiments/php-wasix-managed-access-probe/import_ci_evidence.py": "4bd9f4b50dfaa99c59f8db6eaacb1861250058bcc38fa6c5847c6cb62e12bcaf",
     "experiments/php-wasix-managed-access-probe/managed_check.py": "981c449d0de5331fc2d524677593494676830ad77add7f7481a6fa47e74a8b47",
     "experiments/php-wasix-managed-access-probe/patch_source.py": "e725a0edacbd859b3f952683c85ac9ef67176f02709fcccc442f79fb259e3a67",
     "experiments/php-wasix-managed-access-probe/source_profile.py": "e38c16665f2e8f23f2e212f4a49bd793bca3136d381e5aaadab22e5f20f436b0",
