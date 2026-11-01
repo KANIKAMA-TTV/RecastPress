@@ -1,0 +1,318 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T13:21:52.402513+00:00",
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "backend": "cranelift",
+  "scope": "one fixed C WASIX context program only",
+  "outcome": "execution_failed",
+  "context_contract_passed": false,
+  "owned_host_reaped": true,
+  "php_executed": false,
+  "php_fiber_compatibility_verified": false,
+  "product_runtime_selected": false,
+  "memory_limit_verified": false,
+  "cpu_limit_verified": false,
+  "all_resources_immediately_reclaimed": false,
+  "sysroot_source_build_attestation_verified": false,
+  "outer_build_timeout_seconds": 1200,
+  "outer_execution_timeout_seconds": 60,
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "44d41c9cc08989f1b6fde88c50269b18d22a83c9bb4f78c01432d169b6e077bd",
+    "experiments/php-wasix-host-probe/Cargo.lock": "028ce5e3747f78459e0fe6776901cb5c340b1920dfdca882ff61f8ee09b89be5",
+    "experiments/php-wasix-host-probe/src/cgi_contract.rs": "9b4fb604211dfc42b05857ac7086598ffe96f35470ccfd4c0f35d45b196f7557",
+    "experiments/php-wasix-host-probe/src/context_contract.rs": "25119ddba4d544d6f131f9bff3ff7c0c0fbbfdd60374afacd6c49127418a51e9",
+    "experiments/php-wasix-host-probe/src/language_contract.rs": "02d314e638a54e3d7d5165467535badff0a4eba7e0220b0f14977d0a5dd620ff",
+    "experiments/php-wasix-host-probe/src/main.rs": "182382aa48b5ebfbfcec865bdfdbc86ff2bde82fd4120c3260262d3e0ff1cf30",
+    "experiments/php-wasix-host-probe/src/memory_limits.rs": "497f44ff22db8b20b7601bdfe41731fe22b53cd328f2d11ad0c667c2314cd550",
+    "experiments/php-wasix-host-probe/src/memory_policy.rs": "290d71d9d13320e731085f9ecfc1b96a729d307ed31576de7bf41a2732c932c8",
+    "experiments/php-wasix-host-probe/src/metering_limits.rs": "b06d830c9e4f2fa87be00f8eeaa02ef727b4fd2e6a43c844a45bc2d46fe9f4d0",
+    "experiments/php-wasix-host-probe/src/module_reuse.rs": "8616b0033cee1a969a28b0ac90fcf7e0f9ff90c2be8e7efa201fd49f7f8c30a4",
+    "experiments/php-wasix-host-probe/src/php_memory_cap.rs": "ca479e7b55e954e01ba656a4d8da21666a99f546304ee0d81ebfc44b54efc9ba",
+    "experiments/php-wasix-host-probe/src/rpc_contract.rs": "b13eab4d70aa56afa2b1423f8d68ece6942acc0fc9945d036293a0ecd104c04e",
+    "experiments/php-wasix-host-probe/src/rpc_fs.rs": "f46092f470e70d27b54c18808204a709b15f3b791920cfbed4b36d3dc69eed5e",
+    "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
+    "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasix-context-probe/manifest.json": "655d02a98d684806e6a268477a59234fb3909432613e7f11afd99a467705d98b",
+    "experiments/php-wasix-context-probe/fixtures/context_contract.c": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "experiments/php-wasi-host-probe/src/cgi_response.rs": "d7ef796e0bea093c862e67b3591d97ecf4a8ce53428e17196a22a7d06551bc49",
+    "experiments/php-wasix-host-probe/context_check.py": "ea8ad2e7137e4c6c913f7d718321cd4158fee90d79f2720f0f1587f1207d89aa",
+    "experiments/php-wasix-host-probe/check.py": "6f44e57abb926950c3bc8a394abf4fbbc8062cd476fbbb1a52326c4c84dd23f5",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",
+    "experiments/php-wasix-context-probe/build.py": "d04385183afa385a4c9bc3f642878b7ae7b18c59b4c7391147f8f3a6f25069bf",
+    ".github/workflows/php-wasix-cgi-build.yml": "d95d9b6b28f0c915a9541b7e3c5e89818d5254db2c5a4e7798052a9a8d52a208",
+    "experiments/php-wasix-cgi-build/README.ja.md": "990a73940a8ce53e8a73a157b3c4464900689521d106767ebf2acc234416657a",
+    "experiments/php-wasix-cgi-build/build.py": "cd79682626052d796ed0b60c178d7ec60bb6b160dd8b7dee1865831747597085",
+    "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d",
+    "experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540"
+  },
+  "generated_provenance": {
+    "build_receipt_sha256": "3846b6684a46690c5f4f2b6f8ae02aa9b12d218450d15d90a37e95ecfedc0965",
+    "manifest_sha256": "655d02a98d684806e6a268477a59234fb3909432613e7f11afd99a467705d98b",
+    "source_sha256": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "module_bytes": 46414,
+    "module_sha256": "f9591248d09700b7f67d9cd44d39fa5881b7447cacdd4aa153f58accad648ad3",
+    "build_verifier_provenance_sha256": "ee706db980696cda14c6dfb8af4450fd6285ba8d4647ee3db157b9f0bd4dabfa",
+    "scope": "same-job trusted source/tool observations; no signed-attestation or reproducible-build claim"
+  },
+  "build_exit_code": 0,
+  "native_artifact": "target/php-wasix-host-probe/release/recastpress-php-wasix-host-probe",
+  "native_artifact_sha256": "32e6c8e61580c2ff7a0a304bb4d31f69360bbb9f0003b802e5f6da96f39316ed",
+  "owned_process_pid": 10799,
+  "exit_code": 1,
+  "host_stderr_sha256": "ce24756db62eb70cc4c234820e48788d5093851bb787563e0cd8aa26b73ddd25",
+  "observed_phases": [
+    "module_compile",
+    "context_execution"
+  ],
+  "host_stderr_excerpt": "WASIX_CONTEXT_PHASE=module_compile\nWASIX_CONTEXT_PHASE=context_execution\n",
+  "native_result": {
+    "all_resources_immediately_reclaimed": false,
+    "artifact": {
+      "identity_policy": "same-job-build-receipt-not-PHP-CLI-artifact-pin",
+      "observed_bytes": 46414,
+      "observed_sha256": "f9591248d09700b7f67d9cd44d39fa5881b7447cacdd4aa153f58accad648ad3",
+      "path": "target/php-wasix-context-probe/context.wasm",
+      "verified": true
+    },
+    "build_receipt": {
+      "chain_owner": "context_check.py must compare host receipt/module/source digests with its verified snapshots",
+      "full_source_tool_chain_verified_by_host": false,
+      "manifest_sha256": "655d02a98d684806e6a268477a59234fb3909432613e7f11afd99a467705d98b",
+      "observed_sha256": "3846b6684a46690c5f4f2b6f8ae02aa9b12d218450d15d90a37e95ecfedc0965",
+      "path": "experiments/php-wasix-context-probe/evidence/build.json",
+      "verified": true
+    },
+    "compile_elapsed_ms": 42,
+    "context_contract_verified": false,
+    "cpu_limit_verified": false,
+    "engine": "wasmer-7.2.0/cranelift",
+    "engine_supports_async": true,
+    "error": "execute fixed C context program: WASI error: WASI exited with code: ExitCode::1: WASI exited with code: ExitCode::1",
+    "exception_support": {
+      "execution_verdict": "not-exercised",
+      "msvc_source_verdict": "negative-unimplemented-panic-stubs"
+    },
+    "exceptions_executed": false,
+    "full_php_compatibility_verified": false,
+    "guest_arguments": [],
+    "guest_completed": false,
+    "guest_execution_elapsed_ms": 1,
+    "guest_json": {
+      "a_done": true,
+      "a_ready": true,
+      "a_resumed_after_destroy": 0,
+      "a_rounds": 8,
+      "a_unwound_frames": 4,
+      "abi": {
+        "context_id_bytes": 8,
+        "einval": 28,
+        "pointer_bytes": 4
+      },
+      "b_done": false,
+      "b_ready": true,
+      "b_rounds": 8,
+      "b_unwound_frames": 0,
+      "checks": {
+        "a_recursion_unwound": true,
+        "a_self_switch": true,
+        "b_continued_after_a_destroy": false,
+        "b_preserved_after_a_unwind": false,
+        "b_recursion_unwound": false,
+        "canaries_preserved": false,
+        "destroy_a_succeeded": false,
+        "destroy_a_twice_succeeded": false,
+        "destroy_b_succeeded": false,
+        "destroy_b_twice_succeeded": false,
+        "destroy_main_from_a_rejected": true,
+        "destroy_main_rejected": true,
+        "destroy_self_a_rejected": true,
+        "main_clobber_after_a_unwind": false,
+        "main_self_switch": true,
+        "ranges_disjoint": true,
+        "switch_destroyed_a_rejected": false,
+        "switch_destroyed_b_rejected": false,
+        "trace_matches": false
+      },
+      "contexts": {
+        "a": 1,
+        "b": 2,
+        "main": 0
+      },
+      "depth": 4,
+      "errors": {
+        "destroy_main_from_a": {
+          "errno": 28,
+          "return": -1
+        },
+        "destroy_main_from_main": {
+          "errno": 28,
+          "return": -1
+        },
+        "destroy_self_a": {
+          "errno": 28,
+          "return": -1
+        },
+        "switch_destroyed_a": null,
+        "switch_destroyed_b": null
+      },
+      "failure": "volatile-stack-canary-changed",
+      "failure_errno": 0,
+      "failure_return": 0,
+      "ok": false,
+      "phase": "post_a_unwind_clobber",
+      "range_count": 9,
+      "range_observation": "initial-simultaneous-live-snapshot",
+      "ranges": [
+        {
+          "begin": 8398976,
+          "depth": 0,
+          "end": 8399232,
+          "owner": "main"
+        },
+        {
+          "begin": 8398720,
+          "depth": 0,
+          "end": 8398976,
+          "owner": "a"
+        },
+        {
+          "begin": 8398464,
+          "depth": 1,
+          "end": 8398720,
+          "owner": "a"
+        },
+        {
+          "begin": 8398208,
+          "depth": 2,
+          "end": 8398464,
+          "owner": "a"
+        },
+        {
+          "begin": 8397952,
+          "depth": 3,
+          "end": 8398208,
+          "owner": "a"
+        },
+        {
+          "begin": 8397696,
+          "depth": 0,
+          "end": 8397952,
+          "owner": "b"
+        },
+        {
+          "begin": 8397440,
+          "depth": 1,
+          "end": 8397696,
+          "owner": "b"
+        },
+        {
+          "begin": 8397184,
+          "depth": 2,
+          "end": 8397440,
+          "owner": "b"
+        },
+        {
+          "begin": 8396928,
+          "depth": 3,
+          "end": 8397184,
+          "owner": "b"
+        }
+      ],
+      "rounds": 8,
+      "schema": "recastpress.wasix-context-c.v0.5",
+      "trace": [
+        10,
+        20,
+        100,
+        200,
+        101,
+        201,
+        102,
+        202,
+        103,
+        203,
+        104,
+        204,
+        105,
+        205,
+        106,
+        206,
+        107,
+        207,
+        40
+      ]
+    },
+    "guest_json_decoded": true,
+    "host": {
+      "arch": "x86_64",
+      "os": "linux"
+    },
+    "host_execution_error": "execute fixed C context program: WASI error: WASI exited with code: ExitCode::1: WASI exited with code: ExitCode::1",
+    "integer_width_matches_native": null,
+    "isolation": {
+      "asynchronous_threading": true,
+      "configured_guest_max_threads": 1,
+      "deadline_owner": "required-external-owned-child-supervisor",
+      "deep_sleep": false,
+      "guest_environment_supplied": [],
+      "guest_mounts": [],
+      "home_mapped": false,
+      "host_directories_mapped": false,
+      "host_environment_forwarded": false,
+      "http_client": false,
+      "in_process_deadline_enforced": false,
+      "memory_limit_enforced": false,
+      "networking": "UnsupportedVirtualNetworking",
+      "other_virtual_root_writes_forbidden": false,
+      "stderr_limit_bytes": 65536,
+      "stdin": "closed-pipe",
+      "stdout_limit_bytes": 65536
+    },
+    "limitations": [
+      "Only one fixed C program using WASIX context create/switch/destroy is exercised; PHP and Fiber are not executed.",
+      "The generated module is bound to this job's receipt/source/tool observations; this is not signed attestation or reproducible-build proof.",
+      "No memory, CPU or in-process deadline limit is established; an external owned-child supervisor must enforce 60 seconds and reap the host.",
+      "Runner shutdown and pipe EOF do not establish immediate reclamation of all runtime resources or a product worker.",
+      "Stack ranges describe the initial simultaneous live-frame snapshot; unwound A frames are not asserted to remain live.",
+      "Host directories/environment/network are not supplied; WasiRunner's other temporary virtual-root writes are not forbidden."
+    ],
+    "memory_limit_verified": false,
+    "module_compile_invocations": 1,
+    "ok": false,
+    "phase": "context_execution",
+    "php_executed": false,
+    "php_fiber_compatibility_verified": false,
+    "process_pid": 10799,
+    "product_adopted": false,
+    "real_db": false,
+    "runtime_shutdown_returned": true,
+    "runtime_shutdown_wait_limit_ms": 2000,
+    "schema": "recastpress.wasix-context-host.v0.5",
+    "scope": "one-fixed-C-context-program-no-PHP-or-product-integration",
+    "source": {
+      "kind": "same-job-fixed-C-source-build",
+      "observed_sha256": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+      "path": "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+      "verified": true
+    },
+    "stderr_bytes": 0,
+    "stderr_eof": true,
+    "stderr_hex": "",
+    "stderr_overflow": false,
+    "stdout_bytes": 1877,
+    "stdout_eof": true,
+    "stdout_hex": "7b22736368656d61223a2272656361737470726573732e77617369782d636f6e746578742d632e76302e35222c226f6b223a66616c73652c227068617365223a22706f73745f615f756e77696e645f636c6f62626572222c226661696c757265223a22766f6c6174696c652d737461636b2d63616e6172792d6368616e676564222c226661696c7572655f72657475726e223a302c226661696c7572655f6572726e6f223a302c22616269223a7b22636f6e746578745f69645f6279746573223a382c22706f696e7465725f6279746573223a342c2265696e76616c223a32387d2c22636f6e7465787473223a7b226d61696e223a302c2261223a312c2262223a327d2c22726f756e6473223a382c226465707468223a342c22615f726f756e6473223a382c22625f726f756e6473223a382c22615f7265616479223a747275652c22625f7265616479223a747275652c22625f646f6e65223a66616c73652c22615f726573756d65645f61667465725f64657374726f79223a302c22615f646f6e65223a747275652c22615f756e776f756e645f6672616d6573223a342c22625f756e776f756e645f6672616d6573223a302c2272616e67655f6f62736572766174696f6e223a22696e697469616c2d73696d756c74616e656f75732d6c6976652d736e617073686f74222c2272616e67655f636f756e74223a392c2272616e676573223a5b7b226f776e6572223a226d61696e222c226465707468223a302c22626567696e223a383339383937362c22656e64223a383339393233327d2c7b226f776e6572223a2261222c226465707468223a302c22626567696e223a383339383732302c22656e64223a383339383937367d2c7b226f776e6572223a2261222c226465707468223a312c22626567696e223a383339383436342c22656e64223a383339383732307d2c7b226f776e6572223a2261222c226465707468223a322c22626567696e223a383339383230382c22656e64223a383339383436347d2c7b226f776e6572223a2261222c226465707468223a332c22626567696e223a383339373935322c22656e64223a383339383230387d2c7b226f776e6572223a2262222c226465707468223a302c22626567696e223a383339373639362c22656e64223a383339373935327d2c7b226f776e6572223a2262222c226465707468223a312c22626567696e223a383339373434302c22656e64223a383339373639367d2c7b226f776e6572223a2262222c226465707468223a322c22626567696e223a383339373138342c22656e64223a383339373434307d2c7b226f776e6572223a2262222c226465707468223a332c22626567696e223a383339363932382c22656e64223a383339373138347d5d2c227472616365223a5b31302c32302c3130302c3230302c3130312c3230312c3130322c3230322c3130332c3230332c3130342c3230342c3130352c3230352c3130362c3230362c3130372c3230372c34305d2c22636865636b73223a7b226d61696e5f73656c665f737769746368223a747275652c22615f73656c665f737769746368223a747275652c2264657374726f795f6d61696e5f72656a6563746564223a747275652c2264657374726f795f73656c665f615f72656a6563746564223a747275652c2264657374726f795f6d61696e5f66726f6d5f615f72656a6563746564223a747275652c2272616e6765735f6469736a6f696e74223a747275652c2263616e61726965735f707265736572766564223a66616c73652c2274726163655f6d617463686573223a66616c73652c2264657374726f795f615f737563636565646564223a66616c73652c227377697463685f64657374726f7965645f615f72656a6563746564223a66616c73652c2264657374726f795f615f74776963655f737563636565646564223a66616c73652c22625f636f6e74696e7565645f61667465725f615f64657374726f79223a66616c73652c22625f726563757273696f6e5f756e776f756e64223a66616c73652c2264657374726f795f625f737563636565646564223a66616c73652c227377697463685f64657374726f7965645f625f72656a6563746564223a66616c73652c2264657374726f795f625f74776963655f737563636565646564223a66616c73652c22615f726563757273696f6e5f756e776f756e64223a747275652c226d61696e5f636c6f626265725f61667465725f615f756e77696e64223a66616c73652c22625f7072657365727665645f61667465725f615f756e77696e64223a66616c73657d2c226572726f7273223a7b2264657374726f795f6d61696e5f66726f6d5f6d61696e223a7b2272657475726e223a2d312c226572726e6f223a32387d2c2264657374726f795f73656c665f61223a7b2272657475726e223a2d312c226572726e6f223a32387d2c2264657374726f795f6d61696e5f66726f6d5f61223a7b2272657475726e223a2d312c226572726e6f223a32387d2c227377697463685f64657374726f7965645f61223a6e756c6c2c227377697463685f64657374726f7965645f62223a6e756c6c7d7d0a",
+    "stdout_overflow": false,
+    "stdout_sha256": "c1093a22f7bd03c67bc8eff3489705fd78581635651d80aa98945e1281528e2e",
+    "sysroot_source_build_attestation_verified": false,
+    "wasmer_wasix": "0.702.0",
+    "wordpress_executed": false
+  },
+  "diagnostics": "fixed context host execution failed"
+}

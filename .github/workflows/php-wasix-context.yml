@@ -112,7 +112,8 @@ jobs:
           evidence.mkdir(parents=True, exist_ok=True)
           inputs = [root / '.github/workflows/php-wasix-context.yml']
           inputs += sorted(experiment.glob('*.py')) + sorted(experiment.glob('*.json'))
-          inputs += sorted(experiment.glob('fixtures/*.c'))
+          for pattern in ['fixtures/*.c', 'fixtures/*.h', 'fixtures/*.S']:
+              inputs += sorted(experiment.glob(pattern))
           inputs += [root / 'experiments/php-wasix-host-probe/context_check.py',
                      root / 'experiments/php-wasix-host-probe/prepare_host_llvm.py',
                      root / 'experiments/php-wasix-host-probe/llvm-toolchain.json']

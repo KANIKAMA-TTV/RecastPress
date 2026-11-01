@@ -1,0 +1,29 @@
+{
+  "format_version": 1,
+  "scope": "finite C context and live stack observations; not PHP Fiber compatibility",
+  "source_commit": "a0cbadeb83916ad4896c0026235990a18fb40099",
+  "run_id": "41310854007",
+  "run_attempt": "1",
+  "backend": "llvm",
+  "php_executed": false,
+  "php_fiber_compatible": false,
+  "product_runtime_selected": false,
+  "stages": {
+    "dependencies": "success",
+    "definitions": "success",
+    "guest_tools": "success",
+    "build": "success",
+    "rust": "success",
+    "host_llvm": "success",
+    "contract": "failure"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-context.yml": "9f4273ee777ef6640fcf6adee1f2adf16362e02e71600de1b5d63f5453709cc2",
+    "experiments/php-wasix-context-probe/build.py": "d04385183afa385a4c9bc3f642878b7ae7b18c59b4c7391147f8f3a6f25069bf",
+    "experiments/php-wasix-context-probe/manifest.json": "655d02a98d684806e6a268477a59234fb3909432613e7f11afd99a467705d98b",
+    "experiments/php-wasix-context-probe/fixtures/context_contract.c": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "experiments/php-wasix-host-probe/context_check.py": "ea8ad2e7137e4c6c913f7d718321cd4158fee90d79f2720f0f1587f1207d89aa",
+    "experiments/php-wasix-host-probe/prepare_host_llvm.py": "47cdd0336d6e0652486c15a03dc8ec83f709dd5538b36f0e423c0ac0873d8761",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388"
+  }
+}

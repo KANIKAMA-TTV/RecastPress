@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "observed_at_utc": "2026-11-01T12:45:04.619997+00:00",
+  "observed_at_utc": "2026-11-01T13:58:55.512189+00:00",
   "schema": "recastpress.php-wasix-dependency-inventory.v0.5",
   "outcome": "declared_dependency_inventory_recorded",
   "inventory_verified": true,
@@ -48,15 +48,15 @@
     "Raw metadata, diagnostics, Cargo package IDs and absolute host paths are never published."
   ],
   "input_files": {
-    "experiments/php-wasix-host-probe/Cargo.toml": "44d41c9cc08989f1b6fde88c50269b18d22a83c9bb4f78c01432d169b6e077bd",
+    "experiments/php-wasix-host-probe/Cargo.toml": "9e39660f960e4d4cf91eca63a3d24f660a87f9c10ed2a0bc58090fe151c89545",
     "experiments/php-wasix-host-probe/Cargo.lock": "028ce5e3747f78459e0fe6776901cb5c340b1920dfdca882ff61f8ee09b89be5",
     "experiments/php-wasix-host-probe/license_inventory.py": "2b869bc883090d64380c36b2f44315978c2eeb150439c0a366f5653bf281858f",
     "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
   },
-  "owned_process_pid": 2360,
+  "owned_process_pid": 26620,
   "metadata_exit_code": 0,
-  "metadata_stdout_bytes": 1812009,
-  "metadata_stdout_sha256": "ab685cc75528fc967d25f7191e2119f6b1d868e52e90cf8c54608daced581934",
+  "metadata_stdout_bytes": 1812007,
+  "metadata_stdout_sha256": "e25ddbf08ef9aa26d685289ddce6ebcc558798f0c1ec5186e95fa308b89eca2f",
   "metadata_stderr_bytes": 0,
   "metadata_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "root_package": {
@@ -97,6 +97,11 @@
         "source": "registry+https://github.com/rust-lang/crates.io-index"
       },
       {
+        "name": "wasmer-middlewares",
+        "version": "7.2.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index"
+      },
+      {
         "name": "wasmer-wasix",
         "version": "0.702.0",
         "source": "registry+https://github.com/rust-lang/crates.io-index"
@@ -105,11 +110,6 @@
     "build": [],
     "dev": [
       {
-        "name": "wasmer-middlewares",
-        "version": "7.2.0",
-        "source": "registry+https://github.com/rust-lang/crates.io-index"
-      },
-      {
         "name": "wat",
         "version": "1.262.0",
         "source": "registry+https://github.com/rust-lang/crates.io-index"
@@ -117,9 +117,9 @@
     ]
   },
   "graph_package_counts": {
-    "runtime": 355,
+    "runtime": 356,
     "build": 49,
-    "dev": 164
+    "dev": 16
   },
   "reachable_package_count": 384,
   "locked_package_count": 428,
@@ -131,8 +131,7 @@
       "license": "Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -142,8 +141,7 @@
       "license": "0BSD OR MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -235,8 +233,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -276,8 +273,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -327,8 +323,7 @@
       "license": "MIT/Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -370,8 +365,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -412,8 +406,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -423,8 +416,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -444,8 +436,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -455,8 +446,7 @@
       "license": "Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -487,8 +477,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -628,8 +617,7 @@
       "license": "Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -649,8 +637,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -670,8 +657,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -681,8 +667,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -702,8 +687,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -713,8 +697,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -734,8 +717,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -745,8 +727,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -756,8 +737,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -778,8 +758,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -789,8 +768,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -800,8 +778,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -811,8 +788,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -842,8 +818,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -853,8 +828,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -864,8 +838,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -875,8 +848,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -886,8 +858,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -897,8 +868,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -918,8 +888,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -939,8 +908,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -960,8 +928,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -981,8 +948,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -992,8 +958,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1003,8 +968,7 @@
       "license": "Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1094,8 +1058,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1105,8 +1068,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1126,8 +1088,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1178,8 +1139,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -1189,8 +1149,7 @@
       "license": "0BSD",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1200,8 +1159,7 @@
       "license": "0BSD",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1211,8 +1169,7 @@
       "license": "MIT/Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1222,8 +1179,7 @@
       "license": "MIT/Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1245,8 +1201,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -1266,8 +1221,7 @@
       "license": "Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1308,8 +1262,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1319,8 +1272,7 @@
       "license": "Apache-2.0 / MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1371,8 +1323,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1382,8 +1333,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1393,8 +1343,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1404,8 +1353,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1415,8 +1363,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1426,8 +1373,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1437,8 +1383,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1448,8 +1393,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1459,8 +1403,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1490,8 +1433,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1501,8 +1443,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1512,8 +1453,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1563,8 +1503,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1584,8 +1523,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1637,8 +1575,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1658,8 +1595,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1749,8 +1685,7 @@
       "license": "MIT/Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1851,8 +1786,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1862,8 +1796,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1883,8 +1816,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1916,8 +1848,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -1937,8 +1868,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1958,8 +1888,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -1990,8 +1919,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -2021,8 +1949,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2033,8 +1960,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -2076,8 +2002,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2087,8 +2012,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2098,8 +2022,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2119,8 +2042,7 @@
       "license": "MIT OR Zlib OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2130,8 +2052,7 @@
       "license": "Unlicense OR MIT OR Apache-2.0 OR CC0-1.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2141,8 +2062,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2152,8 +2072,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2233,8 +2152,7 @@
       "license": "Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2244,8 +2162,7 @@
       "license": "Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2255,8 +2172,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2276,8 +2192,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2287,8 +2202,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2298,8 +2212,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2359,8 +2272,7 @@
       "license": "Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2440,8 +2352,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2451,8 +2362,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2463,8 +2373,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -2474,8 +2383,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2485,8 +2393,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2507,8 +2414,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -2518,8 +2424,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2559,8 +2464,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2580,8 +2484,7 @@
       "license": "MIT/Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2591,8 +2494,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2602,8 +2504,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2643,8 +2544,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2687,8 +2587,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2698,8 +2597,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2719,8 +2617,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2730,8 +2627,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2741,8 +2637,7 @@
       "license": "MIT/Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2753,8 +2648,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -2775,8 +2669,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -2807,8 +2700,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2868,8 +2760,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2879,8 +2770,7 @@
       "license": "Apache-2.0 OR GPL-2.0-only",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2902,8 +2792,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2925,8 +2814,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2986,8 +2874,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -2997,8 +2884,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3028,8 +2914,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3039,8 +2924,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3060,8 +2944,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3071,8 +2954,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3092,8 +2974,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3123,8 +3004,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3134,8 +3014,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3156,8 +3035,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -3167,8 +3045,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3199,8 +3076,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3210,8 +3086,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3241,8 +3116,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3252,8 +3126,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3303,8 +3176,7 @@
       "license": "Zlib OR Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3404,8 +3276,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3415,8 +3286,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3426,8 +3296,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3437,8 +3306,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3448,8 +3316,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3470,8 +3337,7 @@
       "license_file": null,
       "reachable_from": [
         "runtime",
-        "build",
-        "dev"
+        "build"
       ]
     },
     {
@@ -3491,8 +3357,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3512,8 +3377,7 @@
       "license": "MIT OR Apache-2.0",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3593,8 +3457,7 @@
       "license": "Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3764,8 +3627,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3775,8 +3637,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3786,8 +3647,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3807,8 +3667,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3828,7 +3687,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3848,8 +3707,7 @@
       "license": "MIT OR Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3859,8 +3717,7 @@
       "license": "MIT OR Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3890,8 +3747,7 @@
       "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3911,8 +3767,7 @@
       "license": "Apache-2.0 WITH LLVM-exception",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -3962,8 +3817,7 @@
       "license": "MIT",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -4104,8 +3958,7 @@
       "license": "Zlib",
       "license_file": null,
       "reachable_from": [
-        "runtime",
-        "dev"
+        "runtime"
       ]
     },
     {
@@ -4635,7 +4488,7 @@
     "wasmer-compiler-cranelift": {
       "runtime": true,
       "build": false,
-      "dev": true
+      "dev": false
     }
   },
   "cranelift_graph_excludes_llvm_compiler": true,

@@ -1,6 +1,6 @@
 # WASIX C contextの有限実証
 
-PHP Fiberの移植に入る前に、固定Cプログラムでcontext切替と生存中のC stackを検証するP0実験。PHP・WP・実DBは実行せず、製品runtimeも選定しない。C fixtureとRust実行経路は実装済みで、Linuxでの正実行は専用CI待ちである。
+PHP Fiberの移植に入る前に、固定Cプログラムでcontext切替と生存中のC stackを検証するP0実験。PHP・WP・実DBは実行せず、製品runtimeも選定しない。SDK APIだけの実測と、専用stackを管理する次の実装を区別する。
 
 ## 確認する動作
 
@@ -27,3 +27,15 @@ python experiments/php-wasix-host-probe/context_check.py --record
 Rustは固定`--context-contract`だけを受け付け、同jobのreceipt・C source・manifest・実Wasmを照合して1回compileする。公開APIによる非同期WasiRunnerを使い、host環境・host directory・networkを渡さず、stdinは閉じ、両出力を各64KiBに制限する。外側checkerは所有hostに60秒の期限を設け、失敗時にも取得できたraw JSON・出力・host errorを保持する。LLVM jobはCビルド後に別系統のhost LLVM22.1を準備し、`--llvm`で同じ条件を実行する。
 
 [manifest](manifest.json)のSDK commitはcontext APIを読んだ参照sourceであり、取得済みsysrootがそのsourceからbuildされたattestationではない。4資材の取得物SHA、参照API source、今回Cのbuild/実行を分けて記録する。バイナリはGitやCI artifactへ再配布しない。
+
+## SDK APIだけの実測
+
+source `a0cbade`の[LLVM](evidence/ci-41310854007-llvm/provenance.json)と[Cranelift](evidence/ci-41310854007-cranelift/provenance.json)は同じ46,414BのWasmを実行し、8周の切替・初期9範囲の非重複・Aの4frame unwindまで成功した。その後のmainによるstack書込みで、suspend中のBのvolatile値が壊れた。両方とも`post_a_unwind_clobber`の`volatile-stack-canary-changed`でexit1となり、EOFと所有hostの回収を確認した。Cのcompile/optやhost非同期設定の失敗と混ぜない。
+
+[importer](import_ci_evidence.py)は元Gitの入力hash・ZIPのbyte/SHA・tool/module・rawJSON・19イベントの途中traceを照合し、原記録の失敗をそのまま保存する。この固定ケースではSDK APIの素結線だけではstackを保てなかった。SDK全般やPHP Fiberの実装可否をこの負例だけで決めない。
+
+## 専用stackを使う次の実装
+
+元のC fixtureは変更せず、fixture objectだけにheaderを強制includeし、create/switch/destroyを小adapterへ渡す。A/Bに各64KiBの16B整列heap stackを用意し、初回entryはassembly thunkがC prologより前にstackを切り替える。switchはWasm localへSPを保存し、raw importから通常復帰した直後に戻す。errnoの処理はその後のCで行う。
+
+最適化後のWasmもRustの公開parserで検査し、export/type/importの同一性、shimの7/9命令の閉じた形、thunkの6命令、復帰前の余分なcallやlinear-memory書込みが無いことを必須にする。errnoをWasm localへ置く9命令形でも、old SPと別のlocalであることを検査する。正常2形と危険な29変形をguest実行なしで確認した。生成物名も`context.managed.wasm`へ分ける。2つのheap stackは実験の終了まで保持し、destroy直後のfree/reuse、trap/cancelからの通常復帰、即時全資源回収は主張しない。managed版の実C実行とPHP適合は未確認である。

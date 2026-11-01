@@ -1,0 +1,185 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.wasix-context-build.v0.5",
+  "observed_at_utc": "2026-11-01T13:21:40.810709+00:00",
+  "outcome": "context_candidate_built_not_executed",
+  "phase": "build_complete",
+  "build_steps": [
+    {
+      "name": "compile_c",
+      "command": [
+        "target/php-wasix-cgi-build/tools/bin/wasixcc",
+        "-sMODULE_KIND=static-main",
+        "-std=c11",
+        "-O1",
+        "-g0",
+        "-fno-optimize-sibling-calls",
+        "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+        "-o",
+        "target/php-wasix-context-probe/context.raw.wasm"
+      ],
+      "working_directory": "<workspace>",
+      "completed": true,
+      "timeout_seconds": 120,
+      "process_group_timeout_cleanup": false,
+      "log_budget_checked_after_exit": true,
+      "elapsed_ms": 214,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "name": "optimize_context",
+      "command": [
+        "target/php-wasix-cgi-build/tools/binaryen/bin/wasm-opt",
+        "target/php-wasix-context-probe/context.raw.wasm",
+        "--emit-exnref",
+        "--all-features",
+        "--strip-debug",
+        "--asyncify",
+        "--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot",
+        "--pass-arg=asyncify-ignore-indirect",
+        "--pass-arg=max-func-params@32",
+        "-o",
+        "target/php-wasix-context-probe/context.wasm"
+      ],
+      "working_directory": "<workspace>",
+      "completed": true,
+      "timeout_seconds": 120,
+      "process_group_timeout_cleanup": false,
+      "log_budget_checked_after_exit": true,
+      "elapsed_ms": 16,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    }
+  ],
+  "guest_executed": false,
+  "php_executed": false,
+  "php_backend_modified": false,
+  "sysroot_source_build_attestation_verified": false,
+  "product_runtime_selected": false,
+  "redistributed_binaries": false,
+  "binaryen_validation_enabled": true,
+  "runtime_module_validation_performed": false,
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-cgi-build.yml": "d95d9b6b28f0c915a9541b7e3c5e89818d5254db2c5a4e7798052a9a8d52a208",
+    "experiments/php-wasix-cgi-build/README.ja.md": "990a73940a8ce53e8a73a157b3c4464900689521d106767ebf2acc234416657a",
+    "experiments/php-wasix-cgi-build/build.py": "cd79682626052d796ed0b60c178d7ec60bb6b160dd8b7dee1865831747597085",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d",
+    "experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-context-probe/build.py": "d04385183afa385a4c9bc3f642878b7ae7b18c59b4c7391147f8f3a6f25069bf",
+    "experiments/php-wasix-context-probe/fixtures/context_contract.c": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "experiments/php-wasix-context-probe/manifest.json": "655d02a98d684806e6a268477a59234fb3909432613e7f11afd99a467705d98b"
+  },
+  "build_config": {
+    "format_version": 1,
+    "schema": "recastpress.wasix-context-build.v0.5",
+    "scope": "fixed small C context candidate; no PHP backend or product adoption",
+    "context_api_reference": {
+      "repository": "wasix-org/wasix-libc",
+      "commit": "09503b230e8acc721c1e013ca28a41bf149e4ee2",
+      "header": "libc-bottom-half/headers/public/wasix/context.h",
+      "role": "consulted public ABI source; not a verified source-build identity of the downloaded sysroot"
+    },
+    "sysroot_source_build_attestation_verified": false,
+    "toolchain_manifest": "experiments/php-wasix-cgi-build/manifest.json",
+    "toolchain_receipt": "experiments/php-wasix-cgi-build/evidence/toolchain.json",
+    "fixture": "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+    "rounds": 8,
+    "depth": 4,
+    "b_extra_rounds": 2,
+    "stack_lifetime_case": "A unwinds while B remains suspended; main clobbers before B resumes",
+    "raw_output": "target/php-wasix-context-probe/context.raw.wasm",
+    "wasm_output": "target/php-wasix-context-probe/context.wasm",
+    "compile_flags": [
+      "-sMODULE_KIND=static-main",
+      "-std=c11",
+      "-O1",
+      "-g0",
+      "-fno-optimize-sibling-calls"
+    ],
+    "optimizer_flags": [
+      "--emit-exnref",
+      "--all-features",
+      "--strip-debug",
+      "--asyncify",
+      "--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot",
+      "--pass-arg=asyncify-ignore-indirect",
+      "--pass-arg=max-func-params@32"
+    ],
+    "tool_environment": {
+      "WASIXCC_WASM_EXCEPTIONS": "legacy",
+      "WASIXCC_INCLUDE_CPP_SYMBOLS": "yes",
+      "WASIXCC_RUN_WASM_OPT": "no",
+      "WASIXCC_PIC": "no",
+      "WASIXCC_GENERATE_SHELL_SCRIPT": "no"
+    },
+    "command_timeout_seconds": 120,
+    "command_cleanup_timeout_seconds": 5,
+    "command_log_limit_bytes": 65536,
+    "module_limit_bytes": 67108864,
+    "guest_executed": false,
+    "php_executed": false,
+    "product_runtime_selected": false,
+    "redistributed_binaries": false
+  },
+  "toolchain": {
+    "manifest": "experiments/php-wasix-cgi-build/manifest.json",
+    "manifest_sha256": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "receipt": "experiments/php-wasix-cgi-build/evidence/toolchain.json",
+    "receipt_sha256": "4c6b9ba8e2d69318a9bcae8930b3a9e4177e18195699658bb38c598d6d695c5d",
+    "verification_scope": "pinned archive size/SHA and extracted tool identities; no source-build attestation",
+    "assets": [
+      {
+        "name": "wasixcc",
+        "asset_id": 496323636,
+        "bytes": 3554031,
+        "sha256": "f4c7d4417d4699adc9e56972ab033bb7c05acc87553fd34ea81243470fe8de45"
+      },
+      {
+        "name": "sysroot",
+        "asset_id": 465375751,
+        "bytes": 6142222,
+        "sha256": "8c54240afabda1106c19f284bdfff77f29932caa55f82756f87d01f69ffd50f4"
+      },
+      {
+        "name": "llvm",
+        "asset_id": 504888362,
+        "bytes": 81191584,
+        "sha256": "4066b52816c3382d10c5a7d7cfd6252a5f432459f007c143f07e23bf367c43ea"
+      },
+      {
+        "name": "binaryen",
+        "asset_id": 435610959,
+        "bytes": 107371282,
+        "sha256": "0a18362361ad05465118cd8eeb72edaeec89de6894bc283576ef4e07aa3babcc"
+      }
+    ]
+  },
+  "source": {
+    "path": "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+    "bytes": 15250,
+    "sha256": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37"
+  },
+  "raw_context_wasm": {
+    "path": "target/php-wasix-context-probe/context.raw.wasm",
+    "bytes": 75629,
+    "sha256": "aae0676753f30276f6536659114a2f11a10d050bf9ef10e2b90388075060b77e",
+    "wasm_header_verified": true,
+    "executed": false
+  },
+  "context_wasm": {
+    "path": "target/php-wasix-context-probe/context.wasm",
+    "bytes": 46414,
+    "sha256": "f9591248d09700b7f67d9cd44d39fa5881b7447cacdd4aa153f58accad648ad3",
+    "wasm_header_verified": true,
+    "executed": false
+  }
+}

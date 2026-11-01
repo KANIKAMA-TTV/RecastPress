@@ -16,13 +16,23 @@
   "depth": 4,
   "b_extra_rounds": 2,
   "stack_lifetime_case": "A unwinds while B remains suspended; main clobbers before B resumes",
-  "raw_output": "target/php-wasix-context-probe/context.raw.wasm",
-  "wasm_output": "target/php-wasix-context-probe/context.wasm",
-  "compile_flags": ["-sMODULE_KIND=static-main", "-std=c11", "-O1", "-g0", "-fno-optimize-sibling-calls"],
+  "raw_output": "target/php-wasix-context-probe/context.managed.raw.wasm",
+  "wasm_output": "target/php-wasix-context-probe/context.managed.wasm",
+  "compile_flags": [
+    "-std=c11",
+    "-O1",
+    "-g0",
+    "-fno-optimize-sibling-calls",
+    "-fno-lto"
+  ],
   "optimizer_flags": [
-    "--emit-exnref", "--all-features", "--strip-debug", "--asyncify",
+    "--emit-exnref",
+    "--all-features",
+    "--strip-debug",
+    "--asyncify",
     "--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot",
-    "--pass-arg=asyncify-ignore-indirect", "--pass-arg=max-func-params@32"
+    "--pass-arg=asyncify-ignore-indirect",
+    "--pass-arg=max-func-params@32"
   ],
   "tool_environment": {
     "WASIXCC_WASM_EXCEPTIONS": "legacy",
@@ -38,5 +48,49 @@
   "guest_executed": false,
   "php_executed": false,
   "product_runtime_selected": false,
-  "redistributed_binaries": false
+  "redistributed_binaries": false,
+  "variant": "managed-guest-linear-stacks-v1",
+  "adapter_sources": [
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.c",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.h",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.S"
+  ],
+  "stack_adapter": {
+    "slots": 2,
+    "stack_bytes_per_context": 65536,
+    "alignment_bytes": 16,
+    "buffers_freed": false,
+    "buffers_reused": false,
+    "allocation_lifetime": "owned guest process exit",
+    "forced_include_scope": "original fixture translation unit only",
+    "switch_policy": "Wasm local saves current SP; raw import returns before SP restoration; no target-SP prechange",
+    "postopt_exports": [
+      "rp_stack_switch_raw",
+      "rp_stack_entry_a",
+      "rp_stack_entry_b",
+      "rp_stack_dispatch_a",
+      "rp_stack_dispatch_b"
+    ],
+    "postopt_stackless_verified_by_builder": false,
+    "postopt_stack_global": "__stack_pointer"
+  },
+  "object_outputs": [
+    "target/php-wasix-context-probe/context.fixture.o",
+    "target/php-wasix-context-probe/context.adapter-c.o",
+    "target/php-wasix-context-probe/context.adapter-asm.o"
+  ],
+  "assembly_flags": [
+    "-g0",
+    "-fno-lto"
+  ],
+  "link_flags": [
+    "-sMODULE_KIND=static-main",
+    "-fno-lto",
+    "-Wl,--export=rp_stack_switch_raw",
+    "-Wl,--export=rp_stack_entry_a",
+    "-Wl,--export=rp_stack_entry_b",
+    "-Wl,--export=rp_stack_dispatch_a",
+    "-Wl,--export=rp_stack_dispatch_b",
+    "-Wl,--export=__stack_pointer"
+  ]
 }

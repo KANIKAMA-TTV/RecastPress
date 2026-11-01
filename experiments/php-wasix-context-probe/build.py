@@ -34,15 +34,30 @@ _cgi_tools = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_cgi_tools)
 require, digest = tool_prepare.require, tool_prepare.digest
 
-COMPILE_FLAGS = ['-sMODULE_KIND=static-main', '-std=c11', '-O1', '-g0', '-fno-optimize-sibling-calls']
+COMPILE_FLAGS = ['-std=c11', '-O1', '-g0', '-fno-optimize-sibling-calls', '-fno-lto']
+ASSEMBLY_FLAGS = ['-g0', '-fno-lto']
+EXPORTS = ['rp_stack_switch_raw', 'rp_stack_entry_a', 'rp_stack_entry_b',
+           'rp_stack_dispatch_a', 'rp_stack_dispatch_b']
+LINK_FLAGS = ['-sMODULE_KIND=static-main', '-fno-lto'] + ['-Wl,--export=' + name for name in [*EXPORTS, '__stack_pointer']]
 OPT_FLAGS = ['--emit-exnref', '--all-features', '--strip-debug', '--asyncify',
              '--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot',
              '--pass-arg=asyncify-ignore-indirect', '--pass-arg=max-func-params@32']
 ENVIRONMENT = {'WASIXCC_WASM_EXCEPTIONS': 'legacy', 'WASIXCC_INCLUDE_CPP_SYMBOLS': 'yes',
                'WASIXCC_RUN_WASM_OPT': 'no', 'WASIXCC_PIC': 'no', 'WASIXCC_GENERATE_SHELL_SCRIPT': 'no'}
 FIXTURE = 'experiments/php-wasix-context-probe/fixtures/context_contract.c'
-RAW = 'target/php-wasix-context-probe/context.raw.wasm'
-WASM = 'target/php-wasix-context-probe/context.wasm'
+ADAPTER = ['experiments/php-wasix-context-probe/fixtures/stack_adapter.' + suffix for suffix in ['c', 'h', 'S']]
+OBJECTS = ['target/php-wasix-context-probe/' + name for name in
+           ['context.fixture.o', 'context.adapter-c.o', 'context.adapter-asm.o']]
+RAW = 'target/php-wasix-context-probe/context.managed.raw.wasm'
+WASM = 'target/php-wasix-context-probe/context.managed.wasm'
+STACK_ADAPTER = {
+    'slots': 2, 'stack_bytes_per_context': 65536, 'alignment_bytes': 16,
+    'buffers_freed': False, 'buffers_reused': False, 'allocation_lifetime': 'owned guest process exit',
+    'forced_include_scope': 'original fixture translation unit only',
+    'switch_policy': 'Wasm local saves current SP; raw import returns before SP restoration; no target-SP prechange',
+    'postopt_exports': EXPORTS, 'postopt_stack_global': '__stack_pointer',
+    'postopt_stackless_verified_by_builder': False,
+}
 
 
 def json_object(pairs):
@@ -80,8 +95,11 @@ def load_manifest():
         'toolchain_receipt': 'experiments/php-wasix-cgi-build/evidence/toolchain.json',
         'fixture': FIXTURE, 'rounds': 8, 'depth': 4, 'b_extra_rounds': 2,
         'stack_lifetime_case': 'A unwinds while B remains suspended; main clobbers before B resumes',
+        'variant': 'managed-guest-linear-stacks-v1', 'adapter_sources': ADAPTER,
+        'stack_adapter': STACK_ADAPTER, 'object_outputs': OBJECTS,
         'raw_output': RAW, 'wasm_output': WASM,
-        'compile_flags': COMPILE_FLAGS, 'optimizer_flags': OPT_FLAGS, 'tool_environment': ENVIRONMENT,
+        'compile_flags': COMPILE_FLAGS, 'assembly_flags': ASSEMBLY_FLAGS, 'link_flags': LINK_FLAGS,
+        'optimizer_flags': OPT_FLAGS, 'tool_environment': ENVIRONMENT,
         'command_timeout_seconds': 120, 'command_cleanup_timeout_seconds': 5,
         'command_log_limit_bytes': 65536, 'module_limit_bytes': 67108864,
         'guest_executed': False, 'php_executed': False, 'product_runtime_selected': False,
@@ -92,13 +110,15 @@ def load_manifest():
     require(manifest == expected, 'fixed context build definition changed')
     tool_prepare.load_manifest()
     fixed_file(FIXTURE, 1024 * 1024)
+    for source in ADAPTER:
+        fixed_file(source, 1024 * 1024)
     require(WORK.resolve() == WORK and WORK.is_relative_to(ROOT / 'target'), 'owned build directory escaped workspace')
     return manifest
 
 
 def input_hashes():
     result = tool_prepare.input_hashes()
-    for path in [Path(__file__).resolve(), MANIFEST, ROOT / FIXTURE]:
+    for path in [Path(__file__).resolve(), MANIFEST, ROOT / FIXTURE, *[ROOT / source for source in ADAPTER]]:
         result[path.relative_to(ROOT).as_posix()] = digest(path)
     return dict(sorted(result.items()))
 
@@ -120,8 +140,12 @@ def verify_toolchain(manifest):
 
 
 def commands():
+    compiler = 'target/php-wasix-cgi-build/tools/bin/wasixcc'
     return [
-        ('compile_c', ['target/php-wasix-cgi-build/tools/bin/wasixcc', *COMPILE_FLAGS, FIXTURE, '-o', RAW]),
+        ('compile_fixture', [compiler, *COMPILE_FLAGS, '-include', ADAPTER[1], '-c', FIXTURE, '-o', OBJECTS[0]]),
+        ('compile_adapter_c', [compiler, *COMPILE_FLAGS, '-c', ADAPTER[0], '-o', OBJECTS[1]]),
+        ('compile_adapter_asm', [compiler, *ASSEMBLY_FLAGS, '-c', ADAPTER[2], '-o', OBJECTS[2]]),
+        ('link_context', [compiler, *LINK_FLAGS, *OBJECTS, '-o', RAW]),
         ('optimize_context', ['target/php-wasix-cgi-build/tools/binaryen/bin/wasm-opt', RAW, *OPT_FLAGS, '-o', WASM]),
     ]
 
@@ -206,7 +230,12 @@ def verify_build():
     require(report['build_config'] == manifest, 'context build configuration differs')
     require(report['source'] == {'path': FIXTURE, 'bytes': (ROOT / FIXTURE).stat().st_size,
                                  'sha256': digest(ROOT / FIXTURE)}, 'context C source changed')
-    require(len(report['build_steps']) == 2, 'context build step count')
+    require(report['variant'] == 'managed-guest-linear-stacks-v1' and report['stack_adapter'] == STACK_ADAPTER,
+            'context managed adapter scope changed')
+    expected_adapter = {name: {'bytes': (ROOT / name).stat().st_size, 'sha256': digest(ROOT / name)} for name in ADAPTER}
+    require(report['adapter_sources'] == expected_adapter, 'context adapter sources changed')
+    require(report['object_files'] == {name: wasm_identity(name) for name in OBJECTS}, 'context object bytes changed')
+    require(len(report['build_steps']) == 5, 'context build step count')
     for step, (name, command) in zip(report['build_steps'], commands()):
         require(step['name'] == name and step['command'] == command and step['working_directory'] == '<workspace>'
                 and step['completed'] is True and type(step['exit_code']) is int and step['exit_code'] == 0
@@ -220,6 +249,7 @@ def verify_build():
             'toolchain_receipt_sha256': report['toolchain']['receipt_sha256'],
             'toolchain_manifest_sha256': report['toolchain']['manifest_sha256'],
             'module_bytes': report['context_wasm']['bytes'], 'module_sha256': report['context_wasm']['sha256'],
+            'variant': report['variant'], 'adapter_sources': expected_adapter,
             'verification_scope': 'same-job generated small C candidate; not reproducible-build or signed attestation'}
 
 
@@ -233,6 +263,8 @@ def main():
               'outcome': 'not_run', 'phase': 'verification', 'build_steps': [],
               'guest_executed': False, 'php_executed': False, 'php_backend_modified': False,
               'sysroot_source_build_attestation_verified': False,
+              'variant': 'managed-guest-linear-stacks-v1', 'stack_adapter': STACK_ADAPTER,
+              'adapter_sources': {}, 'object_files': {},
               'product_runtime_selected': False, 'redistributed_binaries': False,
               'binaryen_validation_enabled': True, 'runtime_module_validation_performed': False,
               'platform': {'system': platform.system(), 'machine': platform.machine()}}
@@ -243,7 +275,7 @@ def main():
             print('Fixed context C/driver definitions validated; no tools, build or guest executed.')
             return 0
         require(platform.system() == 'Linux' and platform.machine() in ('x86_64', 'AMD64'), 'fixed build tools require Linux x86-64')
-        for name in [RAW, WASM]:
+        for name in [*OBJECTS, RAW, WASM]:
             output = ROOT / name
             require(output.resolve() == output and not output.is_symlink() and not output.exists(),
                     'context output is linked or already exists; refusing stale reuse')
@@ -253,11 +285,15 @@ def main():
         report['toolchain'] = verify_toolchain(manifest)
         source = fixed_file(FIXTURE, 1024 * 1024)
         report['source'] = {'path': FIXTURE, 'bytes': source.stat().st_size, 'sha256': digest(source)}
+        report['adapter_sources'] = {name: {'bytes': (ROOT / name).stat().st_size, 'sha256': digest(ROOT / name)} for name in ADAPTER}
         environment = tool_prepare.tool_environment()
         environment.update(ENVIRONMENT)
         for name, command in commands():
             run_step(name, command, environment, report, args.record)
-            if name == 'compile_c':
+            if name in ['compile_fixture', 'compile_adapter_c', 'compile_adapter_asm']:
+                output = command[-1]
+                report['object_files'][output] = wasm_identity(output)
+            if name == 'link_context':
                 report['raw_context_wasm'] = wasm_identity(RAW)
         report['context_wasm'] = wasm_identity(WASM)
         require(input_hashes() == report['input_files'], 'context source changed during build')

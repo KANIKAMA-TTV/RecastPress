@@ -1,0 +1,34 @@
+{
+  "format_version": 1,
+  "scope": "CGI build and three fixed Rust-hosted requests; not product adoption",
+  "backend": "llvm",
+  "guest_execution_verdict": "see the separate CGI contract receipt",
+  "product_runtime_selected": false,
+  "redistributed_binaries": false,
+  "source_commit": "a0cbadeb83916ad4896c0026235990a18fb40099",
+  "run_id": "41310853946",
+  "run_attempt": "1",
+  "stages": {
+    "php_source": "success",
+    "deps_source": "success",
+    "parser_source": "success",
+    "dependencies": "success",
+    "definitions": "success",
+    "tools": "success",
+    "build": "success",
+    "rust": "success",
+    "host_llvm": "success",
+    "cgi_contract": "success"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-cgi-build.yml": "d95d9b6b28f0c915a9541b7e3c5e89818d5254db2c5a4e7798052a9a8d52a208",
+    "experiments/php-wasix-cgi-build/build.py": "cd79682626052d796ed0b60c178d7ec60bb6b160dd8b7dee1865831747597085",
+    "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388",
+    "experiments/php-wasix-host-probe/prepare_host_llvm.py": "47cdd0336d6e0652486c15a03dc8ec83f709dd5538b36f0e423c0ac0873d8761",
+    "experiments/php-wasix-host-probe/cgi_check.py": "ccb55f9130dd74c767eb4cbaf0662629f61a30cba535756a1732e35f6664c010"
+  }
+}

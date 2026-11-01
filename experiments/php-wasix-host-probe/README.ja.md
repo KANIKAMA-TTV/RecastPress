@@ -95,7 +95,7 @@ python experiments/php-wasix-host-probe/rpc_check.py --llvm --record
 
 WASIXがI/O直前に行う現在offsetへのseekとゼロ長readは許可し、FSが受け取る任意位置変更を拒否する。ただしWASIXの`fd_seek(SET/CUR)`はdescriptorだけを動かす場合があり、guestの途中seekをすべて即時拒否する保証はない。空read・seek・metadata照会を含む全I/O回数の上限も別で、外側のprocess期限を残す。bad complete frameの拒否はRust unitの範囲で、実PHP4ケースには含まれない。
 
-実DB・標準wpdb・WP bootstrap・製品ABIは未実装。ローカルでは全23 unit、release build、fmtと引数拒否を確認し、実PHP4要求はLinux CIで別に観測する。CIはRPCとmemoryの失敗後も他の独立比較を実行するが、失敗したstepを成功へ置き換えない。
+実DB・標準wpdb・WP bootstrap・製品ABIは未実装。追加時点のローカルでは全23 unit、release build、fmtと引数拒否を確認し、実PHP4要求は後続Linux CIで観測した。CIはRPCとmemoryの失敗後も他の独立比較を実行するが、失敗したstepを成功へ置き換えない。
 
 同じ[run 41305668144のRPC実測](evidence/ci-41305668144/linux-llvm-rpc-contract.json)は受入`true/true/false/true`で通った。正常要求ごとにRust callback5回、入力90B、応答生成/実読取り76Bを照合し、stdoutのNUL/0xffを含むRPC風文字列はdispatchされなかった。PHPがexit0を返す未完了要求はRustが拒否し、次のfresh要求は正常に戻った。言語契約のFiberは引き続き不一致であり、このrun全体のCI verdictはfailureのまま保存する。
 
@@ -119,6 +119,8 @@ compile1回から3つのfresh CGI環境へcloneし、GET/Cookie、POSTとphp://i
 
 RPCを追加したsource `e9a2e6c`の[追試run 41305668059](../php-wasix-cgi-build/evidence/ci-41305668059/provenance.json)でも、同じ3要求のnative比較と所有process回収が成功した。初回の記録へ成功を付け替えず、各runの実物SHA・原観測を別保存する。
 
+source `a0cbade`のCGI matrixは[Cranelift](../php-wasix-cgi-build/evidence/ci-41310853946-cranelift/provenance.json)と[LLVM](../php-wasix-cgi-build/evidence/ci-41310853946-llvm/provenance.json)の両方で3要求がnativeと一致した。Craneliftはcompile11,042ms、各`run_wasm`77/75/70ms、LLVMはcompile159,182ms、75/66/66msの単発観測だった。各jobがbuildした実物の同一性をそれぞれ確認し、backend間のbit同一性や製品性能の改善率は主張しない。
+
 ## 実験の制御範囲
 
 host環境・home・host directoryをguestへ渡さず、networkはUnsupportedVirtualNetworking、HTTP clientは無し。stdinは閉じ、stdout/stderrは各64KiBを超える書込みをpipeへ入れる前に拒否する。EOF回収にも期限を設ける。
@@ -136,7 +138,7 @@ python experiments/php-wasix-host-probe/unit_check.py --llvm --record
 
 dev依存の`wasmer-middlewares=7.2.0`を使い、[固定WAT](src/metering_limits.rs)の正常→無限loop→正常を同module・3つの新store/instanceで実行する。各開始値10000、正常値42と正の残量、loopの実trap・`Exhausted`・到達状態、最後の初期予算復帰を照合する。WATごとに新Metering/Engineを用意し、別moduleへのmiddleware再利用はしない。hostcall importとstart sectionは無い固定対象である。
 
-[Windows Craneliftの記録](evidence/windows-cranelift-unit-contract.json)では全24件が成功し、通常の残量は9996、loopだけ実`Exhausted`になった。PHPを実行した記録ではない。Linuxにはformal EHのthrow/catchと、catchから入るloopの予算trapが外側のcatchに飲み込まれないことを確認する25件目を追加したが、Windowsではcompile対象に含めず、Linuxでの結果を別に取得する。
+[Windows Craneliftの記録](evidence/windows-cranelift-unit-contract.json)では全25件（初回24件にadapter命令検査1件を追加）が成功し、通常の残量は9996、loopだけ実`Exhausted`になった。PHPを実行した記録ではない。Linuxにはformal EHのthrow/catchと、catchから入るloopの予算trapが外側のcatchに飲み込まれないことを確認する追加テストもある。Windowsではこれをcompile対象に含めず、Linuxでの結果を別に取得する。
 
 無限loopの試験を通常の無期限test実行へ任せず、checkerが`cargo test --no-run`のJSONから選んだ所有test executableを、一覧10秒・本実行30秒で監督する。全件成功・ignoredなし・記録の型/順序/実残量・byte hash・source不変・子process回収を要求する。これはWasm演算の重み付き予算であり、PHP opcode・CPU時間・hostcallやcompile時間の上限ではない。
 
@@ -145,6 +147,17 @@ Linux CIはLLVMとCraneliftを独立したmatrix jobで比較し、片方の失�
 source `de33e0a`の[Cranelift](evidence/ci-41308237911-cranelift/provenance.json)と[LLVM](evidence/ci-41308237911-llvm/provenance.json)は、両方ともLinux25件・formal EHの演算予算・PHP版・module再利用・RPC・256MiB診断・依存棚卸しを通過した。両方の言語比較は基本値/例外が一致、Fiberが不一致であり、CI全体はfailureのまま保持する。Cranelift側の再利用実験ではcompile6174ms、各`run_wasm`65/56/57msだった。backend差や製品性能の改善率をこの単発観測から決めない。
 
 Fiber差分の次の調査は[小C context実験](../php-wasix-context-probe/README.ja.md)へ分けた。`--context-contract`はPHP CLI artifactを読まず、固定Cの同job生成物だけを使う。PHPのFiber backendは変更していない。
+
+## 固定PHPのWasm演算予算
+
+```text
+python experiments/php-wasix-host-probe/operation_check.py --record
+python experiments/php-wasix-host-probe/operation_check.py --llvm --record
+```
+
+`--php-operation-budget`だけにMeteringを適用し、公式PHP moduleを1回compileして、正常→READY後の無限loop→正常回復を3つの新規環境で実行する。試験値は100,000,000 pointsで、各instanceの開始値と終了時の実`Remaining`/`Exhausted`を公開safe APIから取得する。setup/recycleの観測は各1回、loopはREADY・Runner実error・実Exhausted・EOFをすべて要求し、caseの`ok=false`を保持する。
+
+他modeのengineは非instrumentのままにし、snapshot再開・deep sleep・start sectionを使う経路はこの診断で拒否する。所有hostの外側期限は300秒で、期限切れだけでは予算による中断としない。Windowsでのビルド・25 unitとchecker改変拒否は確認済みだが、実PHP3ケースの正実行はLinux CI待ちである。CPU時間・PHP opcode数・hostcall待機・RSS・製品の予算値・Fiber適合はこの試験で確定しない。
 
 ## 宣言された依存ライセンスの棚卸し
 
@@ -158,3 +171,5 @@ python experiments/php-wasix-host-probe/license_inventory.py --llvm --record
 Windows上で取得した[Cranelift graph](evidence/windows-cranelift-dependency-inventory.json)と[LLVM graph](evidence/windows-llvm-dependency-inventory.json)を保存した。Cranelift側ではLLVM compilerにどの分類からも到達しなかった。Linuxでの実compileをこのmetadataで代用しない。`wasmer-compiler-llvm=7.2.0`は別LICENSEにBusiness Source License 1.1の独自利用条件を持ち、製品採用は未判定である。`saffron=0.1.0`も宣言文字列の代わりに別LICENSEを持つ。両者は配布crateのlock checksum・内部LICENSE・ローカル本文の一致とbyte/SHAを確認し、本文やhost絶対pathは証跡へ保存しない。
 
 PHPの28静的archiveは[CGI build receipt](../php-wasix-cgi-build/evidence/ci-41302992818/build.json)にbyte/SHAがあるが、各archiveの元repo/commit・build flags・patch・個別license/noticeの対応は未確認で、全28本が最終リンクへ入ったとの証明でもない。`libwasix_rust_libs.a`等の内部依存はhost Cargo.lockでは追跡できない。PHP本体・Zend・TSRM、host LLVM22.1とcross-build LLVM21.1も別の来歴・配布確認対象として残す。
+
+追加調査では[sendmailの旧recipe](https://github.com/wasix-org/php-wasix-sendmail/blob/8296c22d3fc83b2f245186681b1fc075d02441c7/Makefile)が`wasix-sendmail=0.1.0`のstaticlibをdepsへコピーすると分かったが、既存archive SHAとのbuild対応、`+wasix`のtoolchain版、当時のroot license宣言は未確認である。後年の別版の宣言を流用しない。`libicrt.a`は同梱iconv headerの1.17表記との関連が候補に留まり、`libwasix_rust_libs.a`の元repo/commit/recipeも未特定である。次はlinker map等で現PHP moduleへ採用されたmemberを分け、不要なarchiveまで製品依存と決め付けずに監査範囲を確定する。

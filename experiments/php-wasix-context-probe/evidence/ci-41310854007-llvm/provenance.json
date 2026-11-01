@@ -1,0 +1,37 @@
+{
+  "format_version": 1,
+  "source_commit": "a0cbadeb83916ad4896c0026235990a18fb40099",
+  "backend": "llvm",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41310854007",
+  "artifact_id": 13084639405,
+  "artifact_zip_bytes": 11665,
+  "artifact_zip_sha256": "a853f76dfdc7ac8132a1df25184128fa1607a464235c11b48384e0c26b19b7ce",
+  "ci_job_verdict": "failure",
+  "original_git_source_hashes_verified": true,
+  "php_or_guest_executed_by_importer": false,
+  "module_binaries_acquired_by_importer": false,
+  "product_runtime_selected": false,
+  "imported_files": {
+    "ci-stages.json": "ed77220048fb89426157bb2b7879cf4e6ee51d8ce8c2c44c086594f6b19a42cb",
+    "build.json": "a266689262b74860dd85f12864d20d2ad58084fb18bac0316d9590f6a9082221",
+    "toolchain.json": "de2beee5f13fa73be0b0dea58ff26bccb0ea32a7906a9811c6a5416edcc9a864",
+    "context-contract.json": "6f06d2668299c85cf6b562c0b754d9eeff098518cde89656252b1ecad6383f61",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  },
+  "input_files": {
+    "experiments/php-wasix-context-probe/import_ci_evidence.py": "01839841935d7849a2e00f0630c00e1062dfd208808d3936c07a1057e62eef35",
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "258283bcd42460393491bcad2d8e49742927b999cd621e7e6a24ec167a54be40",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2"
+  },
+  "observations": {
+    "raw_context_switching_completed_rounds": 8,
+    "initial_ranges_disjoint": true,
+    "a_normally_unwound_frames": 4,
+    "b_frames_still_suspended": 4,
+    "failure_phase": "post_a_unwind_clobber",
+    "failure": "volatile-stack-canary-changed",
+    "raw_sdk_api_provides_stack_independence_for_fixture": false,
+    "php_fiber_compatibility_verified": false
+  }
+}

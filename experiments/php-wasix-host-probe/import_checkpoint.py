@@ -17,6 +17,38 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SOURCE = '071c9443ba56b2b5dd27032567ed3e7a9c8d0045'
 SPECS = {
+    '41310853946-cranelift': {
+        'run_id': '41310853946', 'backend': 'cranelift',
+        'source': 'a0cbadeb83916ad4896c0026235990a18fb40099',
+        'kind': 'cgi-contract', 'artifact': 13086146670, 'bytes': 27940,
+        'sha256': '6b1a73a4ba4898b921ca57e7bf7e0b3b9910205e5e9af5444b6d6cac01982320',
+        'module_sha256': '8684a5b3462dbcd2f06cec25379f98672a9938fb54ee5d4994fae5ef63fa49c8',
+        'directory': 'experiments/php-wasix-cgi-build',
+        'current': ['ci-stages.json', 'build.json', 'toolchain.json', 'linux-cranelift-cgi-contract.json',
+                    'native-cgi-contract.json'],
+        'archive_members': {
+            **{name: 'php-wasix-cgi-build/evidence/' + name
+               for name in ['ci-stages.json', 'build.json', 'toolchain.json']},
+            **{name: 'php-wasix-host-probe/evidence/' + name for name in
+               ['linux-cranelift-cgi-contract.json', 'native-cgi-contract.json']},
+        },
+    },
+    '41310853946-llvm': {
+        'run_id': '41310853946', 'backend': 'llvm',
+        'source': 'a0cbadeb83916ad4896c0026235990a18fb40099',
+        'kind': 'cgi-contract', 'artifact': 13085567886, 'bytes': 28407,
+        'sha256': '50bacf779a011f7c2a088ce5461320b571df15d06c0573c5f06caa1c642ec9c9',
+        'module_sha256': 'f51fd1d6d5c43a3371a2b8c3dbb1f9ef3372bbc0b160f266307e597cfea72cd7',
+        'directory': 'experiments/php-wasix-cgi-build',
+        'current': ['ci-stages.json', 'build.json', 'toolchain.json', 'linux-llvm-cgi-contract.json',
+                    'llvm-toolchain-verification.json', 'native-cgi-contract.json'],
+        'archive_members': {
+            **{name: 'php-wasix-cgi-build/evidence/' + name
+               for name in ['ci-stages.json', 'build.json', 'toolchain.json']},
+            **{name: 'php-wasix-host-probe/evidence/' + name for name in
+               ['linux-llvm-cgi-contract.json', 'llvm-toolchain-verification.json', 'native-cgi-contract.json']},
+        },
+    },
     '41308237911-llvm': {
         'run_id': '41308237911', 'backend': 'llvm',
         'source': 'de33e0a8db80b6b5d632b25d7e3dfc30deb3299a',
@@ -166,11 +198,13 @@ def verify_reuse(data, extended=False, backend='llvm', matrix=False):
     }
 
 
-def verify_cgi(data, success, contract=False):
+def verify_cgi(data, success, contract=False, backend='llvm', matrix=False):
     expected = dict.fromkeys(['php_source', 'deps_source', 'parser_source', 'dependencies', 'definitions', 'tools'], 'success')
     expected['build'] = 'success' if success else 'failure'
     if contract:
-        expected.update(rust='success', host_llvm='success', cgi_contract='success')
+        expected.update(rust='success', host_llvm='success' if backend == 'llvm' else 'skipped', cgi_contract='success')
+    if matrix:
+        require(data['ci-stages.json']['backend'] == backend, 'wrong CGI backend')
     require(data['ci-stages.json']['stages'] == expected, 'unexpected CGI CI stage outcomes')
     build, tools = data['build.json'], data['toolchain.json']
     verify_sources(build)
@@ -282,9 +316,9 @@ def verify_memory_startup_failure(data):
             'uncapped_allocation_control_passed': True, 'language_cases_executed': False}
 
 
-def verify_cgi_contract(data):
-    summary = verify_cgi(data, True, contract=True)
-    contract, native = data['linux-llvm-cgi-contract.json'], data['native-cgi-contract.json']
+def verify_cgi_contract(data, backend='llvm', matrix=False):
+    summary = verify_cgi(data, True, contract=True, backend=backend, matrix=matrix)
+    contract, native = data['linux-' + backend + '-cgi-contract.json'], data['native-cgi-contract.json']
     verify_sources(contract)
     verify_sources(native)
     original_native = reader.original('experiments/php-wasix-host-probe/evidence/native-cgi-contract.json')
@@ -309,27 +343,28 @@ def verify_cgi_contract(data):
     require(contract['native_reference']['receipt_sha256'] == sha(original_native)
             and contract['native_reference']['native_executed_by_this_helper'] is False,
             'wrong native oracle or fallback execution claim')
-    cgi_check.validate_result(contract['native_result'], contract['owned_process_pid'], 'llvm', provenance)
+    cgi_check.validate_result(contract['native_result'], contract['owned_process_pid'], backend, provenance)
     comparisons = cgi_check.compare_native_requests(contract['native_result'], native)
     require(comparisons == contract['native_comparison_results']
             and all(row['equal_to_native'] is True for row in comparisons.values()),
             'native CGI comparison changed')
-    llvm = data['llvm-toolchain-verification.json']
-    llvm_wire = reader.original('experiments/php-wasix-host-probe/llvm-toolchain.json')
-    llvm_manifest = json.loads(llvm_wire)
-    require(llvm['llvm_toolchain_manifest_sha256'] == sha(llvm_wire)
-            and llvm['archive_sha256'] == llvm_manifest['archive_sha256']
-            and llvm['archive_bytes'] == llvm_manifest['archive_bytes']
-            and llvm['llvm_config_version'] == '22.1.8'
-            and llvm['verifier_source_sha256'] == sha(reader.original(
-                'experiments/php-wasix-host-probe/prepare_host_llvm.py')), 'host LLVM identity changed')
+    if backend == 'llvm':
+        llvm = data['llvm-toolchain-verification.json']
+        llvm_wire = reader.original('experiments/php-wasix-host-probe/llvm-toolchain.json')
+        llvm_manifest = json.loads(llvm_wire)
+        require(llvm['llvm_toolchain_manifest_sha256'] == sha(llvm_wire)
+                and llvm['archive_sha256'] == llvm_manifest['archive_sha256']
+                and llvm['archive_bytes'] == llvm_manifest['archive_bytes']
+                and llvm['llvm_config_version'] == '22.1.8'
+                and llvm['verifier_source_sha256'] == sha(reader.original(
+                    'experiments/php-wasix-host-probe/prepare_host_llvm.py')), 'host LLVM identity changed')
     summary.update(cgi_guest_executed=True, builder_executed_guest=False,
                    native_comparison_passed=True, native_comparison_results=comparisons,
                    compile_elapsed_ms=contract['native_result']['compile_elapsed_ms'],
                    request_execution_elapsed_ms=[r['php_execution_elapsed_ms']
                                                  for r in contract['native_result']['requests']],
                    actual_http_listener_tested=False, real_db=False, wordpress_bootstrapped=False,
-                   reproducible_build_verified=False)
+                   reproducible_build_verified=False, backend=backend)
     return summary
 
 
@@ -447,7 +482,7 @@ def main():
         if spec['kind'] == 'cgi-contract':
             data['_fixed_module_sha'] = spec['module_sha256']
             data['_raw_build'], data['_raw_native'] = raw['build.json'], raw['native-cgi-contract.json']
-            summary = verify_cgi_contract(data)
+            summary = verify_cgi_contract(data, spec.get('backend', 'llvm'), matrix='backend' in spec)
         else:
             summary = verify_cgi(data, spec['kind'] == 'cgi-build-passed')
     destination = ROOT / spec['directory'] / 'evidence' / ('ci-' + args.run)

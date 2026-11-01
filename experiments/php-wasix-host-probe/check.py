@@ -39,6 +39,9 @@ def compiled_inputs():
                ROOT / 'experiments/php-wasix-cgi-build/manifest.json',
                ROOT / 'experiments/php-wasix-context-probe/manifest.json',
                ROOT / 'experiments/php-wasix-context-probe/fixtures/context_contract.c',
+               ROOT / 'experiments/php-wasix-context-probe/fixtures/stack_adapter.c',
+               ROOT / 'experiments/php-wasix-context-probe/fixtures/stack_adapter.h',
+               ROOT / 'experiments/php-wasix-context-probe/fixtures/stack_adapter.S',
                ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
 
 
