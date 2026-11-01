@@ -47,6 +47,10 @@ def compiled_inputs():
                ROOT / 'experiments/php-wasix-fiber-probe/fixtures/zend_wasix_fiber.S',
                ROOT / 'experiments/php-wasix-fiber-probe/fixtures/fiber_contract.php',
                ROOT / 'experiments/php-wasix-fiber-probe/evidence/native-fiber-contract.json',
+               ROOT / 'experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch',
+               ROOT / 'experiments/php-wasix-fiber-cgi-probe/manifest.json',
+               ROOT / 'experiments/php-wasix-fiber-cgi-probe/fixtures/fiber_cgi_contract.php',
+               ROOT / 'experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json',
                ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
 
 

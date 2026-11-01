@@ -4,6 +4,9 @@ name: PHP WASIX CGI host candidates
   push:
     branches: ["dev/v0.5"]
     paths:
+      - "experiments/php-wasix-fiber-cgi-probe/fixtures/**"
+      - "experiments/php-wasix-fiber-cgi-probe/manifest.json"
+      - "experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json"
       - "experiments/php-wasix-cgi-build/**"
       - "experiments/php-wasix-host-probe/Cargo.*"
       - "experiments/php-wasix-host-probe/src/**"

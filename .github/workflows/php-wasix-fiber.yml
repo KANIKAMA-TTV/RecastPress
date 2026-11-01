@@ -4,6 +4,9 @@ name: PHP WASIX Fiber prototype
   push:
     branches: ["dev/v0.5"]
     paths:
+      - "experiments/php-wasix-fiber-cgi-probe/fixtures/**"
+      - "experiments/php-wasix-fiber-cgi-probe/manifest.json"
+      - "experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json"
       - "experiments/php-wasix-fiber-probe/build.py"
       - "experiments/php-wasix-fiber-probe/patch_source.py"
       - "experiments/php-wasix-fiber-probe/fiber_check.py"

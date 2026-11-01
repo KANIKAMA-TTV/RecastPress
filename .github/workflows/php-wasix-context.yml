@@ -4,6 +4,9 @@ name: WASIX C context candidate
   push:
     branches: ["dev/v0.5"]
     paths:
+      - "experiments/php-wasix-fiber-cgi-probe/fixtures/**"
+      - "experiments/php-wasix-fiber-cgi-probe/manifest.json"
+      - "experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json"
       - "experiments/php-wasix-context-probe/**"
       - "experiments/php-wasix-host-probe/**"
       - "experiments/php-wasix-cgi-build/*.py"

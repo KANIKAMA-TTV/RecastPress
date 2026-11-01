@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "observed_at_utc": "2026-11-01T15:52:26.379757+00:00",
+  "observed_at_utc": "2026-11-01T16:24:14.646762+00:00",
   "role": "native CGI comparison oracle only; never a Wasm or product fallback",
   "outcome": "native_cgi_contract_passed",
   "wasm_executed": false,
@@ -79,15 +79,15 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 14444,
+      "owned_process_pid": 22272,
       "exit_code": 0,
-      "elapsed_ms": 225,
+      "elapsed_ms": 137,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
       "stdout_bytes": 572,
       "stderr_bytes": 0,
-      "stdout_sha256": "391ed5958d6d27bdc7f081c7292ee43a7608a3824eb9aebf8876cfe333a6a9fc",
+      "stdout_sha256": "7a2cdd7b473c93b1225e62e26926c82fff26e798e2e527cada66acd8fafe896d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -103,7 +103,7 @@
           }
         ],
         "body_bytes": 491,
-        "body_sha256": "3e70a7f79d74e307aa673d1c7e5366181f1d42480339d2ac9a25957e7b7316e5",
+        "body_sha256": "e35452eba52862add15db8690a83504dd4f08147748b6d7143adf4489adb705b",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -238,15 +238,15 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 25500,
+      "owned_process_pid": 24268,
       "exit_code": 0,
-      "elapsed_ms": 218,
+      "elapsed_ms": 121,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
       "stdout_bytes": 654,
       "stderr_bytes": 0,
-      "stdout_sha256": "12e17ed381371e847bf4957cb7e60bb5ef9908d19d745828f2088ede1e7602dd",
+      "stdout_sha256": "65844c94cbdfd32731c35011f0995ea12511fd3519b985808c6619a1d4a01df7",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -262,7 +262,7 @@
           }
         ],
         "body_bytes": 573,
-        "body_sha256": "ac50ec7dc6e337498d70a4e503723b02953c2152573c64d39289c0a8002b3865",
+        "body_sha256": "7f830581e2b743f25e4c5689ccf3db853a40148a6e28e3b2a5afc0748fc24ae9",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -401,9 +401,9 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 4612,
+      "owned_process_pid": 1536,
       "exit_code": 0,
-      "elapsed_ms": 196,
+      "elapsed_ms": 107,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
@@ -570,7 +570,7 @@
     "executed": false
   },
   "fixture_copy": {
-    "path": "target/php-wasix-host-probe/native-cgi-contract/2440-4c9a689abb794707b4fc447cc0accfb4/cgi_contract.php",
+    "path": "target/php-wasix-host-probe/native-cgi-contract/4756-f97081d3f7994a3c819da461b4a17b01/cgi_contract.php",
     "sha256": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
     "bytes": 1573
   },
@@ -595,7 +595,7 @@
     "experiments/php-wasix-host-probe/native_cgi_contract.py": "6efd7d2009221d823e0a7471791e8de75c412cefaaba1b8bd61be690a1b935c3",
     "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
     "experiments/php-wasix-host-probe/cgi_check.py": "b410fc62e4357ce5daf2db2578b7ff474818d70810d5d17a03dc5d669f80b5b6",
-    "experiments/php-wasix-host-probe/check.py": "fb519271c13fbda73fb640ba70f2e7b275eb62dc0c76c7130676dd00b14eac55",
+    "experiments/php-wasix-host-probe/check.py": "24f0d81cf1620fff19f812f0fb49078eb31344413e88d7a907c45158c0164d3f",
     "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
     "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
     "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",

@@ -23,7 +23,7 @@ use super::{LimitedPipe, collect_pipe, make_engine};
 
 // Reuse the complete-response parser unchanged, including its nine unit tests.
 #[path = "../../php-wasi-host-probe/src/cgi_response.rs"]
-mod cgi_response;
+pub(crate) mod cgi_response;
 
 const BUILD_RECEIPT: &str = "experiments/php-wasix-cgi-build/evidence/build.json";
 const BUILD_MANIFEST: &str = "experiments/php-wasix-cgi-build/manifest.json";
