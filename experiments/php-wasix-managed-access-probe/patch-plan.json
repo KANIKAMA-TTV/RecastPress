@@ -1,0 +1,127 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.php-wasix-managed-access-patch-plan.v0.5",
+  "phase": "authored_source_patch_not_built",
+  "scope": "opt-in WASI-only managed access query and explicitly authorized open errno correction",
+  "upstream": {
+    "repository": "wasix-org/php",
+    "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+    "source_hash_basis": "Full UTF-8 file bytes read from primary GitHub at the fixed commit; Git blob SHA-1 recomputed. Builder independently verifies checkout HEAD and complete base files."
+  },
+  "source_patches": [
+    {
+      "path": "patches/0001-wasi-managed-access.patch",
+      "bytes": 9077,
+      "sha256": "343bd0bcd1adb4abcf22653973a5f2d3a75360c1fe06c2748ed83b5646fe3be1",
+      "files": [
+        {
+          "path": "ext/standard/filestat.c",
+          "change": "modify",
+          "before": {
+            "bytes": 29692,
+            "sha256": "fac3258f4ed14964bc9d28c69c2de3a05f637b62ee938f670b7c362bd0f0070a",
+            "git_blob_sha1": "d960d4e8535d91d5432dc54ff3bfed1a9b2d7db0"
+          },
+          "after": {
+            "bytes": 30529,
+            "sha256": "db2460056917b7c3689971d8da30fe08f1e32ea657147585bf81a35f672f069f",
+            "git_blob_sha1": "ecd58dda113f209e1a5a49021d7d041549d00cf0"
+          }
+        },
+        {
+          "path": "main/streams/plain_wrapper.c",
+          "change": "modify",
+          "before": {
+            "bytes": 47201,
+            "sha256": "e612184e21e8b1cb311feaac3d54fb0902f514b749ca57096d94e0a9c9cd8edf",
+            "git_blob_sha1": "74d8877a7f3819f5fb1fb3de49082e7ee94f7b4d"
+          },
+          "after": {
+            "bytes": 47407,
+            "sha256": "e202a4ef58c7cb776463003db13079850109b341f243dd55109d48bfdeab47ca",
+            "git_blob_sha1": "4ca68635f209b5d2fe880a92d6b5f0d946e8d2ad"
+          }
+        },
+        {
+          "path": "main/recastpress_fs_access.h",
+          "change": "add",
+          "before": null,
+          "after": {
+            "bytes": 7066,
+            "sha256": "3973380aeaf7354496dd18bb2f82ffe3f6467ac7ebe9e2c82a0a634f9514268f",
+            "git_blob_sha1": "beedbef4a7fc6b6249bc894b8da55f933e8ef4a4"
+          }
+        }
+      ]
+    }
+  ],
+  "fixed_header": {
+    "path": "fixtures/recastpress_fs_access.h",
+    "bytes": 7066,
+    "sha256": "3973380aeaf7354496dd18bb2f82ffe3f6467ac7ebe9e2c82a0a634f9514268f",
+    "patch_destination": "main/recastpress_fs_access.h",
+    "destination_bytes_equal": true
+  },
+  "canonical_patch_targets_disjoint": [
+    "configure.ac",
+    "Zend/zend_fibers.c",
+    "Zend/asm/recastpress_wasix_fiber.S",
+    "sapi/cgi/cgi_main.c"
+  ],
+  "activation": {
+    "wasi_macro": "__wasi__",
+    "opt_in": "apply this patch only to an independent managed-access profile",
+    "configure_changed": false,
+    "makefile_changed": false,
+    "native_processing": "existing branches retained; header and hooks preprocessor-excluded on native builds"
+  },
+  "protocol": {
+    "transport_path": "/rp-p0-fs/access",
+    "transport": "libc fopen r+b; one open per transaction; no PHP stream/stat",
+    "request_magic": "RPA1",
+    "mode_bits": {
+      "F_OK": 0,
+      "X_OK": 1,
+      "W_OK": 2,
+      "R_OK": 4
+    },
+    "request_header_bytes": 7,
+    "path_length_encoding": "unsigned u16 little endian",
+    "max_absolute_utf8_path_bytes": 4096,
+    "relative_path": "bounded VCWD_GETCWD when defined, otherwise libc getcwd; append slash/path without symlink or dot normalization",
+    "response_magic": "RPR1",
+    "response_bytes": 5,
+    "statuses": {
+      "0": "allow",
+      "1": "deny EACCES",
+      "2": "missing ENOENT",
+      "3": "unmanaged; existing access fallback and incoming errno retained",
+      "4": "invalid EINVAL",
+      "5": "io EIO"
+    },
+    "local_failures": "invalid mode/path EINVAL; overlong absolute path or cwd expansion ENAMETOOLONG; never unmanaged",
+    "failure_policy": "incomplete/malformed/extra response, IO or close failure => EIO and false; only explicit complete status3 permits VCWD_ACCESS fallback",
+    "open_errno_policy": "only original failed open EPERM and same path/O_ACCMODE query status1 => EACCES; all other statuses/errors preserve original EPERM; no retry or success change"
+  },
+  "claims": {
+    "php_built": false,
+    "php_guest_executed": false,
+    "native_php_executed": false,
+    "full_php_compatibility_verified": false,
+    "product_runtime_selected": false,
+    "resource_limits_verified": false
+  },
+  "static_verification": {
+    "whole_file_before_after_pins_recorded": true,
+    "git_apply_checked_here": true,
+    "header_matches_patch_destination_checked_here": true
+  },
+  "open_gates": [
+    "standard Git apply against independently fetched fixed source",
+    "build with the existing Fiber and CGI patches in one dedicated profile",
+    "Rust pure query provider and bounded transport integration",
+    "unchanged native runtime and Fiber corpora on both Linux backends",
+    "transport faults fail closed; errno conversion only on explicit matching-path denial",
+    "source/license/resource and deployment gates remain separate"
+  ]
+}

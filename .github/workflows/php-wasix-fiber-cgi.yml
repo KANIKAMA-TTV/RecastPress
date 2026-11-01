@@ -6,6 +6,10 @@ name: PHP WASIX Fiber CGI prototype
     # Keep explicit build/runtime inputs; evidence, prose and importers do not rebuild guests.
     # Extend these patterns when check.py compiled_inputs() gains another embedded file.
     paths:
+      - "experiments/php-wasix-managed-access-probe/fixtures/recastpress_fs_access.h"
+      - "experiments/php-wasix-managed-access-probe/patches/0001-wasi-managed-access.patch"
+      - "experiments/php-wasix-managed-access-probe/patch-plan.json"
+      - "experiments/php-wasix-managed-access-probe/manifest.json"
       - "experiments/php-wasix-host-probe/Cargo.*"
       - "experiments/php-wasix-host-probe/src/**"
       - "experiments/php-wasix-host-probe/fixtures/**"

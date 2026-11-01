@@ -146,7 +146,7 @@ def main():
         require(platform.system() in ['Linux', 'Windows'], 'only Linux and Windows unit inventories are fixed')
         expected = {'cgi_contract::cgi_response::tests::': 9, 'language_contract::tests::': 2,
                     'context_contract::tests::': 1,
-                    'fiber_adapter::tests::': 1, 'runtime_fixture_fs::tests::': 4,
+                    'fiber_adapter::tests::': 1, 'runtime_fixture_fs::tests::': 4, 'managed_access_fs::tests::': 6,
                     'memory_limits::': 3, 'rpc_fs::tests::': 9,
                     'metering_limits::': 1 if platform.system() == 'Windows' else 2}
         require(len(names) == len(set(names)) == sum(expected.values()), 'unexpected test count')

@@ -1,0 +1,223 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.wasix-php-managed-access-build-plan.v0.5",
+  "scope": "NTS wasm32 PHP 8.5.12 CGI, exactly one request per fresh WASI instance",
+  "upstream": {
+    "repository": "wasix-org/php",
+    "commit": "f4bfae79d5c19028349082f707930cf0951d23b9"
+  },
+  "canonical_manifests": {
+    "fiber": {
+      "path": "experiments/php-wasix-fiber-probe/manifest.json",
+      "sha256": "81cd79838d653453e27e2bb69ad3afefbbd01293846372080e2db8eb134b5c87"
+    },
+    "cgi": {
+      "path": "experiments/php-wasix-cgi-build/manifest.json",
+      "sha256": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28"
+    }
+  },
+  "source_patches": [
+    {
+      "kind": "fiber",
+      "path": "experiments/php-wasix-fiber-probe/patches/0001-nts-fresh-wasi-zend-fibers.patch",
+      "bytes": 19479,
+      "sha256": "2c334bcfcc34cb518971a8b7965ede50032b2813fa0c426ddfde206a8105d231",
+      "files": [
+        {
+          "path": "configure.ac",
+          "change": "modify",
+          "before": {
+            "bytes": 53849,
+            "git_blob_sha1": "6fd5a92366a38c927dba8e4d1b5488d96464ca27",
+            "sha256": "349248c22ad03d509a717c79d6c17987858b8dcc8c050a640d29d357de59d353"
+          },
+          "after": {
+            "bytes": 55143,
+            "git_blob_sha1": "ae18278e7752ddd6546349766e836fde01bb0891",
+            "sha256": "cbe8ba27ade859f17de47904ecbb4a84e81472cbd4ffe5316ef6fa32590de7ce"
+          }
+        },
+        {
+          "path": "Zend/zend_fibers.c",
+          "change": "modify",
+          "before": {
+            "bytes": 34251,
+            "git_blob_sha1": "8e73330e51bbfcc4b3e150a553a32b88f4cc12a5",
+            "sha256": "4e06b55134e35c9eb6a193b9f4c5b7f02b630b10355e6bc8e2384aa9a4cf5cfb"
+          },
+          "after": {
+            "bytes": 43637,
+            "git_blob_sha1": "9c864b1617b7b58754ba823fc9a341a1c1c3d314",
+            "sha256": "0573d1250ebd8204b21b387481b89ec2c0e347825be3925d3ba7c2977804d353"
+          }
+        },
+        {
+          "path": "Zend/asm/recastpress_wasix_fiber.S",
+          "change": "add",
+          "before": null,
+          "after": {
+            "bytes": 1153,
+            "git_blob_sha1": "c7edb0570871f015c971aca30a34ea585d8500ac",
+            "sha256": "c0f44bef8e8a4d54713e3ba989be064995ae527924724edcd4bec1f8e4040c19"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "cgi_prefork",
+      "path": "experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch",
+      "bytes": 673,
+      "sha256": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+      "files": [
+        {
+          "path": "sapi/cgi/cgi_main.c",
+          "change": "modify",
+          "before": {
+            "bytes": 74873,
+            "sha256": "e33b16fc29faec5dd8b9b3b7bdd7747832a83c48525b6b336ef8d263fd8c07e6",
+            "git_blob_sha1": "6db96a43ac97bcaefe8e4c22686435a7d4bf39c7"
+          },
+          "after": {
+            "sha256": "f5fe5e6e4534397cb5b8dbf538bdff32ae988659c7400fe555b703554c210832"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "managed_access",
+      "path": "experiments/php-wasix-managed-access-probe/patches/0001-wasi-managed-access.patch",
+      "bytes": 9077,
+      "sha256": "343bd0bcd1adb4abcf22653973a5f2d3a75360c1fe06c2748ed83b5646fe3be1",
+      "files": [
+        {
+          "path": "ext/standard/filestat.c",
+          "change": "modify",
+          "before": {
+            "bytes": 29692,
+            "sha256": "fac3258f4ed14964bc9d28c69c2de3a05f637b62ee938f670b7c362bd0f0070a",
+            "git_blob_sha1": "d960d4e8535d91d5432dc54ff3bfed1a9b2d7db0"
+          },
+          "after": {
+            "bytes": 30529,
+            "sha256": "db2460056917b7c3689971d8da30fe08f1e32ea657147585bf81a35f672f069f",
+            "git_blob_sha1": "ecd58dda113f209e1a5a49021d7d041549d00cf0"
+          }
+        },
+        {
+          "path": "main/streams/plain_wrapper.c",
+          "change": "modify",
+          "before": {
+            "bytes": 47201,
+            "sha256": "e612184e21e8b1cb311feaac3d54fb0902f514b749ca57096d94e0a9c9cd8edf",
+            "git_blob_sha1": "74d8877a7f3819f5fb1fb3de49082e7ee94f7b4d"
+          },
+          "after": {
+            "bytes": 47407,
+            "sha256": "e202a4ef58c7cb776463003db13079850109b341f243dd55109d48bfdeab47ca",
+            "git_blob_sha1": "4ca68635f209b5d2fe880a92d6b5f0d946e8d2ad"
+          }
+        },
+        {
+          "path": "main/recastpress_fs_access.h",
+          "change": "add",
+          "before": null,
+          "after": {
+            "bytes": 7066,
+            "sha256": "3973380aeaf7354496dd18bb2f82ffe3f6467ac7ebe9e2c82a0a634f9514268f",
+            "git_blob_sha1": "beedbef4a7fc6b6249bc894b8da55f933e8ef4a4"
+          }
+        }
+      ]
+    }
+  ],
+  "build_design": {
+    "toolchain_manifest": "experiments/php-wasix-cgi-build/manifest.json",
+    "toolchain_manifest_sha256": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "inherit_pinned_assets_only": true,
+    "reuse_cgi_source_checkout": false,
+    "configure_script": "wasix-configure-eh-64.sh",
+    "extra_configure_flags": [
+      "--enable-cgi",
+      "--enable-rp-wasix-fibers",
+      "--disable-zts"
+    ],
+    "regenerate_configure_after_patch": true,
+    "make_target": "cgi",
+    "required_extra_c_cxx_flags": [
+      "-fno-lto"
+    ],
+    "assembly_extra_flags": [
+      "-fno-lto"
+    ],
+    "required_link_flags": [
+      "-Wl,--export=rp_zend_wasix_switch_raw",
+      "-Wl,--export=rp_zend_wasix_entry",
+      "-Wl,--export=rp_zend_wasix_dispatch",
+      "-Wl,--export=rp_zend_wasix_bootstrap_sp",
+      "-Wl,--export=__stack_pointer"
+    ],
+    "export_flags_applied": false,
+    "backend_macro": "ZEND_FIBER_WASIX",
+    "default_enabled": false,
+    "changed_feature": "explicit WASIX backend replaces only the opt-in fiber backend; native boost/ucontext and default WASI failure branches remain",
+    "forbidden_variants": [
+      "ZTS",
+      "wasm64",
+      "ucontext combined with WASIX",
+      "Valgrind",
+      "ASan",
+      "persistent multi-request guest",
+      "guest fork/vfork/thread spawning"
+    ],
+    "reuse_fiber_source_checkout": false,
+    "link_map_capture": false
+  },
+  "comparison_fixture": {
+    "path": "experiments/php-wasix-fiber-cgi-probe/fixtures/fiber_cgi_contract.php",
+    "sha256": "3d6b17234b12d1f391293b79366ab1575f0d9322e699ef76131c86818eadeff2",
+    "adaptation": "fixed CGI request guard only; six-case body and expected values preserved; native_contract.py independently verifies exact replacement"
+  },
+  "sysroot_source_build_attestation_verified": false,
+  "claims": {
+    "guest_executed": false,
+    "php_wasm_fiber_cgi_compatibility_verified": false,
+    "full_php_compatibility_verified": false,
+    "product_runtime_selected": false,
+    "resource_limits_verified": false,
+    "stack_free_verified": false,
+    "stack_reuse_verified": false,
+    "persistent_requests_supported": false,
+    "zts_supported": false,
+    "managed_access_semantics_verified": false,
+    "permission_errno_compatible": false
+  },
+  "open_gates": [
+    "actual combined CGI build and postopt inspector",
+    "native CGI six-case comparison on both Linux backends",
+    "separate PHP bailout, stack-size and quarantine-growth behavior",
+    "resource lifecycle and cancellation fence",
+    "source, licenses and distribution obligations",
+    "all three deployment targets"
+  ],
+  "canonical_comparison_fixture": {
+    "path": "experiments/php-wasix-fiber-probe/fixtures/fiber_contract.php",
+    "sha256": "9da4b5ffb45677eaa0e81ddbac8c101c692663bf685bbc1157a4689c61c17831"
+  },
+  "phase": "authored_managed_access_build_plan_not_executed",
+  "variant": "nts-fresh-wasi-zend-fibers-managed-access-v1",
+  "parent_profile": {
+    "path": "experiments/php-wasix-fiber-cgi-probe/manifest.json",
+    "sha256": "b0fdc9d3bff6b0e2cc92a7c4961111c5b1ed959ca1a3ecf87916780779bb39f8"
+  },
+  "managed_access": {
+    "patch_plan": "experiments/php-wasix-managed-access-probe/patch-plan.json",
+    "patch_plan_sha256": "2855b71e5add527b3113fb250ab3d91d0540bb1222bf78cff68b94612c7f0cb5",
+    "header": "experiments/php-wasix-managed-access-probe/fixtures/recastpress_fs_access.h",
+    "header_sha256": "3973380aeaf7354496dd18bb2f82ffe3f6467ac7ebe9e2c82a0a634f9514268f",
+    "endpoint": "/rp-p0-fs/access",
+    "max_path_bytes": 4096,
+    "request": "RPA1 + mode-u8 + path-length-u16le + absolute-UTF8-path",
+    "response": "RPR1 + status-u8: allow/denied/missing/unmanaged/invalid/io",
+    "product_abi_selected": false
+  }
+}

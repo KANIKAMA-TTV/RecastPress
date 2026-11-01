@@ -108,8 +108,16 @@ fn snapshot(value: &ScratchSnapshot) -> Value {
 }
 
 pub fn verify(report: &mut Value) -> Result<()> {
+    verify_candidate(report, super::fiber_cgi_contract::load_module, false)
+}
+
+pub(crate) fn verify_candidate(
+    report: &mut Value,
+    loader: fn(&mut Value) -> Result<Vec<u8>>,
+    managed: bool,
+) -> Result<()> {
     report["phase"] = json!("cgi_runtime_build_verification");
-    let bytes = super::fiber_cgi_contract::load_module(report)?;
+    let bytes = loader(report)?;
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../..")
         .canonicalize()?;
@@ -194,6 +202,22 @@ pub fn verify(report: &mut Value) -> Result<()> {
             "native_semantics_match":false,"guest_json":null,"guest_json_decoded":false,
             "guest_arguments":["-n","-d","fiber.stack_size=2097152","-d","register_argc_argv=0"],
             "program_sha256":sha(FIXTURE),"scratch_initial":snapshot(&initial)});
+        let access = if managed {
+            Some(super::managed_access_fs::ManagedAccessFs::new(
+                "runtime_cgi_contract.php",
+                source_fs.clone(),
+                scratch.clone(),
+            )?)
+        } else {
+            None
+        };
+        let mut mounts: Vec<(&'static str, Arc<dyn wasmer_wasix::virtual_fs::FileSystem>)> = vec![
+            ("/wp-core", Arc::new(source_fs.clone())),
+            ("/scratch", Arc::new(scratch.clone())),
+        ];
+        if let Some(provider) = &access {
+            mounts.push(("/rp-p0-fs", Arc::new(provider.clone())));
+        }
         let result = super::cgi_execution::execute(
             &engine,
             module.clone(),
@@ -202,13 +226,19 @@ pub fn verify(report: &mut Value) -> Result<()> {
                 filename: "runtime_cgi_contract.php",
                 source: FIXTURE,
                 environment: environment.clone(),
-                extra_mounts: vec![
-                    ("/wp-core", Arc::new(source_fs.clone())),
-                    ("/scratch", Arc::new(scratch.clone())),
-                ],
+                extra_mounts: mounts,
             },
             &mut case,
         );
+        let access_result = if let Some(provider) = &access {
+            let completed = provider.finish();
+            if let Ok(snapshot) = provider.snapshot() {
+                case["managed_access"] = snapshot.report_value();
+            }
+            Some(completed)
+        } else {
+            None
+        };
         if case["guest_json"]["cases"]["wordpress_hooks"]["status"] == "ok" {
             report["wordpress_pure_hooks_executed"] = json!(true);
             report["wordpress_executed"] = json!(true);
@@ -221,6 +251,20 @@ pub fn verify(report: &mut Value) -> Result<()> {
         let final_state = scratch.snapshot()?;
         case["scratch_final"] = snapshot(&final_state);
         let result = result.and_then(|()| {
+            if let Some(observed) = access_result {
+                let observed = observed.context("managed access channel must finish normally")?;
+                ensure!(
+                    observed.requests >= 5
+                        && observed.allowed >= 3
+                        && observed.denied >= 2
+                        && observed.missing == 0
+                        && observed.invalid == 0
+                        && observed.io_errors == 0
+                        && observed.read_bytes == observed.generated_bytes
+                        && observed.active_handles == 0,
+                    "actual managed access queries and readback were not established"
+                );
+            }
             ensure!(
                 case["guest_json"] == *expected && case["response"] == native["response"],
                 "CGI runtime corpus or response differs from native oracle"
@@ -250,6 +294,9 @@ pub fn verify(report: &mut Value) -> Result<()> {
     }
     ensure!(passed, "CGI runtime native six-case comparison failed");
     report["runtime_contract_verified_for_fixed_cases"] = json!(true);
+    if managed {
+        report["managed_access_verified_for_fixed_cases"] = json!(true);
+    }
     report["php_metadata_matches_actual_readonly_denial"] = json!(true);
     report["wordpress_pure_hooks_executed"] = json!(true);
     report["wordpress_executed"] = json!(true);

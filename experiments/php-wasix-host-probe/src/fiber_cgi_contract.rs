@@ -182,8 +182,15 @@ pub(crate) fn load_module(report: &mut Value) -> Result<Vec<u8>> {
 }
 
 pub fn verify(report: &mut Value) -> Result<()> {
+    verify_candidate(report, load_module)
+}
+
+pub(crate) fn verify_candidate(
+    report: &mut Value,
+    loader: fn(&mut Value) -> Result<Vec<u8>>,
+) -> Result<()> {
     report["phase"] = json!("fiber_build_verification");
-    let bytes = load_module(report)?;
+    let bytes = loader(report)?;
     report["phase"] = json!("fiber_adapter_verification");
     report["postopt_adapter"] = super::fiber_adapter::inspect(&bytes)?;
     let data = HashedModuleData::new(bytes);

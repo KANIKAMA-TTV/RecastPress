@@ -78,6 +78,21 @@ pub(crate) struct WpSourceFs {
     files: Arc<BTreeMap<&'static str, Arc<[u8]>>>,
 }
 
+impl WpSourceFs {
+    /// Pure capability query for the same fixed namespace as metadata/open.
+    /// No file is opened and no source or filesystem counter is changed.
+    pub(crate) fn access(&self, path: &Path, mode: u8) -> std::result::Result<bool, FsError> {
+        if mode > 7 {
+            return Err(FsError::InvalidInput);
+        }
+        match entry(path)? {
+            None => Ok(mode & 2 == 0), // Directories are readable/searchable, never writable.
+            Some(name) if self.files.contains_key(name) => Ok(mode & 3 == 0),
+            _ => Err(FsError::EntryNotFound),
+        }
+    }
+}
+
 pub(crate) fn wp_source_fs(files: [(&'static str, Arc<[u8]>); 3]) -> Result<WpSourceFs> {
     ensure!(
         files.iter().map(|(name, _)| *name).collect::<BTreeSet<_>>()
@@ -205,6 +220,18 @@ pub(crate) struct ScratchSnapshot {
 impl ScratchFs {
     pub(crate) fn new() -> Self {
         Self(Arc::new(Mutex::new(ScratchState::default())))
+    }
+    /// Query the fixed entries without probing an open or altering scratch.
+    pub(crate) fn access(&self, path: &Path, mode: u8) -> std::result::Result<bool, FsError> {
+        if mode > 7 {
+            return Err(FsError::InvalidInput);
+        }
+        match entry(path)? {
+            None => Ok(mode & 2 == 0),
+            Some("ordinary.txt") => Ok(mode & 1 == 0),
+            Some("readonly.txt") => Ok(mode & 3 == 0),
+            _ => Err(FsError::EntryNotFound),
+        }
     }
     pub(crate) fn snapshot(&self) -> Result<ScratchSnapshot> {
         let state = self

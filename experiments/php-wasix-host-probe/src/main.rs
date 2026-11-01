@@ -11,6 +11,8 @@ mod fiber_adapter;
 mod fiber_cgi_contract;
 mod fiber_contract;
 mod language_contract;
+mod managed_access_fs;
+mod managed_contract;
 #[cfg(test)]
 mod memory_limits;
 mod memory_policy;
@@ -66,6 +68,8 @@ enum ProbeMode {
     FiberContract,
     FiberCgiContract,
     CgiRuntimeContract,
+    ManagedFiberContract,
+    ManagedRuntimeContract,
 }
 
 #[cfg(feature = "llvm")]
@@ -99,6 +103,11 @@ fn main() -> ExitCode {
         ProbeMode::FiberCgiContract
     } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--cgi-runtime-contract"] {
         ProbeMode::CgiRuntimeContract
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--managed-fiber-cgi-contract"] {
+        ProbeMode::ManagedFiberContract
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--managed-cgi-runtime-contract"]
+    {
+        ProbeMode::ManagedRuntimeContract
     } else {
         ProbeMode::VersionOnly
     };
@@ -173,6 +182,10 @@ fn main() -> ExitCode {
         fiber_cgi_contract::describe(&mut report);
     } else if mode == ProbeMode::CgiRuntimeContract {
         cgi_runtime_contract::describe(&mut report);
+    } else if mode == ProbeMode::ManagedFiberContract {
+        managed_contract::describe_fiber(&mut report);
+    } else if mode == ProbeMode::ManagedRuntimeContract {
+        managed_contract::describe_runtime(&mut report);
     }
 
     let passed = match run(&mut report, mode) {
@@ -192,6 +205,8 @@ fn main() -> ExitCode {
                 ProbeMode::FiberContract => "fiber_contract_verified",
                 ProbeMode::FiberCgiContract => "fiber_cgi_contract_verified",
                 ProbeMode::CgiRuntimeContract => "cgi_runtime_contract_verified",
+                ProbeMode::ManagedFiberContract => "managed_fiber_contract_verified",
+                ProbeMode::ManagedRuntimeContract => "managed_runtime_contract_verified",
             });
             true
         }
@@ -229,8 +244,10 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
             || (mode == ProbeMode::PhpOperationBudget && std::env::args_os().len() == 2)
             || (mode == ProbeMode::FiberContract && std::env::args_os().len() == 2)
             || (mode == ProbeMode::FiberCgiContract && std::env::args_os().len() == 2)
-            || (mode == ProbeMode::CgiRuntimeContract && std::env::args_os().len() == 2),
-        "this fixed probe accepts only --language-contract, --module-reuse, --php-memory-cap, --cgi-contract, --rpc-contract, --context-contract, --php-operation-budget, --fiber-contract, --fiber-cgi-contract, --cgi-runtime-contract or no arguments"
+            || (mode == ProbeMode::CgiRuntimeContract && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::ManagedFiberContract && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::ManagedRuntimeContract && std::env::args_os().len() == 2),
+        "this fixed probe accepts only --language-contract, --module-reuse, --php-memory-cap, --cgi-contract, --rpc-contract, --context-contract, --php-operation-budget, --fiber-contract, --fiber-cgi-contract, --cgi-runtime-contract, --managed-fiber-cgi-contract, --managed-cgi-runtime-contract or no arguments"
     );
     if mode == ProbeMode::CgiContract {
         return cgi_contract::verify(report);
@@ -242,6 +259,10 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
         return fiber_cgi_contract::verify(report);
     } else if mode == ProbeMode::CgiRuntimeContract {
         return cgi_runtime_contract::verify(report);
+    } else if mode == ProbeMode::ManagedFiberContract {
+        return managed_contract::verify_fiber(report);
+    } else if mode == ProbeMode::ManagedRuntimeContract {
+        return managed_contract::verify_runtime(report);
     }
     if mode == ProbeMode::LanguageContract {
         language_contract::verify_fixture(report)?;
@@ -381,6 +402,9 @@ fn execute(bytes: Vec<u8>, report: &mut Value, mode: ProbeMode) -> Result<(Vec<u
             }
             ProbeMode::CgiRuntimeContract => {
                 bail!("CGI runtime contract must use its fixed source and mount execution path")
+            }
+            ProbeMode::ManagedFiberContract | ProbeMode::ManagedRuntimeContract => {
+                bail!("managed contracts must use their own closed three-patch artifact path")
             }
         }
         let capabilities = runner.capabilities_mut();

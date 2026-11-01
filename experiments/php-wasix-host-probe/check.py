@@ -55,6 +55,10 @@ def compiled_inputs():
                ROOT / 'experiments/php-wasix-cgi-runtime-probe/fixtures/runtime_cgi_contract.php',
                ROOT / 'experiments/php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json',
                ROOT / 'experiments/php-wasi-host-probe/wordpress-fixture.json',
+               ROOT / 'experiments/php-wasix-managed-access-probe/manifest.json',
+               ROOT / 'experiments/php-wasix-managed-access-probe/patch-plan.json',
+               ROOT / 'experiments/php-wasix-managed-access-probe/patches/0001-wasi-managed-access.patch',
+               ROOT / 'experiments/php-wasix-managed-access-probe/fixtures/recastpress_fs_access.h',
                ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
 
 

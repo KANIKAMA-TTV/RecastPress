@@ -38,6 +38,11 @@ prepare = load_unique('recastpress_fiber_pinned_tool_prepare', CGI / 'prepare.py
 patch_source = load_unique('recastpress_fiber_source_patch', HERE / 'patch_source.py')
 require, digest = prepare.require, prepare.digest
 VARIANT = 'nts-fresh-wasi-zend-fibers-cgi-v1'
+PLAN_SCHEMA = 'recastpress.wasix-php-fiber-cgi-build-plan.v0.5'
+BUILD_SCHEMA = 'recastpress.php-wasix-fiber-cgi-build.v0.5'
+BUILD_SUCCESS = 'fiber_cgi_candidate_built_not_executed'
+BUILD_FAILURE = 'fiber_cgi_build_failed'
+CONFIGURE_DIFFERENCE = 'opt-in --enable-cgi --enable-rp-wasix-fibers --disable-zts; both canonical patches applied'
 SOURCE_PINS = {
     'php': {'repository': 'wasix-org/php', 'commit': 'f4bfae79d5c19028349082f707930cf0951d23b9', 'directory': 'source/php'},
     'deps': {'repository': 'wasix-org/php-wasix-deps', 'commit': 'b77ecbede97aba2df32c86eaeb54ff9f5e44f543', 'directory': 'source/php-wasix-deps'},
@@ -100,7 +105,7 @@ def public(value):
 
 def load_manifest():
     manifest = parse_json(fixed(MANIFEST, 1024 * 1024).read_bytes())
-    require(manifest['format_version'] == 1 and manifest['schema'] == 'recastpress.wasix-php-fiber-cgi-build-plan.v0.5'
+    require(manifest['format_version'] == 1 and manifest['schema'] == PLAN_SCHEMA
             and manifest['scope'] == 'NTS wasm32 PHP 8.5.12 CGI, exactly one request per fresh WASI instance', 'unexpected combined Fiber CGI plan')
     require(manifest['upstream']['repository'] == SOURCE_PINS['php']['repository'], 'combined source repository changed')
     patch_source.validate_plan(manifest)
@@ -131,7 +136,7 @@ def load_manifest():
 
 def input_hashes():
     result = prepare.input_hashes()
-    paths = [Path(__file__).resolve(), HERE / 'patch_source.py', MANIFEST, HERE / 'fixtures/fiber_cgi_contract.php',
+    paths = [Path(__file__).resolve(), HERE / 'patch_source.py', MANIFEST, ROOT / 'experiments/php-wasix-fiber-cgi-probe/fixtures/fiber_cgi_contract.php',
              FIBER / 'build.py', FIBER / 'patch_source.py', FIBER / 'manifest.json',
              FIBER / 'patches/0001-nts-fresh-wasi-zend-fibers.patch', patch_source.ASSEMBLY,
              FIBER / 'fixtures/fiber_contract.php', CGI / 'patches/0001-wasi-disable-cgi-prefork.patch']
@@ -245,7 +250,7 @@ def git_output(args, directory, environment):
 
 
 def command_recipe():
-    php = 'target/php-wasix-fiber-cgi-probe/source/php'
+    php = (WORK / 'source/php').relative_to(ROOT).as_posix()
     return [
         ('configure', ['bash', 'wasix-configure-eh-64.sh'], php, 600),
         ('make_cgi', ['make', '-j2', 'PHP=<host-stub-php>', 'cgi'], php, 1200),
@@ -345,7 +350,7 @@ def build_config():
                                for name, command, cwd, timeout in command_recipe()],
             'configure_timeout_seconds': 600, 'make_timeout_seconds': 1200, 'optimizer_timeout_seconds': 300,
             'live_command_output_limit_bytes': 16 * 1024 * 1024, 'failure_cleanup_timeout_seconds': 5,
-            'configure_difference': 'opt-in --enable-cgi --enable-rp-wasix-fibers --disable-zts; both canonical patches applied',
+            'configure_difference': CONFIGURE_DIFFERENCE,
             'lto_difference': '64bit script unconditionally sets -flto; WASIXCC_COMPILER_POST_FLAGS=-fno-lto overrides it last for C/CXX/assembly',
             'optimizer_difference': 'validation enabled and no -O3; final stackless-shape inspection is required before execution',
             'postopt_inspected_by_builder': False, 'sysroot_source_build_attestation_verified': False}
@@ -356,8 +361,8 @@ def verify_build():
     manifest = load_manifest()
     wire = fixed(RECEIPT).read_bytes()
     report = parse_json(wire)
-    require(report['schema'] == 'recastpress.php-wasix-fiber-cgi-build.v0.5' and report['variant'] == VARIANT
-            and report['outcome'] == 'fiber_cgi_candidate_built_not_executed' and report['phase'] == 'build_complete', 'Fiber CGI build did not complete')
+    require(report['schema'] == BUILD_SCHEMA and report['variant'] == VARIANT
+            and report['outcome'] == BUILD_SUCCESS and report['phase'] == 'build_complete', 'Fiber CGI build did not complete')
     for key in ['guest_executed', 'php_guest_executed', 'patched_php_executed', 'product_runtime_selected',
                 'native_runtime_fallback_used', 'redistributed_binaries', 'php_wasm_fiber_cgi_compatibility_verified',
                 'postopt_module_inspected', 'sysroot_source_build_attestation_verified']:
@@ -403,7 +408,7 @@ def main():
     parser.add_argument('--record', action='store_true')
     parser.add_argument('--validate-only', action='store_true')
     args = parser.parse_args()
-    report = {'format_version': 1, 'schema': 'recastpress.php-wasix-fiber-cgi-build.v0.5', 'variant': VARIANT,
+    report = {'format_version': 1, 'schema': BUILD_SCHEMA, 'variant': VARIANT,
               'observed_at_utc': datetime.now(timezone.utc).isoformat(), 'outcome': 'not_run', 'phase': 'verification',
               'guest_executed': False, 'php_guest_executed': False, 'patched_php_executed': False,
               'product_runtime_selected': False, 'native_runtime_fallback_used': False,
@@ -452,7 +457,7 @@ def main():
             if name == 'make_cgi':
                 # PHP adapter exports apply only to the final guest link.
                 step_environment.update(MAKE_ENV)
-            step = {'name': name, 'command': normalized_command(command, host_php), 'working_directory': 'target/php-wasix-fiber-cgi-probe/source/php',
+            step = {'name': name, 'command': normalized_command(command, host_php), 'working_directory': php.relative_to(ROOT).as_posix(),
                     'linker_flags_environment': {'present': 'WASIXCC_LINKER_FLAGS' in step_environment,
                         'value_sha256': hashlib.sha256(step_environment['WASIXCC_LINKER_FLAGS'].encode()).hexdigest() if 'WASIXCC_LINKER_FLAGS' in step_environment else None}}
             recipe = command_recipe()[len(report['build_steps'])]
@@ -491,9 +496,9 @@ def main():
         report['tracked_changes_after_build'] = tracked_changes(environment)
         report['changed_stub_headers'] = sorted(name for name in set(report['stub_headers_before']) | set(report['stub_headers_after'])
                                                 if report['stub_headers_before'].get(name) != report['stub_headers_after'].get(name))
-        report['outcome'], report['phase'], passed = 'fiber_cgi_candidate_built_not_executed', 'build_complete', True
+        report['outcome'], report['phase'], passed = BUILD_SUCCESS, 'build_complete', True
     except (Exception, KeyboardInterrupt) as failure:
-        report['outcome'], report['diagnostics'] = 'fiber_cgi_build_failed', public(failure)[:8192]
+        report['outcome'], report['diagnostics'] = BUILD_FAILURE, public(failure)[:8192]
         if report['phase'] == 'configure':
             try:
                 log = fixed(owned('source/php/config.log'), 8 * 1024 * 1024)
