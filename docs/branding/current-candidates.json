@@ -1,0 +1,113 @@
+{
+  "base": "concept-v14",
+  "study": "warm-dark-study-v3",
+  "selectedOriginals": [
+    {
+      "id": "01",
+      "name": "バーントオレンジ",
+      "hex": "#8F3F1F"
+    },
+    {
+      "id": "02",
+      "name": "ダークアンバー",
+      "hex": "#80551E"
+    },
+    {
+      "id": "03",
+      "name": "ブリックレッド",
+      "hex": "#943E35"
+    },
+    {
+      "id": "04",
+      "name": "オックスブラッド",
+      "hex": "#681E2D"
+    }
+  ],
+  "reference": "WordPress official W mark",
+  "variants": [
+    {
+      "id": "01",
+      "hex": "#8F3F1F",
+      "level": "元案",
+      "svg": "warm-dark-study-v3/01-burnt-orange.svg"
+    },
+    {
+      "id": "02",
+      "hex": "#80551E",
+      "level": "元案",
+      "svg": "warm-dark-study-v3/02-dark-amber.svg"
+    },
+    {
+      "id": "03",
+      "hex": "#943E35",
+      "level": "元案",
+      "svg": "warm-dark-study-v3/03-brick-red.svg"
+    },
+    {
+      "id": "04",
+      "hex": "#681E2D",
+      "level": "元案",
+      "svg": "warm-dark-study-v3/04-oxblood.svg"
+    },
+    {
+      "id": "01-D1",
+      "hex": "#753419",
+      "level": "暗め",
+      "svg": "warm-dark-study-v3/01-D1-burnt-orange.svg"
+    },
+    {
+      "id": "02-D1",
+      "hex": "#694619",
+      "level": "暗め",
+      "svg": "warm-dark-study-v3/02-D1-dark-amber.svg"
+    },
+    {
+      "id": "03-D1",
+      "hex": "#79332B",
+      "level": "暗め",
+      "svg": "warm-dark-study-v3/03-D1-brick-red.svg"
+    },
+    {
+      "id": "04-D1",
+      "hex": "#551925",
+      "level": "暗め",
+      "svg": "warm-dark-study-v3/04-D1-oxblood.svg"
+    },
+    {
+      "id": "01-D2",
+      "hex": "#5D2914",
+      "level": "さらに暗め",
+      "svg": "warm-dark-study-v3/01-D2-burnt-orange.svg"
+    },
+    {
+      "id": "02-D2",
+      "hex": "#533714",
+      "level": "さらに暗め",
+      "svg": "warm-dark-study-v3/02-D2-dark-amber.svg"
+    },
+    {
+      "id": "03-D2",
+      "hex": "#602822",
+      "level": "さらに暗め",
+      "svg": "warm-dark-study-v3/03-D2-brick-red.svg"
+    },
+    {
+      "id": "04-D2",
+      "hex": "#44141D",
+      "level": "さらに暗め",
+      "svg": "warm-dark-study-v3/04-D2-oxblood.svg"
+    }
+  ],
+  "status": "adopted",
+  "adopted": {
+    "candidate": "03-D1",
+    "name": "ブリックレッド・暗め",
+    "hex": "#79332B",
+    "date": "2026-10-26",
+    "geometry": "concept-v16",
+    "sourceSVG": "docs/branding/recastpress-logo-concept-v16.svg",
+    "assetDirectory": "assets/branding/recastpress",
+    "svg": "assets/branding/recastpress/recastpress.svg"
+  },
+  "currentGeometry": "concept-v16"
+}

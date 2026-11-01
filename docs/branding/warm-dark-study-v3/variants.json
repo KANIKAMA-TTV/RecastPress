@@ -1,0 +1,160 @@
+{
+  "base": "concept-v14",
+  "selectedOriginalIds": [
+    "01",
+    "02",
+    "03",
+    "04"
+  ],
+  "rows": [
+    {
+      "suffix": "",
+      "name": "元案",
+      "mix": 0
+    },
+    {
+      "suffix": "-D1",
+      "name": "暗め",
+      "mix": 0.18
+    },
+    {
+      "suffix": "-D2",
+      "name": "さらに暗め",
+      "mix": 0.35
+    }
+  ],
+  "variants": [
+    {
+      "id": "01",
+      "slug": "burnt-orange",
+      "name": "バーントオレンジ",
+      "hex": "#8F3F1F",
+      "note": "深い橙。鋳造・火・活字の温かさ。",
+      "baseId": "01",
+      "level": "元案",
+      "blackMix": 0,
+      "filename": "01-burnt-orange"
+    },
+    {
+      "id": "02",
+      "slug": "dark-amber",
+      "name": "ダークアンバー",
+      "hex": "#80551E",
+      "note": "落ち着いた琥珀色。古い真鍮の気配。",
+      "baseId": "02",
+      "level": "元案",
+      "blackMix": 0,
+      "filename": "02-dark-amber"
+    },
+    {
+      "id": "03",
+      "slug": "brick-red",
+      "name": "ブリックレッド",
+      "hex": "#943E35",
+      "note": "赤茶のレンガ色。力強く、親しみやすい。",
+      "baseId": "03",
+      "level": "元案",
+      "blackMix": 0,
+      "filename": "03-brick-red"
+    },
+    {
+      "id": "04",
+      "slug": "oxblood",
+      "name": "オックスブラッド",
+      "hex": "#681E2D",
+      "note": "黒に近い深紅。重厚な出版物の印象。",
+      "baseId": "04",
+      "level": "元案",
+      "blackMix": 0,
+      "filename": "04-oxblood"
+    },
+    {
+      "id": "01-D1",
+      "slug": "burnt-orange",
+      "name": "バーントオレンジ",
+      "hex": "#753419",
+      "note": "深い橙。鋳造・火・活字の温かさ。",
+      "baseId": "01",
+      "level": "暗め",
+      "blackMix": 0.18,
+      "filename": "01-D1-burnt-orange"
+    },
+    {
+      "id": "02-D1",
+      "slug": "dark-amber",
+      "name": "ダークアンバー",
+      "hex": "#694619",
+      "note": "落ち着いた琥珀色。古い真鍮の気配。",
+      "baseId": "02",
+      "level": "暗め",
+      "blackMix": 0.18,
+      "filename": "02-D1-dark-amber"
+    },
+    {
+      "id": "03-D1",
+      "slug": "brick-red",
+      "name": "ブリックレッド",
+      "hex": "#79332B",
+      "note": "赤茶のレンガ色。力強く、親しみやすい。",
+      "baseId": "03",
+      "level": "暗め",
+      "blackMix": 0.18,
+      "filename": "03-D1-brick-red"
+    },
+    {
+      "id": "04-D1",
+      "slug": "oxblood",
+      "name": "オックスブラッド",
+      "hex": "#551925",
+      "note": "黒に近い深紅。重厚な出版物の印象。",
+      "baseId": "04",
+      "level": "暗め",
+      "blackMix": 0.18,
+      "filename": "04-D1-oxblood"
+    },
+    {
+      "id": "01-D2",
+      "slug": "burnt-orange",
+      "name": "バーントオレンジ",
+      "hex": "#5D2914",
+      "note": "深い橙。鋳造・火・活字の温かさ。",
+      "baseId": "01",
+      "level": "さらに暗め",
+      "blackMix": 0.35,
+      "filename": "01-D2-burnt-orange"
+    },
+    {
+      "id": "02-D2",
+      "slug": "dark-amber",
+      "name": "ダークアンバー",
+      "hex": "#533714",
+      "note": "落ち着いた琥珀色。古い真鍮の気配。",
+      "baseId": "02",
+      "level": "さらに暗め",
+      "blackMix": 0.35,
+      "filename": "02-D2-dark-amber"
+    },
+    {
+      "id": "03-D2",
+      "slug": "brick-red",
+      "name": "ブリックレッド",
+      "hex": "#602822",
+      "note": "赤茶のレンガ色。力強く、親しみやすい。",
+      "baseId": "03",
+      "level": "さらに暗め",
+      "blackMix": 0.35,
+      "filename": "03-D2-brick-red"
+    },
+    {
+      "id": "04-D2",
+      "slug": "oxblood",
+      "name": "オックスブラッド",
+      "hex": "#44141D",
+      "note": "黒に近い深紅。重厚な出版物の印象。",
+      "baseId": "04",
+      "level": "さらに暗め",
+      "blackMix": 0.35,
+      "filename": "04-D2-oxblood"
+    }
+  ]
+}

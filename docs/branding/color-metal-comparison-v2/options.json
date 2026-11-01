@@ -1,0 +1,188 @@
+{
+  "base": "concept-v14",
+  "reference": {
+    "id": "WP",
+    "name": "WordPress（公式）",
+    "label": "比較基準・配布色のまま",
+    "kind": "reference",
+    "src": "wordpress-official-wmark.png"
+  },
+  "colors": [
+    {
+      "id": "01",
+      "slug": "burnt-orange",
+      "name": "バーントオレンジ",
+      "hex": "#8F3F1F",
+      "note": "深い橙。鋳造・火・活字の温かさ。"
+    },
+    {
+      "id": "02",
+      "slug": "dark-amber",
+      "name": "ダークアンバー",
+      "hex": "#80551E",
+      "note": "落ち着いた琥珀色。古い真鍮の気配。"
+    },
+    {
+      "id": "03",
+      "slug": "brick-red",
+      "name": "ブリックレッド",
+      "hex": "#943E35",
+      "note": "赤茶のレンガ色。力強く、親しみやすい。"
+    },
+    {
+      "id": "04",
+      "slug": "oxblood",
+      "name": "オックスブラッド",
+      "hex": "#681E2D",
+      "note": "黒に近い深紅。重厚な出版物の印象。"
+    },
+    {
+      "id": "05",
+      "slug": "dark-plum",
+      "name": "ダークプラム",
+      "hex": "#4C2D46",
+      "note": "深い紫。古典的で、少し独特な佇まい。"
+    },
+    {
+      "id": "06",
+      "slug": "ink-navy",
+      "name": "インクネイビー",
+      "hex": "#1E3048",
+      "note": "濃いインクの青。端正で安定感がある。"
+    },
+    {
+      "id": "07",
+      "slug": "petrol",
+      "name": "ペトロール",
+      "hex": "#1E5059",
+      "note": "青緑。現行の青から自然につながる。"
+    },
+    {
+      "id": "08",
+      "slug": "forest",
+      "name": "フォレスト",
+      "hex": "#244B3B",
+      "note": "濃緑。静かな工房や書庫の印象。"
+    },
+    {
+      "id": "09",
+      "slug": "espresso",
+      "name": "エスプレッソ",
+      "hex": "#49372F",
+      "note": "濃い茶。紙・木・革となじむ温かさ。"
+    },
+    {
+      "id": "10",
+      "slug": "graphite",
+      "name": "グラファイト",
+      "hex": "#30353B",
+      "note": "青みの墨色。道具としての簡潔さ。"
+    }
+  ],
+  "metals": [
+    {
+      "id": "M1",
+      "slug": "mercury-mirror",
+      "name": "水銀・鏡面シルバー",
+      "hex": "#111C25",
+      "note": "R・円環・タレを、冷たい鏡面の銀に。",
+      "kind": "foreground"
+    },
+    {
+      "id": "M2",
+      "slug": "brushed-gunmetal",
+      "name": "ヘアライン・ガンメタル",
+      "hex": "METALLIC GROUND",
+      "note": "円内の地を、細い研磨線のある金属に。",
+      "kind": "background"
+    },
+    {
+      "id": "M3",
+      "slug": "satin-bronze",
+      "name": "サテン・ブロンズ",
+      "hex": "#261E1B",
+      "note": "R・円環・タレを、落ち着いた銅合金色に。",
+      "kind": "foreground"
+    },
+    {
+      "id": "M4",
+      "slug": "mercury-ground-white",
+      "name": "水銀／白ベタ",
+      "note": "水銀の地・白い字",
+      "kind": "background",
+      "paint": "#FFFFFF"
+    },
+    {
+      "id": "M5",
+      "slug": "mercury-ground-ink",
+      "name": "水銀／墨ベタ",
+      "note": "水銀の地・墨色の字",
+      "kind": "background",
+      "paint": "#18242E"
+    },
+    {
+      "id": "M6",
+      "slug": "chrome-ground-white",
+      "name": "クローム／白ベタ",
+      "note": "強い鏡面の地・白い字",
+      "kind": "background",
+      "paint": "#FFFFFF"
+    },
+    {
+      "id": "M7",
+      "slug": "chrome-ground-ink",
+      "name": "クローム／墨ベタ",
+      "note": "強い鏡面の地・墨色の字",
+      "kind": "background",
+      "paint": "#14212D"
+    },
+    {
+      "id": "M8",
+      "slug": "black-chrome-ground-white",
+      "name": "黒クローム／白ベタ",
+      "note": "黒いメッキの地・白い字",
+      "kind": "background",
+      "paint": "#FFFFFF"
+    },
+    {
+      "id": "M9",
+      "slug": "copper-plated-ground-white",
+      "name": "銅メッキ／白ベタ",
+      "note": "銅メッキの地・白い字",
+      "kind": "background",
+      "paint": "#FFFFFF"
+    },
+    {
+      "id": "M10",
+      "slug": "gold-plated-ground-ink",
+      "name": "金メッキ／墨ベタ",
+      "note": "金メッキの地・墨色の字",
+      "kind": "background",
+      "paint": "#281E11"
+    },
+    {
+      "id": "M11",
+      "slug": "hard-chrome-letter",
+      "name": "硬質クローム文字",
+      "note": "強い鏡面の字・黒い地",
+      "kind": "foreground",
+      "ground": "#101820"
+    },
+    {
+      "id": "M12",
+      "slug": "black-nickel-letter",
+      "name": "黒ニッケル文字",
+      "note": "黒い鏡面の字・淡灰の地",
+      "kind": "foreground",
+      "ground": "#E7E8E5"
+    },
+    {
+      "id": "M13",
+      "slug": "gold-plated-letter-wine",
+      "name": "金メッキ文字",
+      "note": "金メッキの字・深紅の地",
+      "kind": "foreground",
+      "ground": "#501E2B"
+    }
+  ]
+}
