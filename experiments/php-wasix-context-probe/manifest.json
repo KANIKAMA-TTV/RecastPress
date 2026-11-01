@@ -1,0 +1,42 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.wasix-context-build.v0.5",
+  "scope": "fixed small C context candidate; no PHP backend or product adoption",
+  "context_api_reference": {
+    "repository": "wasix-org/wasix-libc",
+    "commit": "09503b230e8acc721c1e013ca28a41bf149e4ee2",
+    "header": "libc-bottom-half/headers/public/wasix/context.h",
+    "role": "consulted public ABI source; not a verified source-build identity of the downloaded sysroot"
+  },
+  "sysroot_source_build_attestation_verified": false,
+  "toolchain_manifest": "experiments/php-wasix-cgi-build/manifest.json",
+  "toolchain_receipt": "experiments/php-wasix-cgi-build/evidence/toolchain.json",
+  "fixture": "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+  "rounds": 8,
+  "depth": 4,
+  "b_extra_rounds": 2,
+  "stack_lifetime_case": "A unwinds while B remains suspended; main clobbers before B resumes",
+  "raw_output": "target/php-wasix-context-probe/context.raw.wasm",
+  "wasm_output": "target/php-wasix-context-probe/context.wasm",
+  "compile_flags": ["-sMODULE_KIND=static-main", "-std=c11", "-O1", "-g0", "-fno-optimize-sibling-calls"],
+  "optimizer_flags": [
+    "--emit-exnref", "--all-features", "--strip-debug", "--asyncify",
+    "--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot",
+    "--pass-arg=asyncify-ignore-indirect", "--pass-arg=max-func-params@32"
+  ],
+  "tool_environment": {
+    "WASIXCC_WASM_EXCEPTIONS": "legacy",
+    "WASIXCC_INCLUDE_CPP_SYMBOLS": "yes",
+    "WASIXCC_RUN_WASM_OPT": "no",
+    "WASIXCC_PIC": "no",
+    "WASIXCC_GENERATE_SHELL_SCRIPT": "no"
+  },
+  "command_timeout_seconds": 120,
+  "command_cleanup_timeout_seconds": 5,
+  "command_log_limit_bytes": 65536,
+  "module_limit_bytes": 67108864,
+  "guest_executed": false,
+  "php_executed": false,
+  "product_runtime_selected": false,
+  "redistributed_binaries": false
+}

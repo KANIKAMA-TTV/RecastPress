@@ -1,0 +1,118 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "de33e0a8db80b6b5d632b25d7e3dfc30deb3299a",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41308237911",
+  "artifact_id": 13084366721,
+  "artifact_zip_bytes": 132366,
+  "artifact_zip_sha256": "39e9505cf09111516185c14d6ce7a63423f14da3564b83bcfcc658558bc67936",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "ad99b8eb1e3a8db912f193407effcf5283745d71416be7b476a8216a49f1864b",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "6f44e57abb926950c3bc8a394abf4fbbc8062cd476fbbb1a52326c4c84dd23f5",
+    "experiments/php-wasix-host-probe/cgi_check.py": "ccb55f9130dd74c767eb4cbaf0662629f61a30cba535756a1732e35f6664c010",
+    "experiments/php-wasix-host-probe/memory_check.py": "1dd73f00dbc46473babc7ad65f916c9cc6276aba598b7f4bff88617b53c8c2a8",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",
+    "experiments/php-wasix-host-probe/unit_check.py": "914297f2ce5eb537db1f0a3b09abd7e029de660da72c1716082d2ea030c28bcb"
+  },
+  "imported_files": {
+    "ci-stages.json": "81de89a1ccb37604b51b09958d0c421f060bb5f0c5ec78cbc65fb93d9dc7f10b",
+    "linux-cranelift.json": "9c14700d70b6092058c63cb784ab560072c8aeb2d2b44007dc62446c1e208a30",
+    "linux-cranelift-module-reuse.json": "b319dc1be8e7db2cbe3524a01b6546724ee9fadf1db8c55df1da071a60866947",
+    "linux-cranelift-rpc-contract.json": "7b13698674f8d3f7a243d35796cbec8d79aa4e1f0ce7daac7136563d2d07505c",
+    "linux-cranelift-php-memory-cap.json": "385345c2fd763089aa5e80500df6c122a70c9b123f628d96485aaf56e054d463",
+    "linux-cranelift-language-contract.json": "462c39ba70bea49c0c7442a222d17e8a48ca18c649c8e50960eb8f8231001ec5",
+    "linux-cranelift-unit-contract.json": "6a3d27b409679ac6fbea3af1335f38fdf4d70b7fe06a22e6e306d08cf6ff3628",
+    "linux-cranelift-dependency-inventory.json": "f05ddbb020b1c9ce942e8004a0406c41d6d5431a7abc7e2829039c023d2e2e84"
+  },
+  "observations": {
+    "module_reuse_passed": true,
+    "language_comparison_passed": false,
+    "case_results": {
+      "basic": {
+        "equal_to_native": true
+      },
+      "exceptions": {
+        "equal_to_native": true
+      },
+      "fiber": {
+        "equal_to_native": false,
+        "difference": "contract fields mismatch: fiber"
+      }
+    },
+    "compile_elapsed_ms": 6174,
+    "request_execution_elapsed_ms": [
+      65,
+      56,
+      57
+    ],
+    "counter_scope": "explicit PHP Module::new call site; internal backend operations are not instrumented",
+    "timing_scope": "one CI runner; run_wasm includes startup/shutdown; not a product latency benchmark",
+    "private_rpc_diagnostic_passed": true,
+    "php_memory_diagnostic_passed": true,
+    "incomplete_rpc_case_accepted": false,
+    "test_memory_cap_bytes": 268435456,
+    "production_memory_limit_verified": false,
+    "real_db": false,
+    "standard_wpdb": false,
+    "rpc_case_acceptance": [
+      true,
+      true,
+      false,
+      true
+    ],
+    "memory_case_execution_results": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "memory_observations": [
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 65536,
+        "shared": true,
+        "size_pages": 6734
+      }
+    ],
+    "backend": "cranelift",
+    "bounded_unit_tests_passed": 25,
+    "formal_eh_wat_metering_passed": true,
+    "php_cpu_budget_verified": false,
+    "declared_license_inventory_recorded": true,
+    "legal_compatibility_evaluated": false,
+    "compiler_reachability": {
+      "wasmer-compiler-llvm": {
+        "runtime": false,
+        "build": false,
+        "dev": false
+      },
+      "wasmer-compiler-cranelift": {
+        "runtime": true,
+        "build": false,
+        "dev": true
+      }
+    }
+  }
+}

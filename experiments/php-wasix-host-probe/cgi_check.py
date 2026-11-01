@@ -201,7 +201,7 @@ def expected_environment(index):
     return values
 
 
-def validate_native_baseline(native):
+def validate_native_baseline(native, read_source=None):
     """Verify a public native oracle without executing or requiring native PHP.
 
     The pinned map digest binds all 78 package-file names and SHA values. Its
@@ -227,7 +227,13 @@ def validate_native_baseline(native):
         'experiments/php-wasix-cgi-build/patch_source.py',
     }
     equal(set(native['input_files']), expected_inputs, 'native baseline source set')
-    verify_hash_files(ROOT, native['input_files'])
+    if read_source is None:
+        verify_hash_files(ROOT, native['input_files'])
+    else:
+        # Historical CI importers supply bytes from their pinned original Git
+        # tree. They must not reinterpret an old receipt as a current execution.
+        for path, expected in native['input_files'].items():
+            equal(hashlib.sha256(read_source(path)).hexdigest(), expected, 'original native source ' + path)
     reference = native['native_reference']
     for key, expected in [('version', '8.5.12'), ('archive_sha256', NATIVE_ARCHIVE_SHA),
                           ('manifest', '.reference/php-8.5.12/recastpress-tool.json'),

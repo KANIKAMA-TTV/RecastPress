@@ -142,6 +142,10 @@ dev依存の`wasmer-middlewares=7.2.0`を使い、[固定WAT](src/metering_limit
 
 Linux CIはLLVMとCraneliftを独立したmatrix jobで比較し、片方の失敗で他方を中止しない。LLVMの実績をCraneliftの合格へ移さず、Cranelift jobではhost LLVM archiveを取得しない。各backendの結果と証跡名を分け、製品engineは選定保留のままにする。
 
+source `de33e0a`の[Cranelift](evidence/ci-41308237911-cranelift/provenance.json)と[LLVM](evidence/ci-41308237911-llvm/provenance.json)は、両方ともLinux25件・formal EHの演算予算・PHP版・module再利用・RPC・256MiB診断・依存棚卸しを通過した。両方の言語比較は基本値/例外が一致、Fiberが不一致であり、CI全体はfailureのまま保持する。Cranelift側の再利用実験ではcompile6174ms、各`run_wasm`65/56/57msだった。backend差や製品性能の改善率をこの単発観測から決めない。
+
+Fiber差分の次の調査は[小C context実験](../php-wasix-context-probe/README.ja.md)へ分けた。`--context-contract`はPHP CLI artifactを読まず、固定Cの同job生成物だけを使う。PHPのFiber backendは変更していない。
+
 ## 宣言された依存ライセンスの棚卸し
 
 ```text

@@ -11,11 +11,34 @@ import reuse_check
 import cgi_check
 import memory_check
 import rpc_check
+import unit_check
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SOURCE = '071c9443ba56b2b5dd27032567ed3e7a9c8d0045'
 SPECS = {
+    '41308237911-llvm': {
+        'run_id': '41308237911', 'backend': 'llvm',
+        'source': 'de33e0a8db80b6b5d632b25d7e3dfc30deb3299a',
+        'kind': 'compiler-matrix', 'artifact': 13084916171, 'bytes': 132600,
+        'sha256': 'c8b50bb2dec510bbb66420577ce89969147cc416199c7781eb98935772f6a906',
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-llvm.json', 'linux-llvm-module-reuse.json',
+                    'linux-llvm-rpc-contract.json', 'linux-llvm-php-memory-cap.json',
+                    'linux-llvm-language-contract.json', 'linux-llvm-unit-contract.json',
+                    'linux-llvm-dependency-inventory.json', 'llvm-toolchain-verification.json'],
+    },
+    '41308237911-cranelift': {
+        'run_id': '41308237911', 'backend': 'cranelift',
+        'source': 'de33e0a8db80b6b5d632b25d7e3dfc30deb3299a',
+        'kind': 'compiler-matrix', 'artifact': 13084366721, 'bytes': 132366,
+        'sha256': '39e9505cf09111516185c14d6ce7a63423f14da3564b83bcfcc658558bc67936',
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-cranelift.json', 'linux-cranelift-module-reuse.json',
+                    'linux-cranelift-rpc-contract.json', 'linux-cranelift-php-memory-cap.json',
+                    'linux-cranelift-language-contract.json', 'linux-cranelift-unit-contract.json',
+                    'linux-cranelift-dependency-inventory.json'],
+    },
     '41305668059': {
         'source': 'e9a2e6c050f69c325a75378aa78dc847abe8581f',
         'kind': 'cgi-contract', 'artifact': 13083584092, 'bytes': 28215,
@@ -100,25 +123,29 @@ def verify_sources(report):
         require(sha(reader.original(path)) == expected, 'original source mismatch: ' + path)
 
 
-def verify_reuse(data, extended=False):
+def verify_reuse(data, extended=False, backend='llvm', matrix=False):
+    prefix = 'linux-' + backend
     stages = data['ci-stages.json']['stages']
     expected = dict.fromkeys(['dependencies', 'rust', 'php', 'cargo', 'llvm', 'fixture_fs', 'probe', 'reuse'], 'success')
     expected['language'] = 'failure'
     if extended:
         expected.update(rpc='success', php_memory='success')
+    if matrix:
+        expected.update(license_inventory='success', llvm='success' if backend == 'llvm' else 'skipped')
+        require(data['ci-stages.json']['backend'] == backend, 'wrong CI backend')
     require(stages == expected, 'unexpected reuse CI stage outcomes')
-    for name in ['linux-llvm.json', 'linux-llvm-module-reuse.json', 'linux-llvm-language-contract.json']:
+    for name in [prefix + '.json', prefix + '-module-reuse.json', prefix + '-language-contract.json']:
         verify_sources(data[name])
-    version = data['linux-llvm.json']
-    reuse = data['linux-llvm-module-reuse.json']
-    language = data['linux-llvm-language-contract.json']
+    version = data[prefix + '.json']
+    reuse = data[prefix + '-module-reuse.json']
+    language = data[prefix + '-language-contract.json']
     require(version['outcome'] == 'version_only_passed' and version['php_version_verified'] is True,
             'version result changed')
     require(reuse['outcome'] == 'module_reuse_passed' and reuse['reuse_passed'] is True
             and reuse['exit_code'] == 0 and reuse['production_compatible'] is False,
             'missing successful module reuse result')
     reuse_check.equal(reuse['observed_phases'], reuse_check.PHASES, 'observed reuse phases')
-    reuse_check.validate_result(reuse['native_result'], reuse['owned_process_pid'], 'llvm')
+    reuse_check.validate_result(reuse['native_result'], reuse['owned_process_pid'], backend)
     require(len({item['native_artifact_sha256'] for item in [version, reuse, language]}) == 1,
             'modes used different native binaries')
     require(language['outcome'] == 'comparison_failed' and language['comparison_passed'] is False,
@@ -262,7 +289,7 @@ def verify_cgi_contract(data):
     verify_sources(native)
     original_native = reader.original('experiments/php-wasix-host-probe/evidence/native-cgi-contract.json')
     require(sha(original_native) == sha(data['_raw_native']), 'CI native baseline changed')
-    cgi_check.validate_native_baseline(native)
+    cgi_check.validate_native_baseline(native, reader.original)
     require(contract['outcome'] == 'cgi_contract_passed' and contract['cgi_contract_passed'] is True
             and contract['native_comparison_passed'] is True and contract['native_comparison_performed'] is True
             and contract['owned_host_reaped'] is True and contract['exit_code'] == 0,
@@ -306,23 +333,24 @@ def verify_cgi_contract(data):
     return summary
 
 
-def verify_rpc_memory(data):
-    summary = verify_reuse(data, extended=True)
-    rpc, memory = data['linux-llvm-rpc-contract.json'], data['linux-llvm-php-memory-cap.json']
+def verify_rpc_memory(data, backend='llvm', matrix=False):
+    prefix = 'linux-' + backend
+    summary = verify_reuse(data, extended=True, backend=backend, matrix=matrix)
+    rpc, memory = data[prefix + '-rpc-contract.json'], data[prefix + '-php-memory-cap.json']
     for report in [rpc, memory]:
         verify_sources(report)
     require(rpc['outcome'] == 'rpc_contract_diagnostic_passed' and rpc['rpc_contract_passed'] is True
             and rpc['owned_host_reaped'] is True and rpc['exit_code'] == 0,
             'RPC diagnostic did not pass')
     rpc_check.equal(rpc['observed_phases'], ['module_compile'] + rpc_check.CASES, 'RPC observed phases')
-    rpc_check.validate_result(rpc['native_result'], rpc['owned_process_pid'], 'llvm')
+    rpc_check.validate_result(rpc['native_result'], rpc['owned_process_pid'], backend)
     require(memory['outcome'] == 'php_memory_cap_diagnostic_passed' and memory['diagnostic_passed'] is True
             and memory['exit_code'] == 0, 'PHP memory diagnostic did not pass')
     memory_check.equal(memory['observed_phases'], ['module_compile'] + memory_check.CASES, 'memory observed phases')
-    memory_check.validate_result(memory['native_result'], memory['owned_process_pid'], 'llvm')
+    memory_check.validate_result(memory['native_result'], memory['owned_process_pid'], backend)
     require(len({data[name]['native_artifact_sha256'] for name in
-                 ['linux-llvm.json', 'linux-llvm-module-reuse.json', 'linux-llvm-rpc-contract.json',
-                  'linux-llvm-php-memory-cap.json', 'linux-llvm-language-contract.json']}) == 1,
+                 [prefix + '.json', prefix + '-module-reuse.json', prefix + '-rpc-contract.json',
+                  prefix + '-php-memory-cap.json', prefix + '-language-contract.json']}) == 1,
             'diagnostics used different host binaries')
     summary.update(private_rpc_diagnostic_passed=True, php_memory_diagnostic_passed=True,
                    incomplete_rpc_case_accepted=False, test_memory_cap_bytes=268435456,
@@ -333,11 +361,53 @@ def verify_rpc_memory(data):
     return summary
 
 
+def verify_compiler_matrix(data, backend):
+    summary = verify_rpc_memory(data, backend, matrix=True)
+    prefix = 'linux-' + backend
+    unit, inventory = data[prefix + '-unit-contract.json'], data[prefix + '-dependency-inventory.json']
+    for report in [unit, inventory]:
+        verify_sources(report)
+    require(unit['outcome'] == 'fixed_p0_unit_tests_passed' and unit['tests_passed'] is True
+            and unit['owned_test_reaped'] is True and unit['exit_code'] == 0
+            and len(unit['listed_tests']) == 25 and unit['backend'] == backend
+            and unit['php_executed'] is False and unit['php_cpu_budget_verified'] is False,
+            'missing bounded WAT unit result')
+    summaries = unit_check.validate_metering_rows(unit['wat_metering_observations'], backend, 'Linux')
+    require(summaries == unit['wat_metering_summaries'], 'WAT metering summary changed')
+    require(inventory['outcome'] == 'declared_dependency_inventory_recorded'
+            and inventory['inventory_verified'] is True and inventory['owned_metadata_reaped'] is True
+            and inventory['owned_cleanup_confirmed'] is True and inventory['input_files_unchanged'] is True
+            and inventory['backend'] == backend and inventory['metadata_exit_code'] == 0
+            and inventory['legal_compatibility_evaluated'] is False
+            and inventory['native_llvm_toolchain_license_provenance_verified'] is False
+            and inventory['php_static_archive_license_provenance_verified'] is False,
+            'dependency inventory failed or became a legal adoption verdict')
+    reach = inventory['compiler_reachability']
+    require(any(reach['wasmer-compiler-llvm'].values()) == (backend == 'llvm')
+            and any(reach['wasmer-compiler-cranelift'].values()) == (backend == 'cranelift'),
+            'wrong compiler reachability')
+    if backend == 'llvm':
+        llvm = data['llvm-toolchain-verification.json']
+        manifest_wire = reader.original('experiments/php-wasix-host-probe/llvm-toolchain.json')
+        manifest = json.loads(manifest_wire)
+        require(llvm['llvm_toolchain_manifest_sha256'] == sha(manifest_wire)
+                and llvm['archive_sha256'] == manifest['archive_sha256']
+                and llvm['archive_bytes'] == manifest['archive_bytes']
+                and llvm['llvm_config_version'] == '22.1.8'
+                and llvm['verifier_source_sha256'] == sha(reader.original(
+                    'experiments/php-wasix-host-probe/prepare_host_llvm.py')), 'host LLVM identity changed')
+    summary.update(backend=backend, bounded_unit_tests_passed=25, formal_eh_wat_metering_passed=True,
+                   php_cpu_budget_verified=False, declared_license_inventory_recorded=True,
+                   legal_compatibility_evaluated=False, compiler_reachability=reach)
+    return summary
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True, choices=sorted(SPECS))
     args = parser.parse_args()
     spec = SPECS[args.run]
+    run_id = spec.get('run_id', args.run)
     source = spec.get('source', SOURCE)
     reader.COMMIT = source
     path = ROOT / 'target/php-wasix-ci-evidence' / ('run-' + args.run + '-1.zip')
@@ -354,14 +424,14 @@ def main():
                     and (entry.external_attr >> 16) & 0o170000 != 0o120000, 'invalid evidence member')
         archived = {name: archive.read(name) for name in names}
     for name in names - set(members.values()):
-        require(spec['kind'] in ['module-reuse', 'php-memory-startup-failed', 'rpc-memory-passed'],
+        require(spec['kind'] in ['module-reuse', 'php-memory-startup-failed', 'rpc-memory-passed', 'compiler-matrix'],
                 'unexpected CGI artifact member')
         require(archived[name] == reader.original(spec['directory'] + '/evidence/' + name),
                 'historical evidence changed in CI')
     raw = {name: archived[member] for name, member in members.items()}
     data = {name: language_check.parse_json(raw[name]) for name in spec['current']}
     stages = data['ci-stages.json']
-    require(stages['source_commit'] == source and stages['run_id'] == args.run
+    require(stages['source_commit'] == source and stages['run_id'] == run_id
             and stages['run_attempt'] == '1', 'wrong source or CI run')
     verify_sources(stages)
     if spec['kind'] == 'module-reuse':
@@ -370,6 +440,8 @@ def main():
         summary = verify_memory_startup_failure(data)
     elif spec['kind'] == 'rpc-memory-passed':
         summary = verify_rpc_memory(data)
+    elif spec['kind'] == 'compiler-matrix':
+        summary = verify_compiler_matrix(data, spec['backend'])
     else:
         data['_raw_toolchain'] = raw['toolchain.json']
         if spec['kind'] == 'cgi-contract':
@@ -384,11 +456,11 @@ def main():
         (destination / name).write_bytes(raw[name])
     sources = [Path(__file__).resolve(), HERE / 'import_ci_evidence.py', HERE / 'language_check.py',
                HERE / 'reuse_check.py', HERE / 'check.py', HERE / 'cgi_check.py',
-               HERE / 'memory_check.py', HERE / 'rpc_check.py']
+               HERE / 'memory_check.py', HERE / 'rpc_check.py', HERE / 'unit_check.py']
     report = {
         'format_version': 1, 'kind': 'source_verified_import_of_pinned_ci_checkpoint',
         'source_commit': source,
-        'run_url': f'https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/{args.run}',
+        'run_url': f'https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/{run_id}',
         'artifact_id': spec['artifact'], 'artifact_zip_bytes': len(wire), 'artifact_zip_sha256': spec['sha256'],
         'original_git_source_hashes_verified': True,
         'ci_verdict': 'success' if spec['kind'] in ['cgi-build-passed', 'cgi-contract'] else 'failure',

@@ -37,6 +37,8 @@ def compiled_inputs():
             + sorted((HERE / 'fixtures').glob('*.php'))
             + [ROOT / 'experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php',
                ROOT / 'experiments/php-wasix-cgi-build/manifest.json',
+               ROOT / 'experiments/php-wasix-context-probe/manifest.json',
+               ROOT / 'experiments/php-wasix-context-probe/fixtures/context_contract.c',
                ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
 
 

@@ -1,0 +1,29 @@
+{
+  "format_version": 1,
+  "scope": "independent Linux host version, module reuse, private RPC, fixed PHP memory and language P0 candidate",
+  "backend": "cranelift",
+  "source_commit": "de33e0a8db80b6b5d632b25d7e3dfc30deb3299a",
+  "run_id": "41308237911",
+  "run_attempt": "1",
+  "stages": {
+    "dependencies": "success",
+    "rust": "success",
+    "php": "success",
+    "cargo": "success",
+    "llvm": "skipped",
+    "fixture_fs": "success",
+    "probe": "success",
+    "reuse": "success",
+    "rpc": "success",
+    "php_memory": "success",
+    "language": "failure",
+    "license_inventory": "success"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-candidate.yml": "f45c7c8c2fb7aff4c0a7fe8d9204f86dc062d8ab07619e0b4b05cd44fbc17937",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388",
+    "experiments/php-runtime-candidate-probe/artifact.json": "a5a8a3aefbc6f0bd094558756ac75f0ac4208adb35ce03317d134049b7856175"
+  },
+  "wordpress_bootstrapped": false,
+  "product_runtime_selected": false
+}

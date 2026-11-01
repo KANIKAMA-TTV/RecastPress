@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "observed_at_utc": "2026-11-01T11:36:20.508811+00:00",
+  "observed_at_utc": "2026-11-01T12:53:38.037104+00:00",
   "role": "native CGI comparison oracle only; never a Wasm or product fallback",
   "outcome": "native_cgi_contract_passed",
   "wasm_executed": false,
@@ -79,15 +79,15 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 12020,
+      "owned_process_pid": 24776,
       "exit_code": 0,
-      "elapsed_ms": 109,
+      "elapsed_ms": 118,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
       "stdout_bytes": 573,
       "stderr_bytes": 0,
-      "stdout_sha256": "cb307578ed56119e450a8647e6d682cd961c9cd5e8e839330e50e943fb99b53d",
+      "stdout_sha256": "436dbdfc0b1ccfa7795f27c2b484671b02f9dd7d381d0027704af18e7c5bb934",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -103,7 +103,7 @@
           }
         ],
         "body_bytes": 492,
-        "body_sha256": "ff429c628fcbbb94ac47745d3ce34f3e8256cac7a5c7024f0afa3c1f803ba4cc",
+        "body_sha256": "d9b5b3b25bcede4bdcb3d839220080516a35c87ce53727d927ab481181a08aea",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -238,7 +238,7 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 11572,
+      "owned_process_pid": 8744,
       "exit_code": 0,
       "elapsed_ms": 108,
       "owned_process_reaped": true,
@@ -246,7 +246,7 @@
       "stderr_eof": true,
       "stdout_bytes": 655,
       "stderr_bytes": 0,
-      "stdout_sha256": "6ae678008169d5a31c24c03792b9cbfa4c9f1f0872dfafafb59d650e123b4e12",
+      "stdout_sha256": "688090d9f0948f78a080e813061fe9d7480307fd36755ae47a82c76d5031fff3",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -262,7 +262,7 @@
           }
         ],
         "body_bytes": 574,
-        "body_sha256": "ed082f57436d38a23096ccc58fc0dcd4384357f3c94ab6840a3259e1623c0f78",
+        "body_sha256": "0ba66a01e9932a09309c3d3b57bd16c6592c6ae07a95ff7f126c17f3aff63bfe",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -401,9 +401,9 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 8836,
+      "owned_process_pid": 24480,
       "exit_code": 0,
-      "elapsed_ms": 123,
+      "elapsed_ms": 121,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
@@ -570,7 +570,7 @@
     "executed": false
   },
   "fixture_copy": {
-    "path": "target/php-wasix-host-probe/native-cgi-contract/21996-43d6623fbfce42aa8207799c5212f078/cgi_contract.php",
+    "path": "target/php-wasix-host-probe/native-cgi-contract/28220-f72c748bed074c5dac5c5af81ea1ed45/cgi_contract.php",
     "sha256": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
     "bytes": 1573
   },
@@ -594,8 +594,8 @@
   "input_files": {
     "experiments/php-wasix-host-probe/native_cgi_contract.py": "6efd7d2009221d823e0a7471791e8de75c412cefaaba1b8bd61be690a1b935c3",
     "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
-    "experiments/php-wasix-host-probe/cgi_check.py": "39e855c49af42323b8c1816574903c00470bea1e457de5d437c69a8b4e0e54ae",
-    "experiments/php-wasix-host-probe/check.py": "2e74181453ed24bb1988792ce91227374d7a1e55340d454a1e900147345b854a",
+    "experiments/php-wasix-host-probe/cgi_check.py": "ccb55f9130dd74c767eb4cbaf0662629f61a30cba535756a1732e35f6664c010",
+    "experiments/php-wasix-host-probe/check.py": "6f44e57abb926950c3bc8a394abf4fbbc8062cd476fbbb1a52326c4c84dd23f5",
     "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
     "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
     "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",

@@ -1,0 +1,470 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T12:57:52.897296+00:00",
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "backend": "llvm",
+  "scope": "one module compile, four fixed private-RPC requests, fixture DB only",
+  "outcome": "rpc_contract_diagnostic_passed",
+  "rpc_contract_passed": true,
+  "owned_host_reaped": true,
+  "expected_incomplete_case_accepted": false,
+  "product_runtime_selected": false,
+  "wordpress_executed": false,
+  "real_db": false,
+  "standard_wpdb": false,
+  "full_php_compatibility_verified": false,
+  "memory_limit_verified": false,
+  "outer_build_timeout_seconds": 1200,
+  "outer_execution_timeout_seconds": 300,
+  "build_exit_code": 0,
+  "native_artifact": "target/php-wasix-host-probe/release/recastpress-php-wasix-host-probe",
+  "native_artifact_sha256": "0a81c8a7fc702a3589ef2494fa7532a42f67e167bfa6d45d3f9f14f6104a037e",
+  "owned_process_pid": 10873,
+  "exit_code": 0,
+  "stderr_sha256": "6247ae5adc9c9e2a0e171712af510172195cae3b8f47d07e521bd003877e8f34",
+  "observed_phases": [
+    "module_compile",
+    "normal_first",
+    "normal_second",
+    "incomplete_ignored",
+    "normal_recovery"
+  ],
+  "stderr_excerpt": "PHP_WASIX_PHASE=module_compile\nPHP_WASIX_PHASE=normal_first\nPHP_WASIX_PHASE=normal_second\nPHP_WASIX_PHASE=incomplete_ignored\nPHP_WASIX_PHASE=normal_recovery\n",
+  "native_result": {
+    "artifact": {
+      "expected_bytes": 39727549,
+      "expected_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "observed_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "path": ".reference/php-wasix-8.5.12/php.wasm",
+      "verified": true
+    },
+    "cases": [
+      {
+        "configured_engine_identity": "EngineId(0)",
+        "expectation_met": true,
+        "guest_environment_supplied": [
+          [
+            "RP_RPC_REQUEST_MARKER",
+            "recastpress-v0.5-rpc-request-1"
+          ]
+        ],
+        "home_mapped": false,
+        "host_directories_mapped": false,
+        "host_environment_forwarded": false,
+        "http_client": false,
+        "module_compile_invocations": 0,
+        "module_delivery": "Module.clone",
+        "name": "normal_first",
+        "networking": "UnsupportedVirtualNetworking",
+        "nonce": 101,
+        "ok": true,
+        "ok_scope": "guest execution plus RPC finish and capture validation; not the diagnostic verdict",
+        "php": {
+          "cache_after": {
+            "value": 7
+          },
+          "cache_before": {
+            "value": null
+          },
+          "cache_set": {
+            "ok": true
+          },
+          "channel_closed": true,
+          "database": {
+            "rows": [
+              {
+                "nonce": 101
+              }
+            ]
+          },
+          "echo": "recastpress-v0.5-private-rpc",
+          "globals_after": "recastpress-v0.5-rpc-request-1",
+          "globals_before_present": false,
+          "kind": "normal",
+          "marker": "recastpress-v0.5-rpc-request-1",
+          "php_int_size": 8,
+          "php_version": "8.5.12",
+          "reopened_cache": {
+            "value": 7
+          }
+        },
+        "php_completed": true,
+        "php_execution_elapsed_ms": 57,
+        "private_rpc_mount": "/rp-p0-rpc",
+        "request_number": 1,
+        "rpc": {
+          "cache_entries": 1,
+          "channel_open": false,
+          "failure": null,
+          "finished": true,
+          "operations": 5,
+          "pending_bytes": 0,
+          "real_db": false,
+          "request_bytes": 90,
+          "response_bytes": 76,
+          "response_read_bytes": 76,
+          "standard_wpdb": false
+        },
+        "rpc_channel": "/rp-p0-rpc/channel",
+        "rpc_valid": true,
+        "runtime_shutdown_returned": true,
+        "runtime_shutdown_wait_limit_ms": 2000,
+        "stderr_bytes": 0,
+        "stderr_eof": true,
+        "stderr_hex": "",
+        "stderr_limit_bytes": 65536,
+        "stderr_overflow": false,
+        "stdin": "closed-pipe",
+        "stdout_bytes": 404,
+        "stdout_eof": true,
+        "stdout_hex": "52505f50302043414348455f53455420370a00ff7b227068705f76657273696f6e223a22382e352e3132222c227068705f696e745f73697a65223a382c226b696e64223a226e6f726d616c222c226d61726b6572223a2272656361737470726573732d76302e352d7270632d726571756573742d31222c22676c6f62616c735f6265666f72655f70726573656e74223a66616c73652c22676c6f62616c735f6166746572223a2272656361737470726573732d76302e352d7270632d726571756573742d31222c2263616368655f6265666f7265223a7b2276616c7565223a6e756c6c7d2c2263616368655f736574223a7b226f6b223a747275657d2c2263616368655f6166746572223a7b2276616c7565223a377d2c226461746162617365223a7b22726f7773223a5b7b226e6f6e6365223a3130317d5d7d2c2272656f70656e65645f6361636865223a7b2276616c7565223a377d2c226368616e6e656c5f636c6f736564223a747275652c226563686f223a2272656361737470726573732d76302e352d707269766174652d727063227d",
+        "stdout_limit_bytes": 65536,
+        "stdout_literal_hex": "52505f50302043414348455f53455420370a00ff",
+        "stdout_overflow": false,
+        "success_expected": true
+      },
+      {
+        "configured_engine_identity": "EngineId(0)",
+        "expectation_met": true,
+        "guest_environment_supplied": [
+          [
+            "RP_RPC_REQUEST_MARKER",
+            "recastpress-v0.5-rpc-request-2"
+          ]
+        ],
+        "home_mapped": false,
+        "host_directories_mapped": false,
+        "host_environment_forwarded": false,
+        "http_client": false,
+        "module_compile_invocations": 0,
+        "module_delivery": "Module.clone",
+        "name": "normal_second",
+        "networking": "UnsupportedVirtualNetworking",
+        "nonce": 102,
+        "ok": true,
+        "ok_scope": "guest execution plus RPC finish and capture validation; not the diagnostic verdict",
+        "php": {
+          "cache_after": {
+            "value": 7
+          },
+          "cache_before": {
+            "value": null
+          },
+          "cache_set": {
+            "ok": true
+          },
+          "channel_closed": true,
+          "database": {
+            "rows": [
+              {
+                "nonce": 102
+              }
+            ]
+          },
+          "echo": "recastpress-v0.5-private-rpc",
+          "globals_after": "recastpress-v0.5-rpc-request-2",
+          "globals_before_present": false,
+          "kind": "normal",
+          "marker": "recastpress-v0.5-rpc-request-2",
+          "php_int_size": 8,
+          "php_version": "8.5.12",
+          "reopened_cache": {
+            "value": 7
+          }
+        },
+        "php_completed": true,
+        "php_execution_elapsed_ms": 54,
+        "private_rpc_mount": "/rp-p0-rpc",
+        "request_number": 2,
+        "rpc": {
+          "cache_entries": 1,
+          "channel_open": false,
+          "failure": null,
+          "finished": true,
+          "operations": 5,
+          "pending_bytes": 0,
+          "real_db": false,
+          "request_bytes": 90,
+          "response_bytes": 76,
+          "response_read_bytes": 76,
+          "standard_wpdb": false
+        },
+        "rpc_channel": "/rp-p0-rpc/channel",
+        "rpc_valid": true,
+        "runtime_shutdown_returned": true,
+        "runtime_shutdown_wait_limit_ms": 2000,
+        "stderr_bytes": 0,
+        "stderr_eof": true,
+        "stderr_hex": "",
+        "stderr_limit_bytes": 65536,
+        "stderr_overflow": false,
+        "stdin": "closed-pipe",
+        "stdout_bytes": 404,
+        "stdout_eof": true,
+        "stdout_hex": "52505f50302043414348455f53455420370a00ff7b227068705f76657273696f6e223a22382e352e3132222c227068705f696e745f73697a65223a382c226b696e64223a226e6f726d616c222c226d61726b6572223a2272656361737470726573732d76302e352d7270632d726571756573742d32222c22676c6f62616c735f6265666f72655f70726573656e74223a66616c73652c22676c6f62616c735f6166746572223a2272656361737470726573732d76302e352d7270632d726571756573742d32222c2263616368655f6265666f7265223a7b2276616c7565223a6e756c6c7d2c2263616368655f736574223a7b226f6b223a747275657d2c2263616368655f6166746572223a7b2276616c7565223a377d2c226461746162617365223a7b22726f7773223a5b7b226e6f6e6365223a3130327d5d7d2c2272656f70656e65645f6361636865223a7b2276616c7565223a377d2c226368616e6e656c5f636c6f736564223a747275652c226563686f223a2272656361737470726573732d76302e352d707269766174652d727063227d",
+        "stdout_limit_bytes": 65536,
+        "stdout_literal_hex": "52505f50302043414348455f53455420370a00ff",
+        "stdout_overflow": false,
+        "success_expected": true
+      },
+      {
+        "configured_engine_identity": "EngineId(0)",
+        "expectation_met": true,
+        "guest_environment_supplied": [
+          [
+            "RP_RPC_REQUEST_MARKER",
+            "recastpress-v0.5-rpc-request-3"
+          ]
+        ],
+        "home_mapped": false,
+        "host_directories_mapped": false,
+        "host_environment_forwarded": false,
+        "http_client": false,
+        "module_compile_invocations": 0,
+        "module_delivery": "Module.clone",
+        "name": "incomplete_ignored",
+        "networking": "UnsupportedVirtualNetworking",
+        "nonce": 103,
+        "ok": false,
+        "ok_scope": "guest execution plus RPC finish and capture validation; not the diagnostic verdict",
+        "php": {
+          "channel_closed": true,
+          "echo": "recastpress-v0.5-private-rpc",
+          "flushed": true,
+          "kind": "incomplete_ignored",
+          "marker": "recastpress-v0.5-rpc-request-3",
+          "php_int_size": 8,
+          "php_version": "8.5.12",
+          "wire_hex": "52505f50302043414348455f",
+          "written": 12
+        },
+        "php_completed": true,
+        "php_execution_elapsed_ms": 50,
+        "private_rpc_mount": "/rp-p0-rpc",
+        "request_number": 3,
+        "rpc": {
+          "cache_entries": 0,
+          "channel_open": false,
+          "failure": "incomplete RPC frame on channel close",
+          "finished": true,
+          "operations": 0,
+          "pending_bytes": 12,
+          "real_db": false,
+          "request_bytes": 12,
+          "response_bytes": 0,
+          "response_read_bytes": 0,
+          "standard_wpdb": false
+        },
+        "rpc_channel": "/rp-p0-rpc/channel",
+        "rpc_error": "RPC failed: Some(\"incomplete RPC frame on channel close\")",
+        "rpc_valid": false,
+        "runtime_shutdown_returned": true,
+        "runtime_shutdown_wait_limit_ms": 2000,
+        "stderr_bytes": 0,
+        "stderr_eof": true,
+        "stderr_hex": "",
+        "stderr_limit_bytes": 65536,
+        "stderr_overflow": false,
+        "stdin": "closed-pipe",
+        "stdout_bytes": 237,
+        "stdout_eof": true,
+        "stdout_hex": "7b227068705f76657273696f6e223a22382e352e3132222c227068705f696e745f73697a65223a382c226b696e64223a22696e636f6d706c6574655f69676e6f726564222c226d61726b6572223a2272656361737470726573732d76302e352d7270632d726571756573742d33222c22776972655f686578223a22353235303566353033303230343334313433343834353566222c227772697474656e223a31322c22666c7573686564223a747275652c226368616e6e656c5f636c6f736564223a747275652c226563686f223a2272656361737470726573732d76302e352d707269766174652d727063227d",
+        "stdout_limit_bytes": 65536,
+        "stdout_literal_hex": "",
+        "stdout_overflow": false,
+        "success_expected": false
+      },
+      {
+        "configured_engine_identity": "EngineId(0)",
+        "expectation_met": true,
+        "guest_environment_supplied": [
+          [
+            "RP_RPC_REQUEST_MARKER",
+            "recastpress-v0.5-rpc-request-4"
+          ]
+        ],
+        "home_mapped": false,
+        "host_directories_mapped": false,
+        "host_environment_forwarded": false,
+        "http_client": false,
+        "module_compile_invocations": 0,
+        "module_delivery": "Module.clone",
+        "name": "normal_recovery",
+        "networking": "UnsupportedVirtualNetworking",
+        "nonce": 104,
+        "ok": true,
+        "ok_scope": "guest execution plus RPC finish and capture validation; not the diagnostic verdict",
+        "php": {
+          "cache_after": {
+            "value": 7
+          },
+          "cache_before": {
+            "value": null
+          },
+          "cache_set": {
+            "ok": true
+          },
+          "channel_closed": true,
+          "database": {
+            "rows": [
+              {
+                "nonce": 104
+              }
+            ]
+          },
+          "echo": "recastpress-v0.5-private-rpc",
+          "globals_after": "recastpress-v0.5-rpc-request-4",
+          "globals_before_present": false,
+          "kind": "normal",
+          "marker": "recastpress-v0.5-rpc-request-4",
+          "php_int_size": 8,
+          "php_version": "8.5.12",
+          "reopened_cache": {
+            "value": 7
+          }
+        },
+        "php_completed": true,
+        "php_execution_elapsed_ms": 49,
+        "private_rpc_mount": "/rp-p0-rpc",
+        "request_number": 4,
+        "rpc": {
+          "cache_entries": 1,
+          "channel_open": false,
+          "failure": null,
+          "finished": true,
+          "operations": 5,
+          "pending_bytes": 0,
+          "real_db": false,
+          "request_bytes": 90,
+          "response_bytes": 76,
+          "response_read_bytes": 76,
+          "standard_wpdb": false
+        },
+        "rpc_channel": "/rp-p0-rpc/channel",
+        "rpc_valid": true,
+        "runtime_shutdown_returned": true,
+        "runtime_shutdown_wait_limit_ms": 2000,
+        "stderr_bytes": 0,
+        "stderr_eof": true,
+        "stderr_hex": "",
+        "stderr_limit_bytes": 65536,
+        "stderr_overflow": false,
+        "stdin": "closed-pipe",
+        "stdout_bytes": 404,
+        "stdout_eof": true,
+        "stdout_hex": "52505f50302043414348455f53455420370a00ff7b227068705f76657273696f6e223a22382e352e3132222c227068705f696e745f73697a65223a382c226b696e64223a226e6f726d616c222c226d61726b6572223a2272656361737470726573732d76302e352d7270632d726571756573742d34222c22676c6f62616c735f6265666f72655f70726573656e74223a66616c73652c22676c6f62616c735f6166746572223a2272656361737470726573732d76302e352d7270632d726571756573742d34222c2263616368655f6265666f7265223a7b2276616c7565223a6e756c6c7d2c2263616368655f736574223a7b226f6b223a747275657d2c2263616368655f6166746572223a7b2276616c7565223a377d2c226461746162617365223a7b22726f7773223a5b7b226e6f6e6365223a3130347d5d7d2c2272656f70656e65645f6361636865223a7b2276616c7565223a377d2c226368616e6e656c5f636c6f736564223a747275652c226563686f223a2272656361737470726573732d76302e352d707269766174652d727063227d",
+        "stdout_limit_bytes": 65536,
+        "stdout_literal_hex": "52505f50302043414348455f53455420370a00ff",
+        "stdout_overflow": false,
+        "success_expected": true
+      }
+    ],
+    "compile_elapsed_ms": 95670,
+    "engine": "wasmer-7.2.0/llvm",
+    "exception_support": {
+      "execution_verdict": "not-exercised",
+      "msvc_source_verdict": "negative-unimplemented-panic-stubs"
+    },
+    "exceptions_executed": false,
+    "full_php_compatibility_verified": false,
+    "host": {
+      "arch": "x86_64",
+      "os": "linux"
+    },
+    "incomplete_frame_rejected": true,
+    "integer_width_matches_native": null,
+    "isolation": {
+      "configured_guest_max_threads": 1,
+      "deadline_owner": "required-external-owned-child-supervisor",
+      "guest_environment_policy": "one fixed per-request marker only",
+      "guest_fixture_files": [],
+      "guest_private_mounts": [
+        "/rp-p0-rpc"
+      ],
+      "home_mapped": false,
+      "host_directories_mapped": false,
+      "host_environment_forwarded": false,
+      "http_client": false,
+      "in_process_deadline_enforced": false,
+      "memory_limit_enforced": false,
+      "networking": "UnsupportedVirtualNetworking",
+      "other_virtual_root_writes_forbidden": false,
+      "rpc_channel": "/rp-p0-rpc/channel",
+      "stderr_limit_bytes": 65536,
+      "stdin": "closed-pipe",
+      "stdout_limit_bytes": 65536
+    },
+    "limitations": [
+      "Only CACHE_GET, CACHE_SET 7 and DB_SELECT_FIXTURE are accepted on a request-local private virtual file.",
+      "The DB returns fixed nonce rows; no real DB, SQL parser, standard wpdb, WordPress or product ABI is implemented.",
+      "No memory, RSS, aggregate, CPU or in-process deadline limit is established; the owned outer process must exit and be reaped.",
+      "Only four sequential fixed PHP programs are checked; PHP compatibility and concurrent product workers remain unverified.",
+      "The immutable host filesystem and network are not supplied; WasiRunner's other temporary virtual-root writes are not forbidden here."
+    ],
+    "native_comparison_performed": false,
+    "observed_php_int_size": 8,
+    "ok": true,
+    "phase": "rpc_contract_diagnostic_verified",
+    "process_pid": 10873,
+    "product_adopted": false,
+    "real_db": false,
+    "request_isolation_verified": true,
+    "reuse": {
+      "configured_engine_identity": "EngineId(0)",
+      "counter_scope": "explicit PHP Module::new call site, not internal backend instrumentation",
+      "module_clone_count": 4,
+      "module_delivery": "Module.clone",
+      "observed_cases": 4,
+      "php_module_compile_invocations": 1,
+      "request_path_module_compile_calls": 0
+    },
+    "rpc_contract_verified": true,
+    "rpc_limits": {
+      "frame_bytes": 128,
+      "operations": 8,
+      "reply_read_bytes": 8192,
+      "request_bytes": 1024,
+      "response_bytes": 1024,
+      "simultaneous_channels": 1,
+      "single_write_bytes": 128,
+      "total_generated_response_bytes": 8192
+    },
+    "schema": "recastpress.php-wasix-rpc-contract.v0.5",
+    "scope": "fixed-PHP-private-RPC-four-request-diagnostic-not-product-ABI",
+    "source": {
+      "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+      "kind": "official-github-actions-artifact",
+      "repository": "https://github.com/wasix-org/php"
+    },
+    "standard_wpdb": false,
+    "stdout_not_rpc_verified": true,
+    "verdict_scope": "Top-level ok describes the diagnostic; the ignored incomplete-frame case stays ok=false, even though PHP exits zero.",
+    "wasmer_wasix": "0.702.0",
+    "wordpress_executed": false
+  },
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "44d41c9cc08989f1b6fde88c50269b18d22a83c9bb4f78c01432d169b6e077bd",
+    "experiments/php-wasix-host-probe/Cargo.lock": "028ce5e3747f78459e0fe6776901cb5c340b1920dfdca882ff61f8ee09b89be5",
+    "experiments/php-wasix-host-probe/src/cgi_contract.rs": "9b4fb604211dfc42b05857ac7086598ffe96f35470ccfd4c0f35d45b196f7557",
+    "experiments/php-wasix-host-probe/src/language_contract.rs": "02d314e638a54e3d7d5165467535badff0a4eba7e0220b0f14977d0a5dd620ff",
+    "experiments/php-wasix-host-probe/src/main.rs": "cfcc028abd1d6adeba2a2999282af8c9a0835ef6656f25dd12bc2eba799d321c",
+    "experiments/php-wasix-host-probe/src/memory_limits.rs": "497f44ff22db8b20b7601bdfe41731fe22b53cd328f2d11ad0c667c2314cd550",
+    "experiments/php-wasix-host-probe/src/memory_policy.rs": "290d71d9d13320e731085f9ecfc1b96a729d307ed31576de7bf41a2732c932c8",
+    "experiments/php-wasix-host-probe/src/metering_limits.rs": "b06d830c9e4f2fa87be00f8eeaa02ef727b4fd2e6a43c844a45bc2d46fe9f4d0",
+    "experiments/php-wasix-host-probe/src/module_reuse.rs": "8616b0033cee1a969a28b0ac90fcf7e0f9ff90c2be8e7efa201fd49f7f8c30a4",
+    "experiments/php-wasix-host-probe/src/php_memory_cap.rs": "ca479e7b55e954e01ba656a4d8da21666a99f546304ee0d81ebfc44b54efc9ba",
+    "experiments/php-wasix-host-probe/src/rpc_contract.rs": "b13eab4d70aa56afa2b1423f8d68ece6942acc0fc9945d036293a0ecd104c04e",
+    "experiments/php-wasix-host-probe/src/rpc_fs.rs": "f46092f470e70d27b54c18808204a709b15f3b791920cfbed4b36d3dc69eed5e",
+    "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
+    "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasi-host-probe/src/cgi_response.rs": "d7ef796e0bea093c862e67b3591d97ecf4a8ce53428e17196a22a7d06551bc49",
+    "experiments/php-wasix-host-probe/check.py": "2e74181453ed24bb1988792ce91227374d7a1e55340d454a1e900147345b854a",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  }
+}

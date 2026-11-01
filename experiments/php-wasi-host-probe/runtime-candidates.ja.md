@@ -56,7 +56,7 @@ WASIX PHPの公式CIは、wasixcc v0.4.4、sysroot v2026-07-03.1、LLVM 21.1.206
 
 ## 同日追補：Fiber移植前のC context実証案
 
-未実装・未実行の次段階である。固定SDKの[公開header](https://github.com/wasix-org/wasix-libc/blob/09503b230e8acc721c1e013ca28a41bf149e4ee2/libc-bottom-half/headers/public/wasix/context.h)はu64のcontext IDと`void(void)` callbackを用い、userdata/stack引数や公開current-context getterはない。main IDは`wasix_context_main` macroを使い、A/BのIDを返却値のまま保持する。wasm32 pointerへIDを詰めない。Rustは既存Runnerのasynchronous threadingと公開`supports_async()`の確認を使う案で、利用側のunsafeや手動のprivate Store初期化は不要である。
+設計後に[小C fixtureとRust host](../php-wasix-context-probe/README.ja.md)を実装した。Linuxの実C実行は専用CIで確認する段階である。固定SDKの[公開header](https://github.com/wasix-org/wasix-libc/blob/09503b230e8acc721c1e013ca28a41bf149e4ee2/libc-bottom-half/headers/public/wasix/context.h)はu64のcontext IDと`void(void)` callbackを用い、userdata/stack引数や公開current-context getterはない。main IDは`wasix_context_main` macroを使い、A/BのIDを返却値のまま保持する。wasm32 pointerへIDを詰めない。Rustは既存Runnerのasynchronous threadingと公開`supports_async()`を使い、利用側のunsafeや手動のprivate Store初期化は不要である。
 
 PHP backendを書き換える前に、main/A/Bのvolatile配列と深さ4の再帰frameを同時に生かし、固定8周の切替・canary・順序・生存address範囲の非重複を確認する。callbackはmainへswitchしてsuspendし、main側がdestroyする。[destroy](https://github.com/wasmerio/wasmer/blob/93bd021012baafda53df2030db3ce1758dc1e336/lib/wasix/src/syscalls/wasix/context_destroy.rs)は取消しの予約なので、A破棄後にBを実行してexecutorを進め、即時解放を主張しない。内容が復元されてもaddressが重なる場合は独立したC stackの証明としない。
 

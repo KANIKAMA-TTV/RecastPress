@@ -1,0 +1,147 @@
+name: WASIX C context candidate
+
+"on":
+  push:
+    branches: ["dev/v0.5"]
+    paths:
+      - "experiments/php-wasix-context-probe/**"
+      - "experiments/php-wasix-host-probe/**"
+      - "experiments/php-wasix-cgi-build/*.py"
+      - "experiments/php-wasix-cgi-build/manifest.json"
+      - ".github/workflows/php-wasix-context.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: php-wasix-context-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  context:
+    name: C stack/context, Linux ${{ matrix.backend }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [cranelift, llvm]
+    defaults:
+      run:
+        shell: bash
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_TARGET_DIR: target/php-wasix-host-probe
+      RUSTUP_TOOLCHAIN: "1.94.0"
+    steps:
+      - name: Check out the closed context experiment
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Install native tool dependencies without PHP
+        id: dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            cmake ninja-build pkg-config libzstd-dev zlib1g-dev \
+            libxml2-dev libncurses-dev libffi-dev
+
+      - name: Validate fixed C build definitions
+        id: definitions
+        run: python3 experiments/php-wasix-context-probe/build.py --validate-only
+
+      - name: Prepare the fixed guest compiler, SDK and Binaryen
+        id: guest_tools
+        run: python3 experiments/php-wasix-cgi-build/prepare.py --record
+
+      - name: Build only the finite C context fixture
+        id: build
+        run: python3 experiments/php-wasix-context-probe/build.py --record
+
+      - name: Install Rust and fetch the locked host dependencies
+        id: rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.94.0 --profile minimal --no-self-update
+          rustc +1.94.0 --version
+          cargo +1.94.0 fetch --locked --manifest-path experiments/php-wasix-host-probe/Cargo.toml
+
+      - name: Prepare the separately pinned host LLVM after the C build
+        if: ${{ matrix.backend == 'llvm' }}
+        id: host_llvm
+        run: |
+          set -euo pipefail
+          mkdir -p .reference
+          LLVM_URL="$(python3 -c 'import json; print(json.load(open("experiments/php-wasix-host-probe/llvm-toolchain.json"))["archive_url"])')"
+          curl --fail --silent --show-error --location \
+            --proto '=https' --proto-redir '=https' \
+            --connect-timeout 30 --max-time 600 --retry 3 --retry-max-time 900 \
+            --max-filesize 741670068 --output .reference/llvm-linux-amd64.tar.xz "$LLVM_URL"
+          python3 experiments/php-wasix-host-probe/prepare_host_llvm.py
+
+      - name: Execute the fixed C fixture in the asynchronous Rust host
+        id: contract
+        run: |
+          set -euo pipefail
+          python3 experiments/php-wasix-host-probe/context_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
+
+      - name: Record independent context stage outcomes
+        if: ${{ always() }}
+        env:
+          STAGE_DEPENDENCIES: ${{ steps.dependencies.outcome }}
+          STAGE_DEFINITIONS: ${{ steps.definitions.outcome }}
+          STAGE_GUEST_TOOLS: ${{ steps.guest_tools.outcome }}
+          STAGE_BUILD: ${{ steps.build.outcome }}
+          STAGE_RUST: ${{ steps.rust.outcome }}
+          STAGE_HOST_LLVM: ${{ steps.host_llvm.outcome }}
+          STAGE_CONTRACT: ${{ steps.contract.outcome }}
+          PROBE_BACKEND: ${{ matrix.backend }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          import os
+
+          root = Path.cwd()
+          experiment = root / 'experiments/php-wasix-context-probe'
+          evidence = experiment / 'evidence'
+          evidence.mkdir(parents=True, exist_ok=True)
+          inputs = [root / '.github/workflows/php-wasix-context.yml']
+          inputs += sorted(experiment.glob('*.py')) + sorted(experiment.glob('*.json'))
+          inputs += sorted(experiment.glob('fixtures/*.c'))
+          inputs += [root / 'experiments/php-wasix-host-probe/context_check.py',
+                     root / 'experiments/php-wasix-host-probe/prepare_host_llvm.py',
+                     root / 'experiments/php-wasix-host-probe/llvm-toolchain.json']
+          report = {
+              'format_version': 1,
+              'scope': 'finite C context and live stack observations; not PHP Fiber compatibility',
+              'source_commit': os.environ['GITHUB_SHA'],
+              'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'backend': os.environ['PROBE_BACKEND'], 'php_executed': False,
+              'php_fiber_compatible': False, 'product_runtime_selected': False,
+              'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
+                         for name in ['DEPENDENCIES', 'DEFINITIONS', 'GUEST_TOOLS', 'BUILD',
+                                      'RUST', 'HOST_LLVM', 'CONTRACT']},
+              'input_files': {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                              for p in inputs if p.is_file()},
+          }
+          (evidence / 'ci-stages.json').write_text(json.dumps(report, indent=2) + '\n',
+                                                encoding='utf-8', newline='\n')
+          PY
+
+      - name: Upload context JSON evidence only
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: php-wasix-context-${{ matrix.backend }}-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            experiments/php-wasix-context-probe/evidence/*.json
+            experiments/php-wasix-cgi-build/evidence/toolchain.json
+            experiments/php-wasix-host-probe/evidence/*context-contract.json
+            experiments/php-wasix-host-probe/evidence/llvm-toolchain-verification.json
+          if-no-files-found: warn
+          retention-days: 14

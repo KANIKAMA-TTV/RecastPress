@@ -1,4 +1,4 @@
-name: PHP WASIX CGI build candidate
+name: PHP WASIX CGI host candidates
 
 "on":
   push:
@@ -9,6 +9,9 @@ name: PHP WASIX CGI build candidate
       - "experiments/php-wasix-host-probe/src/**"
       - "experiments/php-wasix-host-probe/fixtures/cgi_contract.php"
       - "experiments/php-wasix-host-probe/cgi_check.py"
+      - "experiments/php-wasix-host-probe/check.py"
+      - "experiments/php-wasix-context-probe/manifest.json"
+      - "experiments/php-wasix-context-probe/fixtures/context_contract.c"
       - "experiments/php-wasix-host-probe/prepare_host_llvm.py"
       - "experiments/php-wasix-host-probe/llvm-toolchain.json"
       - "experiments/php-wasix-host-probe/evidence/native-cgi-contract.json"
@@ -26,7 +29,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-only:
+  build-and-run:
+    name: CGI build and Rust requests, Linux ${{ matrix.backend }}
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [cranelift, llvm]
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
@@ -103,6 +111,7 @@ jobs:
           cargo +1.94.0 fetch --locked --manifest-path experiments/php-wasix-host-probe/Cargo.toml
 
       - name: Prepare the separately pinned host LLVM 22.1
+        if: ${{ matrix.backend == 'llvm' }}
         id: host_llvm
         run: |
           set -euo pipefail
@@ -116,7 +125,7 @@ jobs:
 
       - name: Execute three fixed CGI requests inside the Rust host
         id: cgi_contract
-        run: python3 experiments/php-wasix-host-probe/cgi_check.py --llvm --record
+        run: python3 experiments/php-wasix-host-probe/cgi_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
 
       - name: Record CI outcomes even if preparation or build failed
         if: ${{ always() }}
@@ -131,6 +140,7 @@ jobs:
           STAGE_RUST: ${{ steps.rust.outcome }}
           STAGE_HOST_LLVM: ${{ steps.host_llvm.outcome }}
           STAGE_CGI_CONTRACT: ${{ steps.cgi_contract.outcome }}
+          PROBE_BACKEND: ${{ matrix.backend }}
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -151,6 +161,7 @@ jobs:
           report = {
               'format_version': 1,
               'scope': 'CGI build and three fixed Rust-hosted requests; not product adoption',
+              'backend': os.environ['PROBE_BACKEND'],
               'guest_execution_verdict': 'see the separate CGI contract receipt',
               'product_runtime_selected': False,
               'redistributed_binaries': False,
@@ -173,7 +184,7 @@ jobs:
         # actions/upload-artifact v4.6.2; no source, toolchain or Wasm binaries.
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: php-wasix-cgi-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          name: php-wasix-cgi-${{ matrix.backend }}-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             experiments/php-wasix-cgi-build/evidence/*.json
             experiments/php-wasix-host-probe/evidence/*cgi-contract.json

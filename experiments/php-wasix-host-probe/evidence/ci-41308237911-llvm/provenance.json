@@ -1,0 +1,119 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "de33e0a8db80b6b5d632b25d7e3dfc30deb3299a",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41308237911",
+  "artifact_id": 13084916171,
+  "artifact_zip_bytes": 132600,
+  "artifact_zip_sha256": "c8b50bb2dec510bbb66420577ce89969147cc416199c7781eb98935772f6a906",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "ad99b8eb1e3a8db912f193407effcf5283745d71416be7b476a8216a49f1864b",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "6f44e57abb926950c3bc8a394abf4fbbc8062cd476fbbb1a52326c4c84dd23f5",
+    "experiments/php-wasix-host-probe/cgi_check.py": "ccb55f9130dd74c767eb4cbaf0662629f61a30cba535756a1732e35f6664c010",
+    "experiments/php-wasix-host-probe/memory_check.py": "1dd73f00dbc46473babc7ad65f916c9cc6276aba598b7f4bff88617b53c8c2a8",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7",
+    "experiments/php-wasix-host-probe/unit_check.py": "914297f2ce5eb537db1f0a3b09abd7e029de660da72c1716082d2ea030c28bcb"
+  },
+  "imported_files": {
+    "ci-stages.json": "674443defe39425c26b3143bc7ecc25d5fc9b0a3033631c2c8c48902db8c1ec3",
+    "linux-llvm.json": "19cf16d67261fca0da7449941b6bb791ed05067e30b249a21ce9823b08e8bc41",
+    "linux-llvm-module-reuse.json": "77f993c7ec6afe86ecf7e77096471229a920fa413b68dc78df8cef7a767c33c4",
+    "linux-llvm-rpc-contract.json": "043667c4866cf99e1d610219b5b0de5896f790d16c1a06e6331970134c66ea6e",
+    "linux-llvm-php-memory-cap.json": "998b7f7f553bedb337f4ad4bdb5d8be3537209e47533f6ebbfa21734b020e30f",
+    "linux-llvm-language-contract.json": "c0c6bbfa980b8e32ec11cb8ec9fb387a10156ca294ef64a1ce009df62ef14e19",
+    "linux-llvm-unit-contract.json": "d10d9595be1810a5061a8b8a402ad18af2500d3fe1539d9b230d6bd6f33d07ee",
+    "linux-llvm-dependency-inventory.json": "6f04ad99e5bf9ebc2cd7d2df3fd4e37e71924c021f4bb3601c2d6428e8ba5ca4",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  },
+  "observations": {
+    "module_reuse_passed": true,
+    "language_comparison_passed": false,
+    "case_results": {
+      "basic": {
+        "equal_to_native": true
+      },
+      "exceptions": {
+        "equal_to_native": true
+      },
+      "fiber": {
+        "equal_to_native": false,
+        "difference": "contract fields mismatch: fiber"
+      }
+    },
+    "compile_elapsed_ms": 95274,
+    "request_execution_elapsed_ms": [
+      69,
+      84,
+      60
+    ],
+    "counter_scope": "explicit PHP Module::new call site; internal backend operations are not instrumented",
+    "timing_scope": "one CI runner; run_wasm includes startup/shutdown; not a product latency benchmark",
+    "private_rpc_diagnostic_passed": true,
+    "php_memory_diagnostic_passed": true,
+    "incomplete_rpc_case_accepted": false,
+    "test_memory_cap_bytes": 268435456,
+    "production_memory_limit_verified": false,
+    "real_db": false,
+    "standard_wpdb": false,
+    "rpc_case_acceptance": [
+      true,
+      true,
+      false,
+      true
+    ],
+    "memory_case_execution_results": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "memory_observations": [
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 65536,
+        "shared": true,
+        "size_pages": 6734
+      }
+    ],
+    "backend": "llvm",
+    "bounded_unit_tests_passed": 25,
+    "formal_eh_wat_metering_passed": true,
+    "php_cpu_budget_verified": false,
+    "declared_license_inventory_recorded": true,
+    "legal_compatibility_evaluated": false,
+    "compiler_reachability": {
+      "wasmer-compiler-llvm": {
+        "runtime": true,
+        "build": false,
+        "dev": true
+      },
+      "wasmer-compiler-cranelift": {
+        "runtime": false,
+        "build": false,
+        "dev": false
+      }
+    }
+  }
+}

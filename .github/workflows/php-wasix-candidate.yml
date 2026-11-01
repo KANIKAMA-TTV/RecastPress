@@ -215,6 +215,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: php-wasix-linux-${{ matrix.backend }}-evidence-${{ github.run_id }}-${{ github.run_attempt }}
-          path: experiments/php-wasix-host-probe/evidence/
+          # Historical source-bound receipts already live in Git. Upload only
+          # top-level observations for this job, without nesting past runs.
+          path: experiments/php-wasix-host-probe/evidence/*.json
           if-no-files-found: warn
           retention-days: 14
