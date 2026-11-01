@@ -64,21 +64,44 @@ def environment():
     return native.expected_environment()
 
 
-def verify_native_reference():
-    oracle = parse_json(read_fixed(ORACLE, 256 * 1024))
+def validation_source(path, read_source=None):
+    if read_source is None:
+        return read_fixed(path, 256 * 1024)
+    wire = read_source(path.relative_to(ROOT).as_posix())
+    require(type(wire) is bytes and 0 < len(wire) <= 256 * 1024, 'historical validation source budget/type')
+    return wire
+
+
+def verify_native_reference(oracle=None, read_source=None):
+    if oracle is None:
+        oracle = parse_json(validation_source(ORACLE, read_source))
+    for name, expected in oracle['input_files'].items():
+        equal(hashlib.sha256(validation_source(ROOT / name, read_source)).hexdigest(), expected,
+            'original native source binding')
+    # This pure validator also requires the native reference inputs to remain
+    # byte-identical to this verifier. A changed native corpus fails closed.
     native.validate_receipt(oracle)
     return oracle
 
 
-def validate_provenance(provenance):
+def validate_provenance(provenance, read_source=None, build_inputs=None):
+    if read_source is None:
+        require(build_inputs is None, 'current validation derives its own complete builder input set')
+        expected_inputs = builder.input_hashes()
+    else:
+        require(type(build_inputs) is dict and build_inputs, 'historical importer derives original complete builder inputs')
+        expected_inputs = build_inputs
+        for name, expected in build_inputs.items():
+            equal(hashlib.sha256(read_source(name)).hexdigest(), expected, 'historical builder source')
+    source_digest = lambda path: hashlib.sha256(validation_source(path, read_source)).hexdigest()
     observed = provenance['builder_provenance']
     for key, expected in [('build_receipt_sha256', provenance['build_receipt_sha256']),
             ('module_bytes', provenance['module']['bytes']), ('module_sha256', provenance['module']['sha256']),
-            ('variant', VARIANT), ('manifest_sha256', digest(HERE / 'manifest.json')),
-            ('patch_sha256', digest(CANONICAL / 'patches/0001-nts-fresh-wasi-zend-fibers.patch')),
-            ('cgi_patch_sha256', digest(ROOT / 'experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch')),
-            ('assembly_sha256', digest(CANONICAL / 'fixtures/zend_wasix_fiber.S')),
-            ('input_files', builder.input_hashes())]:
+            ('variant', VARIANT), ('manifest_sha256', source_digest(HERE / 'manifest.json')),
+            ('patch_sha256', source_digest(CANONICAL / 'patches/0001-nts-fresh-wasi-zend-fibers.patch')),
+            ('cgi_patch_sha256', source_digest(ROOT / 'experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch')),
+            ('assembly_sha256', source_digest(CANONICAL / 'fixtures/zend_wasix_fiber.S')),
+            ('input_files', expected_inputs)]:
         equal(observed[key], expected, 'combined builder/wrapper provenance ' + key)
     identity = provenance['module']
     equal(identity['path'], MODULE.relative_to(ROOT).as_posix(), 'fixed combined module path')
@@ -170,8 +193,8 @@ def verify_build():
     return provenance
 
 
-def validate_result(value, pid, backend, provenance):
-    validate_provenance(provenance)
+def validate_result(value, pid, backend, provenance, read_source=None, build_inputs=None):
+    validate_provenance(provenance, read_source, build_inputs)
     require('error' not in value, 'failed host result must not become success')
     for key, expected in [('schema', 'recastpress.php-wasix-fiber-cgi-host.v0.5'), ('process_pid', pid),
             ('engine', 'wasmer-7.2.0/' + backend), ('wasmer_wasix', '0.702.0'),
@@ -196,8 +219,8 @@ def validate_result(value, pid, backend, provenance):
     equal(value['build_receipt']['verified'], True, 'host receipt verified')
     equal(value['build_receipt']['path'], RECEIPT.relative_to(ROOT).as_posix(), 'fixed host build receipt path')
     equal(value['build_receipt']['full_source_tool_chain_verified_by_host'], False, 'external chain ownership')
-    equal(value['source_files'], [{'path': p.relative_to(ROOT).as_posix(), 'bytes': len(read_fixed(p, 256 * 1024)),
-        'sha256': hashlib.sha256(read_fixed(p, 256 * 1024)).hexdigest(), 'verified': True} for p in embedded_sources()], 'compiled source/oracle identities')
+    equal(value['source_files'], [{'path': p.relative_to(ROOT).as_posix(), 'bytes': len(validation_source(p, read_source)),
+        'sha256': hashlib.sha256(validation_source(p, read_source)).hexdigest(), 'verified': True} for p in embedded_sources()], 'compiled source/oracle identities')
     policy = value['isolation']
     equal(policy, {'asynchronous_threading': True, 'deep_sleep': False, 'max_guest_threads': 1,
         'host_environment_forwarded': False, 'home_mapped': False, 'guest_environment_supplied': environment(),
@@ -205,15 +228,15 @@ def validate_result(value, pid, backend, provenance):
         'http_client': False, 'stdin': 'closed-pipe', 'stdout_limit_bytes': 65536, 'stderr_limit_bytes': 65536,
         'other_virtual_root_writes_forbidden': False}, 'Fiber runtime capability policy')
     validate_inspection(value['postopt_adapter'], provenance['module'])
-    oracle = verify_native_reference()
-    equal(value['native_oracle'], {'sha256': hashlib.sha256(read_fixed(ORACLE, 256 * 1024)).hexdigest(), 'expected_case_count': 6,
+    oracle = verify_native_reference(read_source=read_source)
+    equal(value['native_oracle'], {'sha256': hashlib.sha256(validation_source(ORACLE, read_source)).hexdigest(), 'expected_case_count': 6,
         'expected_values_weakened': False}, 'strict native oracle binding')
     require(type(value['compile_elapsed_ms']) is int and value['compile_elapsed_ms'] >= 0, 'compile span')
     require(type(value['cases']) is list and len(value['cases']) == 3, 'three fresh Fiber instances')
     equal(value['exceptions_executed'], True, 'fixed corpus exception execution')
     equal(value['exception_support']['execution_verdict'], 'fixed-cgi-fiber-corpus-passed', 'fixed exception scope')
     equal(value['integer_width_matches_native'], True, 'fixed PHP integer width')
-    program = read_fixed(FIXTURE, 256 * 1024)
+    program = validation_source(FIXTURE, read_source)
     require(program.startswith(b'<?php'), 'fixed Fiber PHP tag')
     for index, name in enumerate(['normal_first', 'normal_repeat', 'normal_final']):
         case = value['cases'][index]

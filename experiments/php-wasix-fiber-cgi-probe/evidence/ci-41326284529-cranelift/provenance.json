@@ -1,0 +1,72 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_first_combined_cgi_fiber_ci_import",
+  "source_commit": "af4bcebe61992d8299f6e5ff0a4f16777fdb8211",
+  "backend": "cranelift",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41326284529",
+  "artifact_id": 13092230711,
+  "artifact_zip_bytes": 48820,
+  "artifact_zip_sha256": "a5a4c7cb7e89f5508f602f345fa6e30a96d1cf277358f262136fd8d3250a4e19",
+  "ci_verdict": "success",
+  "original_git_source_hashes_verified": true,
+  "php_executed_by_importer": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "source_tool_or_module_binaries_reverified_by_importer": false,
+  "product_runtime_selected": false,
+  "full_php_compatibility_verified": false,
+  "archive_member_map": {
+    "build.json": "php-wasix-fiber-cgi-probe/evidence/build.json",
+    "ci-stages.json": "php-wasix-fiber-cgi-probe/evidence/ci-stages.json",
+    "native-cgi-fiber-contract.json": "php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json",
+    "linux-cranelift-fiber-cgi-contract.json": "php-wasix-fiber-cgi-probe/evidence/linux-cranelift-fiber-cgi-contract.json",
+    "toolchain.json": "php-wasix-cgi-build/evidence/toolchain.json",
+    "windows-cranelift-unit-contract.json": "php-wasix-host-probe/evidence/windows-cranelift-unit-contract.json",
+    "linux-cranelift-unit-contract.json": "php-wasix-host-probe/evidence/linux-cranelift-unit-contract.json"
+  },
+  "input_files": {
+    "experiments/php-wasix-fiber-cgi-probe/import_ci_evidence.py": "80390a89f583546bb9ab3c2afa924d929e5d5b5873f71a83634c9315da440ff9",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-fiber-cgi-probe/fiber_cgi_check.py": "9b2c618b6dacbcff5a03cd069aa7b7e3f4c159e23701ad5cb9b82d1090094c4f",
+    "experiments/php-wasix-fiber-cgi-probe/native_contract.py": "fbb1d1466eac3e85b2f5ff6bf10ea0a764c828230086fe0bdb99bacaca631fe7",
+    "experiments/php-wasix-fiber-cgi-probe/build.py": "87fb4c3bb5d9f59bf52cc435e1a3c386f7ef4edc6305f8fdfc7cf01aa8a2e076",
+    "experiments/php-wasix-fiber-cgi-probe/patch_source.py": "70d985f23d0cb24d4c6aea7db5bff9a1f18f9a87a579a8b52cff00381a3babad",
+    "experiments/php-wasix-host-probe/unit_check.py": "8f1077e0db30edf5ea9678d0ded22e8bef7ef1c67dc680e733955725c21d0ea2",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-host-probe/check.py": "eacc304ad14553ccc4c59ec69ee16e8448546fe6d14448c70febbb95925c3df9",
+    "experiments/php-wasix-fiber-probe/native_contract.py": "14e768a301284cb462d526491af39448a580391584052430571f4d2469850f08",
+    "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "imported_files": {
+    "build.json": "42e102c8eb0ac87bb8373ad57599f828fa377fe4255c4643ca001c2a18373eaa",
+    "ci-stages.json": "e7f51c7dd25b479e07a7e7a1e92d6ce9af0053a8bcd85dbd3840edba0b9c8a2f",
+    "native-cgi-fiber-contract.json": "58ff09bac489a0e1416968255f30f217c9a76e0eba0b24ea07ae959ce64e9a04",
+    "linux-cranelift-fiber-cgi-contract.json": "fc6a8bd256c26ef58e6bc31fb68532791f06f8b1a6306391eb6daaf3afed8373",
+    "toolchain.json": "7517e900ba9336a95d0c71ecb8bc7678b28d6f2394905c43c1d7893b78a750e6",
+    "windows-cranelift-unit-contract.json": "809e9f4902061a70994bfaa2585218a147b28a225240d386e3934678b79fbf8f",
+    "linux-cranelift-unit-contract.json": "6fd5a9d979750045d9b967c20211541814c6038b285f768107db4aecb2bcf2f9"
+  },
+  "observations": {
+    "combined_php_build_passed": true,
+    "canonical_source_patch_sets_applied": 2,
+    "module_bytes": 39146736,
+    "module_sha256": "d7c3b7ee899aac54718c3f923ee0bfb92c5d24edf15d8de2bfaf920492f39768",
+    "postopt_adapter_verified": true,
+    "bounded_linux_units_passed": 27,
+    "fixed_native_cases": 6,
+    "fresh_cgi_wasi_instances": 3,
+    "module_compile_calls": 1,
+    "compile_elapsed_ms": 6326,
+    "guest_execution_elapsed_ms": [
+      68,
+      58,
+      61
+    ],
+    "fixed_cgi_fiber_comparison_passed": true,
+    "full_php_compatibility_verified": false,
+    "all_resources_immediately_reclaimed": false,
+    "physical_stack_free_or_reuse_verified": false,
+    "product_runtime_selected": false
+  }
+}

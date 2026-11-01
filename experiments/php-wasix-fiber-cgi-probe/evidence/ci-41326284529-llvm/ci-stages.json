@@ -1,0 +1,37 @@
+{
+  "format_version": 1,
+  "scope": "Combined NTS PHP Fiber CGI build, exact postopt inspection and native six-case CGI comparison; not product adoption",
+  "backend": "llvm",
+  "guest_execution_verdict": "see the separate Fiber comparison receipt",
+  "product_runtime_selected": false,
+  "redistributed_binaries": false,
+  "source_commit": "af4bcebe61992d8299f6e5ff0a4f16777fdb8211",
+  "run_id": "41326284529",
+  "run_attempt": "1",
+  "stages": {
+    "php_source": "success",
+    "deps_source": "success",
+    "parser_source": "success",
+    "dependencies": "success",
+    "definitions": "success",
+    "tools": "success",
+    "build": "success",
+    "rust": "success",
+    "host_llvm": "success",
+    "units": "success",
+    "fiber_contract": "success"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-fiber-cgi.yml": "7b25db5945ebff011e64bff64d544639401d46801eaeafc5bb215bad07b004d5",
+    "experiments/php-wasix-fiber-cgi-probe/build.py": "87fb4c3bb5d9f59bf52cc435e1a3c386f7ef4edc6305f8fdfc7cf01aa8a2e076",
+    "experiments/php-wasix-fiber-cgi-probe/fiber_cgi_check.py": "b459f329e332d4dd8049503fdc6778a4a07928c9e625b9d84b34e1a5d3ccbfad",
+    "experiments/php-wasix-fiber-cgi-probe/native_contract.py": "fbb1d1466eac3e85b2f5ff6bf10ea0a764c828230086fe0bdb99bacaca631fe7",
+    "experiments/php-wasix-fiber-cgi-probe/patch_source.py": "70d985f23d0cb24d4c6aea7db5bff9a1f18f9a87a579a8b52cff00381a3babad",
+    "experiments/php-wasix-fiber-cgi-probe/manifest.json": "b0fdc9d3bff6b0e2cc92a7c4961111c5b1ed959ca1a3ecf87916780779bb39f8",
+    "experiments/php-wasix-fiber-cgi-probe/fixtures/fiber_cgi_contract.php": "3d6b17234b12d1f391293b79366ab1575f0d9322e699ef76131c86818eadeff2",
+    "experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json": "58ff09bac489a0e1416968255f30f217c9a76e0eba0b24ea07ae959ce64e9a04",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388",
+    "experiments/php-wasix-host-probe/prepare_host_llvm.py": "47cdd0336d6e0652486c15a03dc8ec83f709dd5538b36f0e423c0ac0873d8761",
+    "experiments/php-wasix-host-probe/unit_check.py": "b107b7d9ac4de3bac74ebac29ac4fd85679341678bfb0901394bcda09fe6d0eb"
+  }
+}

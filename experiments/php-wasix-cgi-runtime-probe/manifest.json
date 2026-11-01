@@ -1,0 +1,138 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.php-wasix-cgi-runtime-plan.v0.5",
+  "scope": "fixed six-case CGI corpus, pure WP hooks and two scratch files; no full WordPress bootstrap",
+  "php_build_profile": "experiments/php-wasix-fiber-cgi-probe/manifest.json",
+  "php_build_manifest_sha256": "b0fdc9d3bff6b0e2cc92a7c4961111c5b1ed959ca1a3ecf87916780779bb39f8",
+  "fixture": {
+    "path": "experiments/php-wasix-cgi-runtime-probe/fixtures/runtime_cgi_contract.php",
+    "bytes": 6874,
+    "sha256": "9690cbe445386e7a779bf6ec2719f17953c9f818ae1e220bdd17a3ea2230d8f1"
+  },
+  "wordpress": {
+    "version": "7.1.3",
+    "archive_url": "https://wordpress.org/wordpress-7.1.3.tar.gz",
+    "archive_path": ".reference/wordpress-7.1.3.tar.gz",
+    "archive_bytes": 35368461,
+    "archive_sha256": "d2a09acb6a15e3b9c471d72557753c266d6f41a79ed19bfe04cbfe49e283b2a5",
+    "source_manifest": "experiments/php-wasi-host-probe/wordpress-fixture.json",
+    "source_manifest_sha256": "f25b298591e266cb2eaa8001807ff89aff44c60d46bade4224f7834ba0385543",
+    "files": {
+      "plugin.php": {
+        "bytes": 37123,
+        "sha256": "d70b9e18d34ab3fe46e15548a5e8e089ea5920832f06a4d89a9d64b2f7938b0d"
+      },
+      "class-wp-hook.php": {
+        "bytes": 17584,
+        "sha256": "b839c0e5672246bca8db1ab781ec8835f7732f253c375a237cbf6ec536e8d12e"
+      },
+      "class-wp-filter-sentinel.php": {
+        "bytes": 760,
+        "sha256": "68c9c675d3805a343835728d98a0efedf0df9833cb904bebf909c7e0fda5c61c"
+      }
+    }
+  },
+  "guest_environment": [
+    [
+      "REDIRECT_STATUS",
+      "200"
+    ],
+    [
+      "GATEWAY_INTERFACE",
+      "CGI/1.1"
+    ],
+    [
+      "SERVER_PROTOCOL",
+      "HTTP/1.1"
+    ],
+    [
+      "SERVER_SOFTWARE",
+      "recastpress-p0-runtime-cgi"
+    ],
+    [
+      "SERVER_NAME",
+      "localhost"
+    ],
+    [
+      "SERVER_PORT",
+      "80"
+    ],
+    [
+      "HTTP_HOST",
+      "localhost"
+    ],
+    [
+      "REMOTE_ADDR",
+      "127.0.0.1"
+    ],
+    [
+      "REQUEST_METHOD",
+      "GET"
+    ],
+    [
+      "REQUEST_URI",
+      "/__rp_runtime.php?rp_runtime_cgi=1"
+    ],
+    [
+      "SCRIPT_NAME",
+      "/__rp_runtime.php"
+    ],
+    [
+      "SCRIPT_FILENAME",
+      "/fixture/runtime_cgi_contract.php"
+    ],
+    [
+      "DOCUMENT_ROOT",
+      "/fixture"
+    ],
+    [
+      "QUERY_STRING",
+      "rp_runtime_cgi=1"
+    ],
+    [
+      "CONTENT_LENGTH",
+      "0"
+    ],
+    [
+      "RP_WP_ROOT",
+      "/wp-core"
+    ],
+    [
+      "RP_SCRATCH",
+      "/scratch"
+    ]
+  ],
+  "guest_arguments": [
+    "-n",
+    "-d",
+    "fiber.stack_size=2097152",
+    "-d",
+    "register_argc_argv=0"
+  ],
+  "guest_mounts": [
+    "/fixture",
+    "/wp-core",
+    "/scratch"
+  ],
+  "scratch_files": {
+    "ordinary.txt": {
+      "initial_hex": "",
+      "expected_final_hex": "6f7264696e61727900ff0d0a",
+      "max_bytes": 4096,
+      "writable": true
+    },
+    "readonly.txt": {
+      "initial_hex": "726561646f6e6c7920666978747572650a",
+      "expected_final_hex": "726561646f6e6c7920666978747572650a",
+      "writable": false
+    }
+  },
+  "claims": {
+    "guest_executed": false,
+    "pure_wordpress_hooks_verified": false,
+    "full_wordpress_bootstrap_verified": false,
+    "actual_permissions_match_php_metadata": false,
+    "real_db_verified": false,
+    "product_runtime_selected": false
+  }
+}

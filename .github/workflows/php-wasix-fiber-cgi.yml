@@ -4,6 +4,13 @@ name: PHP WASIX Fiber CGI prototype
   push:
     branches: ["dev/v0.5"]
     paths:
+      - "experiments/php-wasix-cgi-runtime-probe/*.py"
+      - "experiments/php-wasix-cgi-runtime-probe/manifest.json"
+      - "experiments/php-wasix-cgi-runtime-probe/fixtures/**"
+      - "experiments/php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json"
+      - "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php"
+      - "experiments/php-wasi-host-probe/wordpress-fixture.json"
+      - "scripts/wordpress_reference.py"
       - "experiments/php-wasix-fiber-cgi-probe/fixtures/**"
       - "experiments/php-wasix-fiber-cgi-probe/*.py"
       - "experiments/php-wasix-fiber-cgi-probe/manifest.json"
@@ -103,6 +110,7 @@ jobs:
           set -euo pipefail
           python3 experiments/php-wasix-cgi-build/prepare.py --validate-only
           python3 experiments/php-wasix-fiber-cgi-probe/build.py --validate-only
+          python3 experiments/php-wasix-cgi-runtime-probe/prepare.py --validate-only
 
       - name: Download, verify and manually place the four fixed host tools
         id: tools
@@ -141,6 +149,24 @@ jobs:
         id: fiber_contract
         run: python3 experiments/php-wasix-fiber-cgi-probe/fiber_cgi_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
 
+      - name: Verify and place only three fixed pure WordPress hook sources
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.units.outcome == 'success' }}
+        id: wordpress_source
+        run: |
+          set -euo pipefail
+          mkdir -p .reference
+          curl --fail --silent --show-error --location \
+            --proto '=https' --proto-redir '=https' \
+            --connect-timeout 30 --max-time 300 --retry 2 --retry-max-time 600 \
+            --max-filesize 35368461 --output .reference/wordpress-7.1.3.tar.gz \
+            https://wordpress.org/wordpress-7.1.3.tar.gz
+          python3 experiments/php-wasix-cgi-runtime-probe/prepare.py --record
+
+      - name: Compare fixed CGI language, pure hooks and actual IO with native
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.units.outcome == 'success' && steps.wordpress_source.outcome == 'success' }}
+        id: runtime_contract
+        run: python3 experiments/php-wasix-cgi-runtime-probe/runtime_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
+
       - name: Record CI outcomes even if preparation or build failed
         if: ${{ always() }}
         env:
@@ -154,6 +180,8 @@ jobs:
           STAGE_RUST: ${{ steps.rust.outcome }}
           STAGE_HOST_LLVM: ${{ steps.host_llvm.outcome }}
           STAGE_UNITS: ${{ steps.units.outcome }}
+          STAGE_WORDPRESS_SOURCE: ${{ steps.wordpress_source.outcome }}
+          STAGE_RUNTIME_CONTRACT: ${{ steps.runtime_contract.outcome }}
           STAGE_FIBER_CONTRACT: ${{ steps.fiber_contract.outcome }}
           PROBE_BACKEND: ${{ matrix.backend }}
         run: |
@@ -174,6 +202,9 @@ jobs:
           inputs += [root / 'experiments/php-wasix-host-probe/llvm-toolchain.json',
                      root / 'experiments/php-wasix-host-probe/prepare_host_llvm.py',
                      root / 'experiments/php-wasix-host-probe/unit_check.py']
+          runtime = root / 'experiments/php-wasix-cgi-runtime-probe'
+          inputs += sorted(runtime.glob('*.py')) + sorted(runtime.glob('*.json'))
+          inputs += sorted(runtime.glob('fixtures/*')) + [runtime / 'evidence/native-cgi-runtime-contract.json']
           report = {
               'format_version': 1,
               'scope': 'Combined NTS PHP Fiber CGI build, exact postopt inspection and native six-case CGI comparison; not product adoption',
@@ -187,7 +218,7 @@ jobs:
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
                          for name in ['PHP_SOURCE', 'DEPS_SOURCE', 'PARSER_SOURCE',
                                       'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD',
-                                      'RUST', 'HOST_LLVM', 'UNITS', 'FIBER_CONTRACT']},
+                                      'RUST', 'HOST_LLVM', 'UNITS', 'WORDPRESS_SOURCE', 'FIBER_CONTRACT', 'RUNTIME_CONTRACT']},
               'input_files': {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                               for path in inputs if path.is_file()},
           }
@@ -203,6 +234,7 @@ jobs:
           name: php-wasix-fiber-cgi-${{ matrix.backend }}-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             experiments/php-wasix-fiber-cgi-probe/evidence/*.json
+            experiments/php-wasix-cgi-runtime-probe/evidence/*.json
             experiments/php-wasix-cgi-build/evidence/toolchain.json
             experiments/php-wasix-host-probe/evidence/*unit-contract.json
             experiments/php-wasix-host-probe/evidence/llvm-toolchain-verification.json

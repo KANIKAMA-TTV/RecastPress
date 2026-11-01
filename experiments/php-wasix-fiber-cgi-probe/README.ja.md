@@ -56,3 +56,10 @@ Rustの`--fiber-cgi-contract`は引数を追加できない専用入口である
 外側のcheckerはRust buildを1200秒、compileを含む3要求を600秒で監督し、所有子processの終了と回収、sourceとmoduleの実行前後の不変性を確認する。これらの期限は製品の要求処理期限・CPU制御の成立を意味しない。
 
 追加時点のローカル検証ではRustの26単体テスト、追加引数3形の実行前拒否、検証記録の正常形と不正14変異の拒否を確認した。最後の記録検証は合成メタデータの検査であり、結合Wasmをビルド・実行した結果ではない。結合候補のLinux実行結果は専用CIとそのreceiptで別に判断する。
+
+
+## 初回の結合Wasm実行
+
+source `af4bceb`の[run 41326284529](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41326284529)では、CraneliftとLLVMの両方で結合CGIをbuildし、最終adapterの命令検査、Linux27 unit、native CGIの6ケース×fresh3要求が通過した。[Craneliftの原記録](evidence/ci-41326284529-cranelift/provenance.json)と[LLVMの原記録](evidence/ci-41326284529-llvm/provenance.json)は、固定JSON ZIPと元commitの完全な入力集合を照合して別に保存する。
+
+各jobの生成物をそのjobのmodule hashへ結び付けている。両job間のbit再現性、製品採用、全PHP互換性、POST等の全CGI動作、WP通常起動、全資源回収を確認した結果にはしない。次に[同じ候補でのIO・pure hooks比較](../php-wasix-cgi-runtime-probe/README.ja.md)を独立stageへ加える。拡張Fiber6ケースの比較も維持する。

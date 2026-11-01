@@ -51,6 +51,10 @@ def compiled_inputs():
                ROOT / 'experiments/php-wasix-fiber-cgi-probe/manifest.json',
                ROOT / 'experiments/php-wasix-fiber-cgi-probe/fixtures/fiber_cgi_contract.php',
                ROOT / 'experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json',
+               ROOT / 'experiments/php-wasix-cgi-runtime-probe/manifest.json',
+               ROOT / 'experiments/php-wasix-cgi-runtime-probe/fixtures/runtime_cgi_contract.php',
+               ROOT / 'experiments/php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json',
+               ROOT / 'experiments/php-wasi-host-probe/wordpress-fixture.json',
                ROOT / 'experiments/php-wasi-host-probe/src/cgi_response.rs'])
 
 

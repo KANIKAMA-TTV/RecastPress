@@ -4,6 +4,10 @@ name: PHP WASIX Fiber prototype
   push:
     branches: ["dev/v0.5"]
     paths:
+      - "experiments/php-wasix-cgi-runtime-probe/manifest.json"
+      - "experiments/php-wasix-cgi-runtime-probe/fixtures/**"
+      - "experiments/php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json"
+      - "experiments/php-wasi-host-probe/wordpress-fixture.json"
       - "experiments/php-wasix-fiber-cgi-probe/fixtures/**"
       - "experiments/php-wasix-fiber-cgi-probe/manifest.json"
       - "experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json"
