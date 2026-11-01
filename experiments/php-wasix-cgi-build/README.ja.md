@@ -1,0 +1,29 @@
+# PHP 8.5.12 WASIX CGIの独立ビルド実験
+
+Rustで直接ホストするCGI候補を作れるか確認する、v0.5の独立P0実験。ここで行うのはビルドと由来の記録までで、生成したguest PHPは実行しない。製品用ランタイム・CGI方式の採用、HTTP互換性、Fiber互換性は確定しない。既存CLI候補のFiber差分を修正したと扱わない。
+
+## 固定する入力
+
+[manifest.json](manifest.json)にPHP source `f4bfae79d5c19028349082f707930cf0951d23b9`、依存source `b77ecbede97aba2df32c86eaeb54ff9f5e44f543`、PHP-Parser source `f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2`を固定する。GitHub checkoutはcommitを指定し、ビルド開始前にHEADとtracked worktreeを確認する。依存sourceに同梱された`lib-eh`と`pgsql-eh`の静的ライブラリは再ビルドせず、サイズ・SHA-256も記録する。
+
+ホスト用取得物は、wasixcc v0.4.4、WASIX sysroot v2026-07-03.1のlegacy EH版、guest compiler LLVM 21.1.206、Binaryen 130の4点。[prepare.py](prepare.py)が公式release URLから取得し、固定サイズとSHA-256を検証した後だけ展開・使用する。asset IDも記録し、別mirrorや未検証の代替物へ切り替えない。これはRustホスト実行用LLVM 22.1とは別のツールチェーン。
+
+手動配置には`WASIXCC_SYSROOT`、`WASIXCC_LLVM_LOCATION`、`WASIXCC_BINARYEN_LOCATION`を使い、`wasixccenv install-executables`で専用binにwrapperを作る。`download-*`、自動installer、npm/pnpmは呼ばず、HOMEも変更しない。展開先は`target/php-wasix-cgi-build`配下に限定する。既存の展開先は再利用せず失敗するため、CIの新しいworkspaceで準備する。
+
+## 公式手順との差分
+
+[公式configure](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/wasix-configure-eh.sh)を`wasix-configure-eh-64.sh`経由でそのまま使い、末尾の`WASIX_EXTRA_CONFIGURE_FLAGS`へ`--enable-cgi`だけを追加する。PHP core/SAPIソースは変更しない。CLIのconfigure設定も残すが、ビルド対象は`make -j2 cgi`だけとする。
+
+`sapi/cgi/php-cgi`へリンクした後、[公式optimizer手順](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/wasix-build-eh.sh)と同じflagsで`php-cgi.wasm`を生成する。公式の`--no-validation`も維持するため、Wasmヘッダ検査とハッシュだけでmodule validation済みとは扱わない。CGIのconfigure/link、最終Wasm ABI、Rustでの実行は新規に実証が必要。
+
+## stub生成用のnative PHP
+
+Ubuntuのaptから入れるnative PHPは`gen_stub.php`を動かすビルド用ツール。対象guestの代替としてHTTPやWordPressを実行しない。ビルド時にPHPの版・SAPI・tokenizer有効性・実行ファイルSHA-256とapt package版を記録し、PHP 7.4以上とtokenizerを要求する。OS imageやaptの更新版は完全固定しておらず、bit単位の再現ビルドを証明するものではない。
+
+[固定gen_stub.php](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/build/gen_stub.php)はPHP-Parser 5.6.1が無ければdigestを確認せずarchiveを取得する。この経路を使わず、[5.6.1 tagの参照先commit](https://api.github.com/repos/nikic/PHP-Parser/git/tags/ff81abb785a814e3279bd7a331658792092ad22e)を`build/PHP-Parser-5.6.1`へ先にcheckoutする。ビルド開始前にcommit・必要ファイル・generatorの参照先を確認する。mtimeを細工してstub生成を省略せず、再生成が必要なら固定parserと記録済みnative PHPを使う。`*_arginfo.h`のビルド前後ハッシュと変更一覧も保存する。
+
+## 検証と保存範囲
+
+静的確認は、実験ディレクトリの`prepare.py --validate-only`と`build.py --validate-only`で行える。取得・展開・ビルド・guest実行を行わない。[専用workflow](../../.github/workflows/php-wasix-cgi-build.yml)は新実験と自身の変更だけをdev/v0.5 pushで起動し、手動起動も定義する。
+
+CIは準備後に`build.py --record`で由来、ツール検証、configure生成物のハッシュ、CGI Wasmのサイズ・SHA-256を保存する。失敗もJSON証跡に残す。upload対象はこの実験の`evidence/*.json`のみ。PHP/LLVM等のバイナリ、archive、source tree、ビルド生成物そのものはuploadしない。実行互換性の確認は別の段階で行う。

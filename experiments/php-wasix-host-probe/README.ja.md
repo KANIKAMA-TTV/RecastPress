@@ -35,7 +35,7 @@ CIはupstream PHP artifactへの読取アクセスとCargo.lockの取得を先�
 python experiments/php-wasix-host-probe/language_check.py --llvm --record
 ```
 
-`--language-contract`だけを追加selectorとして認め、パス・PHPコード・任意引数は受け付けない。同じ[native fixture](../php-runtime-candidate-probe/fixtures/runtime_contract.php)をcompile時のsnapshotとして取り込み、SHA照合後に`/fixture/runtime_contract.php`だけをreadonlyのメモリFSから渡す。読取りとseekを許可し、write・set_len・unlink・rename・link・作成を拒否する。
+言語比較のselectorは`--language-contract`で、パス・PHPコード・任意引数は受け付けない。同じ[native fixture](../php-runtime-candidate-probe/fixtures/runtime_contract.php)をcompile時のsnapshotとして取り込み、SHA照合後に`/fixture/runtime_contract.php`だけをreadonlyのメモリFSから渡す。読取りとseekを許可し、write・set_len・unlink・rename・link・作成を拒否する。
 
 比較は基本値・例外・Fiberの3ケースに限り、型・警告・ケース内部の全フィールドをnative基準と照合する。WPとscratchのディレクトリは渡さず、元fixture内の残り3ケースのmissing-directory結果は未比較として保存する。readonlyの権限照会やWPが成功したとは扱わない。Runnerの他の仮想root書込みの禁止も未達である。
 
@@ -46,6 +46,18 @@ python experiments/php-wasix-host-probe/language_check.py --llvm --record
 [CI run 41295645988](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41295645988)ではLinuxのFSテスト2件・version-onlyは成功したが、言語契約は失敗した。source `64c004f`の[原観測](evidence/linux-llvm-41295645988/linux-llvm-language-contract.json)を変えずに取り込み、[事後比較](evidence/linux-llvm-41295645988/case-comparison.json)で基本値・例外の完全一致とFiberの不一致を確認した。CI中はhostのFiber失敗で全ケース比較へ進まなかったため、事後の個別比較と元の失敗判定を区別する。
 
 Fiberは`Cannot resume a fiber that is not suspended`を返した。期待は通常PHP通り維持し、3ケース全体・製品候補は合格にしない。`compile_elapsed_ms=155366`、`php_execution_elapsed_ms=61`は当該CIの単発観測である。cold compileと実行を分け、次は同じmoduleの再利用を実証する。
+
+この観測後に比較器を変更し、hostが個別ケースの失敗を返しても、取得できた3ケースの一致・不一致をそれぞれ記録するようにした。元CIのraw JSONは変更せず、新実装でも全3ケース一致とhost成功の両方を要求する。
+
+## コンパイル済みmoduleの再利用
+
+```text
+python experiments/php-wasix-host-probe/reuse_check.py --llvm --record
+```
+
+固定`--module-reuse`モードは、ループ外でPHPの`Module::new`を1回だけ呼び、`Module.clone`を3つの要求へ渡す。要求ごとにTokio runtime・WASIX runtime・WasiRunnerを新設し、GLOBALSの初期状態、3つの異なる環境キーのうち該当する1つだけが見えること、stdout/stderrの上限・EOF・終了を観測する。host directory・home・環境継承・networkは渡さない。
+
+compile回数はコード内の明示した呼出し点の計数で、backend内部の全操作の計測ではない。runtimeの`shutdown_timeout`から戻ることを、全thread停止や全RSS返却の証明にしない。プロセス全体は外側checkerが監督する。Windowsでrelease buildと引数拒否を確認し、Linuxの正実行は別途取得する。
 
 ## 実験の制御範囲
 

@@ -1,0 +1,108 @@
+{
+  "format_version": 1,
+  "scope": "independent official PHP 8.5.12 WASIX CGI build only",
+  "php_version": "8.5.12",
+  "guest_executed": false,
+  "product_runtime_selected": false,
+  "sources": {
+    "php": {
+      "repository": "wasix-org/php",
+      "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+      "directory": "source/php"
+    },
+    "deps": {
+      "repository": "wasix-org/php-wasix-deps",
+      "commit": "b77ecbede97aba2df32c86eaeb54ff9f5e44f543",
+      "directory": "source/php-wasix-deps",
+      "kind": "upstream checked-in headers and prebuilt WASIX archives; not rebuilt here"
+    },
+    "parser": {
+      "repository": "nikic/PHP-Parser",
+      "version": "5.6.1",
+      "commit": "f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2",
+      "directory": "source/php/build/PHP-Parser-5.6.1",
+      "tag_ref_url": "https://api.github.com/repos/nikic/PHP-Parser/git/ref/tags/v5.6.1",
+      "annotated_tag_object": "ff81abb785a814e3279bd7a331658792092ad22e",
+      "purpose": "preseed gen_stub.php parser; no unverified automatic parser archive download"
+    }
+  },
+  "assets": [
+    {
+      "name": "wasixcc",
+      "repository": "wasix-org/wasixcc",
+      "tag": "v0.4.4",
+      "asset_id": 496323636,
+      "url": "https://github.com/wasix-org/wasixcc/releases/download/v0.4.4/wasixcc-x86_64-unknown-linux-gnu.tar.gz",
+      "bytes": 3554031,
+      "sha256": "f4c7d4417d4699adc9e56972ab033bb7c05acc87553fd34ea81243470fe8de45",
+      "strip_components": 0,
+      "archive_prefix": "",
+      "directory": "tools/wasixcc",
+      "required_files": ["wasixccenv"],
+      "unpacked_bytes_limit": 67108864
+    },
+    {
+      "name": "sysroot",
+      "repository": "wasix-org/wasix-libc",
+      "tag": "v2026-07-03.1",
+      "asset_id": 465375751,
+      "url": "https://github.com/wasix-org/wasix-libc/releases/download/v2026-07-03.1/sysroot-eh.tar.gz",
+      "bytes": 6142222,
+      "sha256": "8c54240afabda1106c19f284bdfff77f29932caa55f82756f87d01f69ffd50f4",
+      "strip_components": 2,
+      "archive_prefix": "wasix-sysroot-eh/sysroot",
+      "directory": "tools/sysroot-eh",
+      "required_files": ["lib/wasm32-wasi/libc.a"],
+      "unpacked_bytes_limit": 268435456
+    },
+    {
+      "name": "llvm",
+      "repository": "wasix-org/llvm-project",
+      "tag": "21.1.206",
+      "asset_id": 504888362,
+      "url": "https://github.com/wasix-org/llvm-project/releases/download/21.1.206/LLVM-Linux-x86_64.tar.gz",
+      "bytes": 81191584,
+      "sha256": "4066b52816c3382d10c5a7d7cfd6252a5f432459f007c143f07e23bf367c43ea",
+      "strip_components": 0,
+      "archive_prefix": "",
+      "directory": "tools/llvm",
+      "required_files": ["bin/clang", "bin/wasm-ld", "bin/llvm-ar"],
+      "unpacked_bytes_limit": 2147483648
+    },
+    {
+      "name": "binaryen",
+      "repository": "WebAssembly/binaryen",
+      "tag": "version_130",
+      "asset_id": 435610959,
+      "url": "https://github.com/WebAssembly/binaryen/releases/download/version_130/binaryen-version_130-x86_64-linux.tar.gz",
+      "bytes": 107371282,
+      "sha256": "0a18362361ad05465118cd8eeb72edaeec89de6894bc283576ef4e07aa3babcc",
+      "strip_components": 1,
+      "archive_prefix": "binaryen-version_130",
+      "directory": "tools/binaryen",
+      "required_files": ["bin/wasm-opt"],
+      "unpacked_bytes_limit": 1073741824
+    }
+  ],
+  "build": {
+    "configure_script": "wasix-configure-eh-64.sh",
+    "extra_configure_flags": "--enable-cgi",
+    "make_target": "cgi",
+    "make_jobs": 2,
+    "raw_output": "sapi/cgi/php-cgi",
+    "wasm_output": "sapi/cgi/php-cgi.wasm",
+    "optimizer_flags": [
+      "-O3", "--emit-exnref", "--no-validation", "--all-features", "--strip-debug", "--asyncify",
+      "--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot",
+      "--pass-arg=asyncify-ignore-indirect", "--pass-arg=max-func-params@32"
+    ]
+  },
+  "references": {
+    "official_workflow": "https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/.github/workflows/wasix-pr.yaml",
+    "official_configure": "https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/wasix-configure-eh.sh",
+    "official_optimizer": "https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/wasix-build-eh.sh",
+    "manual_tool_configuration": "https://github.com/wasix-org/wasixcc/blob/aa934ded16300ab0d5b78de6647214b85a9a7fd7/README.md",
+    "wrapper_install_source": "https://github.com/wasix-org/wasixcc/blob/aa934ded16300ab0d5b78de6647214b85a9a7fd7/src/wasixccenv.rs"
+  },
+  "redistribute_binaries": false
+}

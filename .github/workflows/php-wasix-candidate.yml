@@ -174,6 +174,12 @@ jobs:
           set -euo pipefail
           python3 experiments/php-wasix-host-probe/check.py --llvm --record
 
+      - name: Reuse one compiled PHP module across three isolated requests
+        id: reuse
+        run: |
+          set -euo pipefail
+          python3 experiments/php-wasix-host-probe/reuse_check.py --llvm --record
+
       - name: Compare three fixed PHP language cases with the native reference
         id: language
         run: |
@@ -191,6 +197,7 @@ jobs:
           STAGE_PROBE: ${{ steps.probe.outcome }}
           STAGE_LANGUAGE: ${{ steps.language.outcome }}
           STAGE_FIXTURE_FS: ${{ steps.fixture_fs.outcome }}
+          STAGE_REUSE: ${{ steps.reuse.outcome }}
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -206,12 +213,12 @@ jobs:
                     'experiments/php-runtime-candidate-probe/artifact.json']
           report = {
               'format_version': 1,
-              'scope': 'independent Linux LLVM version and three-case language P0 candidate',
+              'scope': 'independent Linux LLVM version, module reuse and language P0 candidate',
               'source_commit': os.environ['GITHUB_SHA'],
               'run_id': os.environ['GITHUB_RUN_ID'],
               'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
-                         for name in ['DEPENDENCIES', 'RUST', 'PHP', 'CARGO', 'LLVM', 'FIXTURE_FS', 'PROBE', 'LANGUAGE']},
+                         for name in ['DEPENDENCIES', 'RUST', 'PHP', 'CARGO', 'LLVM', 'FIXTURE_FS', 'PROBE', 'REUSE', 'LANGUAGE']},
               'input_files': {name: hashlib.sha256((root / name).read_bytes()).hexdigest()
                               for name in inputs if (root / name).is_file()},
               'wordpress_bootstrapped': False,

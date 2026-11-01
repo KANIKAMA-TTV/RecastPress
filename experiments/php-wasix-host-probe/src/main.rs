@@ -4,6 +4,7 @@
 //! A version-only result does not establish exception, WordPress, or DB support.
 
 mod language_contract;
+mod module_reuse;
 
 use std::fs::File;
 use std::io::{self, Read, SeekFrom, Write};
@@ -39,6 +40,7 @@ const PHP_PROGRAM: &str = "echo json_encode(['php_version'=>PHP_VERSION,'php_int
 enum ProbeMode {
     VersionOnly,
     LanguageContract,
+    ModuleReuse,
 }
 
 #[cfg(feature = "llvm")]
@@ -50,10 +52,12 @@ const ENGINE_NAME: &str = "wasmer-7.2.0/cranelift";
 compile_error!("Enable either the cranelift or llvm feature");
 
 fn main() -> ExitCode {
-    // The single extra selector never accepts PHP source, a script path, an
+    // The fixed selectors never accept PHP source, a script path, an
     // environment mapping, or arbitrary PHP arguments from the caller.
     let mode = if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--language-contract"] {
         ProbeMode::LanguageContract
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--module-reuse"] {
+        ProbeMode::ModuleReuse
     } else {
         ProbeMode::VersionOnly
     };
@@ -110,17 +114,19 @@ fn main() -> ExitCode {
 
     if mode == ProbeMode::LanguageContract {
         language_contract::describe(&mut report);
+    } else if mode == ProbeMode::ModuleReuse {
+        module_reuse::describe(&mut report);
     }
 
     let passed = match run(&mut report, mode) {
         Ok(()) => {
             report["ok"] = json!(true);
-            report["phase"] = json!(if mode == ProbeMode::VersionOnly {
-                "version_only_verified"
-            } else {
+            report["phase"] = json!(match mode {
+                ProbeMode::VersionOnly => "version_only_verified",
                 // Observation is not a native comparison. language_check.py
                 // compares all fields of the three cases against the receipt.
-                "language_contract_observed"
+                ProbeMode::LanguageContract => "language_contract_observed",
+                ProbeMode::ModuleReuse => "module_reuse_verified",
             });
             true
         }
@@ -149,8 +155,9 @@ fn main() -> ExitCode {
 fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
     ensure!(
         (mode == ProbeMode::VersionOnly && std::env::args_os().len() == 1)
-            || (mode == ProbeMode::LanguageContract && std::env::args_os().len() == 2),
-        "this fixed probe accepts only --language-contract or no arguments"
+            || (mode == ProbeMode::LanguageContract && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::ModuleReuse && std::env::args_os().len() == 2),
+        "this fixed probe accepts only --language-contract, --module-reuse or no arguments"
     );
     if mode == ProbeMode::LanguageContract {
         language_contract::verify_fixture(report)?;
@@ -174,6 +181,10 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
     report["artifact"]["observed_sha256"] = json!(digest);
     ensure!(digest == ARTIFACT_SHA256, "artifact SHA-256 mismatch");
     report["artifact"]["verified"] = json!(true);
+
+    if mode == ProbeMode::ModuleReuse {
+        return module_reuse::verify(bytes, report);
+    }
 
     let (stdout, stderr) = execute(bytes, report, mode)?;
     ensure!(stderr.is_empty(), "PHP wrote unexpected stderr");
@@ -258,6 +269,7 @@ fn execute(bytes: Vec<u8>, report: &mut Value, mode: ProbeMode) -> Result<(Vec<u
             ProbeMode::LanguageContract => {
                 language_contract::configure(&mut runner);
             }
+            ProbeMode::ModuleReuse => bail!("module reuse must use its separate execution path"),
         }
         let capabilities = runner.capabilities_mut();
         capabilities.insecure_allow_all = false;

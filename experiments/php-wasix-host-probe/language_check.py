@@ -94,16 +94,29 @@ def load_baseline():
     return native
 
 
-def compare_observation(observed, native):
+def compare_cases(observed, native):
     equal(observed['format_version'], 1, 'observation format')
     equal(observed['runtime'], native['observation']['runtime'], 'runtime identity')
     equal(observed['unexpected_output_hex'], '', 'unexpected output')
     require(type(observed['cases']) is dict and set(observed['cases']) == set(CASES + UNCOMPARED),
             'missing or unexpected fixture cases')
-    # Every selected field, including error/warning shape and scalar type, must
-    # match the native observation. The other three results remain in evidence.
+    # Preserve each comparison even when a different case fails. This does not
+    # change the all-three acceptance condition or the host execution verdict.
+    results = {}
     for name in CASES:
-        equal(observed['cases'][name], native['observation']['cases'][name], name)
+        try:
+            equal(observed['cases'][name], native['observation']['cases'][name], name)
+        except ValueError as error:
+            results[name] = {'equal_to_native': False, 'difference': str(error)}
+        else:
+            results[name] = {'equal_to_native': True}
+    return results
+
+
+def compare_observation(observed, native):
+    results = compare_cases(observed, native)
+    for name, result in results.items():
+        require(result['equal_to_native'], result.get('difference', 'case differs: ' + name))
 
 
 def main():
@@ -189,11 +202,13 @@ def main():
         equal(value['isolation']['guest_environment_supplied'], [], 'guest environment')
         equal(value['isolation']['wordpress_directory_supplied'], False, 'WordPress directory')
         equal(value['isolation']['scratch_directory_supplied'], False, 'scratch directory')
+        stage = 'comparison'
+        report['case_results'] = compare_cases(value['php'], native)
         require(completed.returncode == 0 and value['ok'] is True and
-                value['phase'] == 'language_contract_observed', 'language fixture did not complete')
+                value['phase'] == 'language_contract_observed',
+                'host language contract validation failed: ' + str(value.get('error', 'no successful result')))
         equal(value['exceptions_executed'], True, 'exception case observation')
         equal(value['fiber_executed'], True, 'Fiber case observation')
-        stage = 'comparison'
         compare_observation(value['php'], native)
         report['comparison_passed'] = True
         report['outcome'] = 'language_contract_passed'

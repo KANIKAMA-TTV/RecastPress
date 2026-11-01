@@ -13,3 +13,7 @@ embedは[初期化時](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349
 pure-memory loopbackの候補は実lockの`virtual-net 0.702.1`にある公開safe API、`LoopbackTcpListener::new/connect_to`と`TcpSocketHalf::split`である。`VirtualNetworking`の`listen_tcp/bind_tcp`だけを固定addrへ許可し、guestのconnectと他の能力を既定Unsupportedへ保つ案。`LocalNetworking`やhost-vnetを全面許可する必要はない。ただしbuffer上限と異常回収は別途確認が必要で、`WasiProcess::terminate`だけでthread終了を保証しない。
 
 CLI serverはHTTPの`Connection: close`等を返す。CGI parserのhop-by-hop拒否を弱めて兼用せず、HTTP transportとして別に検証する。最初のP0として既存artifactのSAPIを試す案と、要求ごとの正常終了に直結するCGI新ビルド案を比較する。どちらもNode.js・native PHPを製品実行依存に追加しない。
+
+## CGIビルドの実験化
+
+[独立CGIビルド](../php-wasix-cgi-build/README.ja.md)を用意した。configure差分は`--enable-cgi`だけとし、固定source・同梱静的ライブラリ・4つの取得ツール・stub用parserのcommitを照合する。ビルド用native PHPは版と実行ファイルSHAを記録する。実物取得・展開・CGIビルドはCIで別に観測し、ビルド成功をPHP要求の実行成功やFiber修正へ置き換えない。

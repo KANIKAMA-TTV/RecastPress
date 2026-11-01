@@ -31,3 +31,11 @@ WASIX PHPの公式CIは、wasixcc v0.4.4、sysroot v2026-07-03.1、LLVM 21.1.206
 [Rust WASIXホスト](../php-wasix-host-probe/README.ja.md)のWindows Craneliftはmodule compileでpanicし、PHPを実行できなかった。Linux LLVMはRust 1.94.0でビルドし、PHP 8.5.12の固定出力と整数幅8Bを観測した。nativeの6ケース比較基準は別に保存したが、このLinux基本実行が例外・Fiber等の一致まで示すわけではない。
 
 初回正式配備先はLinux Docker Compose・Railway・Lightsail Linuxであり、Windows nativeは元の初回対応範囲に含まれない。Windows不具合の診断と、Linux上でのP0成立実証を区別する。CLI版からWPの要求SAPIへつなぐ入口、権限照会、要求I/O・RPC・回収・配布監査を引き続き検証する。
+
+## 同日追補：Fiber差分の原因
+
+[言語契約の実測](../php-wasix-host-probe/evidence/linux-llvm-41295645988/case-comparison.json)では基本値・例外がnativeと一致し、Fiberは失敗した。固定PHPの[configure](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/configure.ac#L1199-L1307)はwasm用ASMを持たず、`__wasi__`ではucontextの検査・defineも省く。SDKも[ucontext headerを除外](https://github.com/wasix-org/wasix-libc/blob/09503b230e8acc721c1e013ca28a41bf149e4ee2/Makefile#L488-L500)する。`--disable-fiber-asm`やhostのthreading設定だけで直る問題ではない。
+
+[WASIのinit FAILURE分岐](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/Zend/zend_fibers.c#L418-L464)と、startがsuspendへ到達せずresumeで状態エラーになる流れは、今回の`Cannot resume a fiber that is not suspended`と整合する。SDKの[context API](https://github.com/wasix-org/wasix-libc/blob/09503b230e8acc721c1e013ca28a41bf149e4ee2/libc-bottom-half/headers/public/wasix/context.h)へPHPを接続するには、Zend backendまたはucontext adapterの移植と、[Wasmerのasync/context条件](https://github.com/wasmerio/wasmer/blob/v7.2.0/lib/wasix/src/state/context_switching.rs#L113-L159)を含む検証が必要で、実装規模は未確定である。
+
+候補採用を保留し、通常PHPの期待値を維持する。同じZendを使うCGIビルドだけではこの差分を修正しない。新SAPI・module再利用・資源制御を独立して進め、互換範囲を黙って削減しない。

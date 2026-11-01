@@ -1,0 +1,134 @@
+name: PHP WASIX CGI build candidate
+
+"on":
+  push:
+    branches: ["dev/v0.5"]
+    paths:
+      - "experiments/php-wasix-cgi-build/**"
+      - ".github/workflows/php-wasix-cgi-build.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: php-wasix-cgi-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out experiment definitions
+        # actions/checkout v4.2.2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+
+      - name: Check out the fixed official PHP source
+        id: php_source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: wasix-org/php
+          ref: f4bfae79d5c19028349082f707930cf0951d23b9
+          path: target/php-wasix-cgi-build/source/php
+          persist-credentials: false
+
+      - name: Check out the fixed prebuilt WASIX dependency source
+        id: deps_source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: wasix-org/php-wasix-deps
+          ref: b77ecbede97aba2df32c86eaeb54ff9f5e44f543
+          path: target/php-wasix-cgi-build/source/php-wasix-deps
+          persist-credentials: false
+
+      - name: Preseed the fixed stub parser without its automatic archive download
+        id: parser_source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: nikic/PHP-Parser
+          ref: f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2
+          path: target/php-wasix-cgi-build/source/php/build/PHP-Parser-5.6.1
+          persist-credentials: false
+
+      - name: Install native build tools and stub-generation PHP
+        id: dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            build-essential autoconf automake bison re2c pkg-config wabt \
+            curl xz-utils tar php-cli php-xml
+
+      - name: Validate closed build inputs
+        id: definitions
+        run: |
+          set -euo pipefail
+          python3 experiments/php-wasix-cgi-build/prepare.py --validate-only
+          python3 experiments/php-wasix-cgi-build/build.py --validate-only
+
+      - name: Download, verify and manually place the four fixed host tools
+        id: tools
+        run: python3 experiments/php-wasix-cgi-build/prepare.py --record
+
+      - name: Build the official CGI candidate without executing guest PHP
+        id: build
+        run: python3 experiments/php-wasix-cgi-build/build.py --record
+
+      - name: Record CI outcomes even if preparation or build failed
+        if: ${{ always() }}
+        env:
+          STAGE_PHP_SOURCE: ${{ steps.php_source.outcome }}
+          STAGE_DEPS_SOURCE: ${{ steps.deps_source.outcome }}
+          STAGE_PARSER_SOURCE: ${{ steps.parser_source.outcome }}
+          STAGE_DEPENDENCIES: ${{ steps.dependencies.outcome }}
+          STAGE_DEFINITIONS: ${{ steps.definitions.outcome }}
+          STAGE_TOOLS: ${{ steps.tools.outcome }}
+          STAGE_BUILD: ${{ steps.build.outcome }}
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          import os
+
+          root = Path.cwd()
+          experiment = root / 'experiments/php-wasix-cgi-build'
+          evidence = experiment / 'evidence'
+          evidence.mkdir(parents=True, exist_ok=True)
+          inputs = [root / '.github/workflows/php-wasix-cgi-build.yml']
+          inputs += sorted(experiment.glob('*.py')) + sorted(experiment.glob('*.json'))
+          report = {
+              'format_version': 1,
+              'scope': 'CGI build only; no guest execution or product adoption',
+              'guest_executed': False,
+              'product_runtime_selected': False,
+              'redistributed_binaries': False,
+              'source_commit': os.environ['GITHUB_SHA'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
+                         for name in ['PHP_SOURCE', 'DEPS_SOURCE', 'PARSER_SOURCE',
+                                      'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD']},
+              'input_files': {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+                              for path in inputs if path.is_file()},
+          }
+          (evidence / 'ci-stages.json').write_text(json.dumps(report, indent=2) + '\n',
+                                                encoding='utf-8', newline='\n')
+          PY
+
+      - name: Upload JSON evidence only
+        if: ${{ always() }}
+        # actions/upload-artifact v4.6.2; no source, toolchain or Wasm binaries.
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: php-wasix-cgi-build-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: experiments/php-wasix-cgi-build/evidence/*.json
+          if-no-files-found: warn
+          retention-days: 14
