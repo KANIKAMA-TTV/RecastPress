@@ -39,3 +39,11 @@ WASIX PHPの公式CIは、wasixcc v0.4.4、sysroot v2026-07-03.1、LLVM 21.1.206
 [WASIのinit FAILURE分岐](https://github.com/wasix-org/php/blob/f4bfae79d5c19028349082f707930cf0951d23b9/Zend/zend_fibers.c#L418-L464)と、startがsuspendへ到達せずresumeで状態エラーになる流れは、今回の`Cannot resume a fiber that is not suspended`と整合する。SDKの[context API](https://github.com/wasix-org/wasix-libc/blob/09503b230e8acc721c1e013ca28a41bf149e4ee2/libc-bottom-half/headers/public/wasix/context.h)へPHPを接続するには、Zend backendまたはucontext adapterの移植と、[Wasmerのasync/context条件](https://github.com/wasmerio/wasmer/blob/v7.2.0/lib/wasix/src/state/context_switching.rs#L113-L159)を含む検証が必要で、実装規模は未確定である。
 
 候補採用を保留し、通常PHPの期待値を維持する。同じZendを使うCGIビルドだけではこの差分を修正しない。新SAPI・module再利用・資源制御を独立して進め、互換範囲を黙って削減しない。
+
+## 同日追補：guest演算予算の次の実証
+
+以下はWasmer固定commit `93bd021012baafda53df2030db3ce1758dc1e336`のsource調査で、依存追加・実行は未実施。[Metering](https://github.com/wasmerio/wasmer/blob/93bd021012baafda53df2030db3ce1758dc1e336/lib/middlewares/src/metering.rs)にはsafeな初期予算設定・残量照会・再設定の公開APIがあり、[LLVM](https://github.com/wasmerio/wasmer/blob/93bd021012baafda53df2030db3ce1758dc1e336/lib/compiler-llvm/src/config.rs)もmiddlewareを通す。予算はinstance globalへ入り、同一moduleの新instanceでは初期値に戻る。一つのMeteringを別moduleのcompileへ流用するとpanicするため、小WATとPHPには別engineを用意する。
+
+[instance setup callback](https://github.com/wasmerio/wasmer/blob/93bd021012baafda53df2030db3ce1758dc1e336/lib/wasix/src/runtime/mod.rs)で開始値を照合し、recycle時は公開instanceとstoreから実`Remaining`／`Exhausted`を読む案とする。setupは`Instance::new`後なので、Wasm start sectionのない固定moduleだけを先行対象にし、compile時の初期予算も省かない。LLVM＋formal EH＋Meteringの組合せは未実証であり、小WATの正常→無限loop→正常とthrow/catch領域を先に確認してから、別engineの固定PHPへ進む。
+
+これはWasm演算の重み付き予算で、時間・native命令・PHP opcodeの上限ではない。hostcall・待機・compileを止める保証もなく、外側の所有process期限とmemory制約を残す。trap文言や非zero終了だけで予算による停止と判定せず、実`Exhausted`、EOF・回収、次要求の初期予算を成功条件にする。PHPのfinallyや通常shutdownの完走も前提にしない。

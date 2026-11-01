@@ -1,0 +1,69 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "7c57fad7a7b996f4dddad3a23c3d71ef79114910",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41302992818",
+  "artifact_id": 13082738133,
+  "artifact_zip_bytes": 28128,
+  "artifact_zip_sha256": "716a20927a6e2e9f7f6b713bf30164dab31bcfab39fd66b1a8ce82a63f68696c",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "success",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "27f0fb97846a6ff4a5a31078a9d9a7dce2ebdee98ecd2b9b6e34487b9a6ebb7c",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "2e74181453ed24bb1988792ce91227374d7a1e55340d454a1e900147345b854a",
+    "experiments/php-wasix-host-probe/cgi_check.py": "39e855c49af42323b8c1816574903c00470bea1e457de5d437c69a8b4e0e54ae"
+  },
+  "imported_files": {
+    "ci-stages.json": "abcf892268fd8b76f737c98aaeca613c77a4cfc79de3b92e06a72c345519f64f",
+    "build.json": "922735e7450d4e02fac089663c61cc769c880ce1cb92824e9ffc9fcf475c4128",
+    "toolchain.json": "3db1f2d977962d1119230abe14fc837a2dde31c32e747b1c4c15bcb3f67a3754",
+    "linux-llvm-cgi-contract.json": "35836e4596b069e87eefdc5fd9fe6a79fbcd45ce2108cc1c814dace5bdc779f7",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854",
+    "native-cgi-contract.json": "1412691e99c2c3ecb954574eeba08d79f5a35e5c1e31d2283e62e29063f478fa"
+  },
+  "observations": {
+    "tool_preparation_passed": true,
+    "configure_passed": true,
+    "cgi_build_passed": true,
+    "cgi_guest_executed": true,
+    "cgi_wasm": {
+      "path": "sapi/cgi/php-cgi.wasm",
+      "bytes": 40002084,
+      "sha256": "2879787251cea507843d6ab98c0f0fd4eea5005b5fe74120c8c512541a73ed59",
+      "wasm_header_verified": true,
+      "executed": false
+    },
+    "builder_executed_guest": false,
+    "native_comparison_passed": true,
+    "native_comparison_results": {
+      "get_cookie": {
+        "equal_to_native": true,
+        "body_comparison": "exact-JSON-types-and-values-after-declared-path-normalization"
+      },
+      "post_raw_body": {
+        "equal_to_native": true,
+        "body_comparison": "exact-JSON-types-and-values-after-declared-path-normalization"
+      },
+      "status_cookies_binary": {
+        "equal_to_native": true,
+        "body_comparison": "exact-binary-bytes"
+      }
+    },
+    "compile_elapsed_ms": 157978,
+    "request_execution_elapsed_ms": [
+      69,
+      70,
+      65
+    ],
+    "actual_http_listener_tested": false,
+    "real_db": false,
+    "wordpress_bootstrapped": false,
+    "reproducible_build_verified": false
+  }
+}

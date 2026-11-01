@@ -1,0 +1,39 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "7c57fad7a7b996f4dddad3a23c3d71ef79114910",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41302992753",
+  "artifact_id": 13082023573,
+  "artifact_zip_bytes": 57423,
+  "artifact_zip_sha256": "2b5326b20eaa7ab1be6462678920e553568699accd20a0c766a0872bb0689926",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "27f0fb97846a6ff4a5a31078a9d9a7dce2ebdee98ecd2b9b6e34487b9a6ebb7c",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "2e74181453ed24bb1988792ce91227374d7a1e55340d454a1e900147345b854a",
+    "experiments/php-wasix-host-probe/cgi_check.py": "39e855c49af42323b8c1816574903c00470bea1e457de5d437c69a8b4e0e54ae"
+  },
+  "imported_files": {
+    "ci-stages.json": "fb815ef06bc1fb14de00725624c44261813e92d6438ec313af426c9d916b7e06",
+    "linux-llvm.json": "d44b83759e17d9bf3dd7457f89da06039fd4f22ea824ac97a74c25fa2e6b69b3",
+    "linux-llvm-module-reuse.json": "586b58c6f62ff6f58fa4d2b41cdfb4008793aa878ff0c530bf5cbb40eef8bbbe",
+    "linux-llvm-php-memory-cap.json": "bb46b90c234f9d3ea9cc7410192303d5fbc631f39a0632c45d711d437b3705b1",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  },
+  "observations": {
+    "module_reuse_passed": true,
+    "php_memory_diagnostic_passed": false,
+    "failed_cap_bytes": 67108864,
+    "failure_phase": "OPcache startup before PHP script",
+    "capped_script_execution_verified": false,
+    "recovery_verified": false,
+    "uncapped_allocation_control_passed": true,
+    "language_cases_executed": false
+  }
+}

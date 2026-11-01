@@ -10,6 +10,8 @@ mod memory_limits;
 mod memory_policy;
 mod module_reuse;
 mod php_memory_cap;
+mod rpc_contract;
+mod rpc_fs;
 
 use std::fs::File;
 use std::io::{self, Read, SeekFrom, Write};
@@ -48,6 +50,7 @@ enum ProbeMode {
     ModuleReuse,
     PhpMemoryCap,
     CgiContract,
+    RpcContract,
 }
 
 #[cfg(feature = "llvm")]
@@ -69,6 +72,8 @@ fn main() -> ExitCode {
         ProbeMode::PhpMemoryCap
     } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--cgi-contract"] {
         ProbeMode::CgiContract
+    } else if std::env::args_os().skip(1).collect::<Vec<_>>() == ["--rpc-contract"] {
+        ProbeMode::RpcContract
     } else {
         ProbeMode::VersionOnly
     };
@@ -131,6 +136,8 @@ fn main() -> ExitCode {
         php_memory_cap::describe(&mut report);
     } else if mode == ProbeMode::CgiContract {
         cgi_contract::describe(&mut report);
+    } else if mode == ProbeMode::RpcContract {
+        rpc_contract::describe(&mut report);
     }
 
     let passed = match run(&mut report, mode) {
@@ -144,6 +151,7 @@ fn main() -> ExitCode {
                 ProbeMode::ModuleReuse => "module_reuse_verified",
                 ProbeMode::PhpMemoryCap => "php_memory_cap_diagnostic_verified",
                 ProbeMode::CgiContract => "cgi_contract_verified",
+                ProbeMode::RpcContract => "rpc_contract_diagnostic_verified",
             });
             true
         }
@@ -175,8 +183,9 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
             || (mode == ProbeMode::LanguageContract && std::env::args_os().len() == 2)
             || (mode == ProbeMode::ModuleReuse && std::env::args_os().len() == 2)
             || (mode == ProbeMode::PhpMemoryCap && std::env::args_os().len() == 2)
-            || (mode == ProbeMode::CgiContract && std::env::args_os().len() == 2),
-        "this fixed probe accepts only --language-contract, --module-reuse, --php-memory-cap, --cgi-contract or no arguments"
+            || (mode == ProbeMode::CgiContract && std::env::args_os().len() == 2)
+            || (mode == ProbeMode::RpcContract && std::env::args_os().len() == 2),
+        "this fixed probe accepts only --language-contract, --module-reuse, --php-memory-cap, --cgi-contract, --rpc-contract or no arguments"
     );
     if mode == ProbeMode::CgiContract {
         return cgi_contract::verify(report);
@@ -208,6 +217,8 @@ fn run(report: &mut Value, mode: ProbeMode) -> Result<()> {
         return module_reuse::verify(bytes, report);
     } else if mode == ProbeMode::PhpMemoryCap {
         return php_memory_cap::verify(bytes, report);
+    } else if mode == ProbeMode::RpcContract {
+        return rpc_contract::verify(bytes, report);
     }
 
     let (stdout, stderr) = execute(bytes, report, mode)?;
@@ -300,6 +311,7 @@ fn execute(bytes: Vec<u8>, report: &mut Value, mode: ProbeMode) -> Result<(Vec<u
             ProbeMode::CgiContract => {
                 bail!("CGI contract must use its generated artifact execution path")
             }
+            ProbeMode::RpcContract => bail!("RPC contract must use its separate execution path"),
         }
         let capabilities = runner.capabilities_mut();
         capabilities.insecure_allow_all = false;

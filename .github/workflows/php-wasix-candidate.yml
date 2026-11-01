@@ -107,7 +107,7 @@ jobs:
             --max-filesize 741670068 --output "$LLVM_ARCHIVE" "$LLVM_URL"
           python3 experiments/php-wasix-host-probe/prepare_host_llvm.py
 
-      - name: Test fixture filesystem, memory policy and CGI parser
+      - name: Test fixture filesystem, memory policy, private RPC and CGI parser
         id: fixture_fs
         run: |
           set -euo pipefail
@@ -127,13 +127,21 @@ jobs:
           set -euo pipefail
           python3 experiments/php-wasix-host-probe/reuse_check.py --llvm --record
 
+      - name: Verify private PHP to Rust RPC, request isolation and incomplete-frame recovery
+        id: rpc
+        run: |
+          set -euo pipefail
+          python3 experiments/php-wasix-host-probe/rpc_check.py --llvm --record
+
       - name: Verify fixed PHP memory ceiling, OOM, recovery and uncapped control
+        if: ${{ !cancelled() && steps.reuse.outcome == 'success' }}
         id: php_memory
         run: |
           set -euo pipefail
           python3 experiments/php-wasix-host-probe/memory_check.py --llvm --record
 
       - name: Compare three fixed PHP language cases with the native reference
+        if: ${{ !cancelled() && steps.reuse.outcome == 'success' }}
         id: language
         run: |
           set -euo pipefail
@@ -151,6 +159,7 @@ jobs:
           STAGE_LANGUAGE: ${{ steps.language.outcome }}
           STAGE_FIXTURE_FS: ${{ steps.fixture_fs.outcome }}
           STAGE_REUSE: ${{ steps.reuse.outcome }}
+          STAGE_RPC: ${{ steps.rpc.outcome }}
           STAGE_PHP_MEMORY: ${{ steps.php_memory.outcome }}
         run: |
           python3 - <<'PY'
@@ -167,12 +176,12 @@ jobs:
                     'experiments/php-runtime-candidate-probe/artifact.json']
           report = {
               'format_version': 1,
-              'scope': 'independent Linux LLVM version, module reuse, fixed PHP memory and language P0 candidate',
+              'scope': 'independent Linux LLVM version, module reuse, private RPC, fixed PHP memory and language P0 candidate',
               'source_commit': os.environ['GITHUB_SHA'],
               'run_id': os.environ['GITHUB_RUN_ID'],
               'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
-                         for name in ['DEPENDENCIES', 'RUST', 'PHP', 'CARGO', 'LLVM', 'FIXTURE_FS', 'PROBE', 'REUSE', 'PHP_MEMORY', 'LANGUAGE']},
+                         for name in ['DEPENDENCIES', 'RUST', 'PHP', 'CARGO', 'LLVM', 'FIXTURE_FS', 'PROBE', 'REUSE', 'RPC', 'PHP_MEMORY', 'LANGUAGE']},
               'input_files': {name: hashlib.sha256((root / name).read_bytes()).hexdigest()
                               for name in inputs if (root / name).is_file()},
               'wordpress_bootstrapped': False,

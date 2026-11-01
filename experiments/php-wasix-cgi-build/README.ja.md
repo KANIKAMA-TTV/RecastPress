@@ -32,10 +32,12 @@ Ubuntuのaptから入れるnative PHPは`gen_stub.php`を動かすビルド用�
 
 ## 検証と保存範囲
 
-静的確認は、実験ディレクトリの`prepare.py --validate-only`と`build.py --validate-only`で行える。取得・展開・ビルド・guest実行を行わない。[専用workflow](../../.github/workflows/php-wasix-cgi-build.yml)は新実験と自身の変更だけをdev/v0.5 pushで起動し、手動起動も定義する。
+静的確認は、実験ディレクトリの`prepare.py --validate-only`と`build.py --validate-only`で行える。取得・展開・ビルド・guest実行を行わない。[専用workflow](../../.github/workflows/php-wasix-cgi-build.yml)は当実験・共通Rustホスト・自身の変更をdev/v0.5 pushで起動し、手動起動も定義する。
 
 CIは準備後に`build.py --record`で由来、ツール検証、configure生成物のハッシュ、CGI Wasmのサイズ・SHA-256をこの実験の`evidence/*.json`へ保存する。失敗もJSON証跡に残す。PHP/LLVM等のバイナリ、archive、source tree、ビルド生成物そのものはuploadしない。実行checkerのJSON追加は後述のとおり、builderの記録と区別する。
 
 [run 41300641538](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41300641538)では、source `98215a2`の[明示patch付きビルド](evidence/ci-41300641538/provenance.json)が成功した。最終Wasmは40,002,084B、SHA-256 `6fb1d3c02e57aef7fbd9f06b315a93eab1d985453d104aab9147bc34c6837c43`。これは当該jobの生成物hashで、次回buildが同じbyteになるとの宣言ではない。Rustでの要求実行はこのrunには含まれない。
 
 後続workflowでは、別系統のhost LLVM22.1/Rust1.94を準備して[固定CGI checker](../php-wasix-host-probe/cgi_check.py)を同jobで実行する。生成物をuploadして受け渡さず、builderのguest未実行receiptと実行checkerのreceiptを分ける。uploadは両実験の該当JSONだけで、バイナリは含まない。GET/POST等が通っても、WP bootstrap・DB・Fiber・製品採用を合格にしない。
+
+[run 41302992818](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41302992818)はsource `7c57fad`でbuildとRust内の3要求・native比較に成功した。[原記録と元source照合](evidence/ci-41302992818/provenance.json)を保存した。今回のWasmは同じ40,002,084BだがSHAは`2879787251cea507843d6ab98c0f0fd4eea5005b5fe74120c8c512541a73ed59`であり、bit単位の再現性は成立確認していない。実行したバイトは同jobのbuilder receiptと前後照合されている。

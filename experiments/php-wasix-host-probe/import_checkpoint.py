@@ -8,11 +8,34 @@ import zipfile
 import import_ci_evidence as reader
 import language_check
 import reuse_check
+import cgi_check
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SOURCE = '071c9443ba56b2b5dd27032567ed3e7a9c8d0045'
 SPECS = {
+    '41302992818': {
+        'source': '7c57fad7a7b996f4dddad3a23c3d71ef79114910',
+        'kind': 'cgi-contract', 'artifact': 13082738133, 'bytes': 28128,
+        'sha256': '716a20927a6e2e9f7f6b713bf30164dab31bcfab39fd66b1a8ce82a63f68696c',
+        'directory': 'experiments/php-wasix-cgi-build',
+        'current': ['ci-stages.json', 'build.json', 'toolchain.json', 'linux-llvm-cgi-contract.json',
+                    'llvm-toolchain-verification.json', 'native-cgi-contract.json'],
+        'archive_members': {
+            **{name: 'php-wasix-cgi-build/evidence/' + name
+               for name in ['ci-stages.json', 'build.json', 'toolchain.json']},
+            **{name: 'php-wasix-host-probe/evidence/' + name for name in
+               ['linux-llvm-cgi-contract.json', 'llvm-toolchain-verification.json', 'native-cgi-contract.json']},
+        },
+    },
+    '41302992753': {
+        'source': '7c57fad7a7b996f4dddad3a23c3d71ef79114910',
+        'kind': 'php-memory-startup-failed', 'artifact': 13082023573, 'bytes': 57423,
+        'sha256': '2b5326b20eaa7ab1be6462678920e553568699accd20a0c766a0872bb0689926',
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-llvm.json', 'linux-llvm-module-reuse.json',
+                    'linux-llvm-php-memory-cap.json', 'llvm-toolchain-verification.json'],
+    },
     '41300641489': {
         'source': '98215a27f7f48f7738ad6e0008d3f1fd97473fe0',
         'kind': 'module-reuse', 'artifact': 13081821666, 'bytes': 38109,
@@ -87,9 +110,11 @@ def verify_reuse(data):
     }
 
 
-def verify_cgi(data, success):
+def verify_cgi(data, success, contract=False):
     expected = dict.fromkeys(['php_source', 'deps_source', 'parser_source', 'dependencies', 'definitions', 'tools'], 'success')
     expected['build'] = 'success' if success else 'failure'
+    if contract:
+        expected.update(rust='success', host_llvm='success', cgi_contract='success')
     require(data['ci-stages.json']['stages'] == expected, 'unexpected CGI CI stage outcomes')
     build, tools = data['build.json'], data['toolchain.json']
     verify_sources(build)
@@ -127,8 +152,10 @@ def verify_cgi(data, success):
                 and patch['observed_patch_sha256'] == fixed['sha256']
                 and patch['observed_before_sha256'] == fixed['before_sha256']
                 and patch['observed_after_sha256'] == fixed['after_sha256'], 'patch provenance incomplete')
+        expected_sha = ('2879787251cea507843d6ab98c0f0fd4eea5005b5fe74120c8c512541a73ed59' if contract else
+                        '6fb1d3c02e57aef7fbd9f06b315a93eab1d985453d104aab9147bc34c6837c43')
         require(build['cgi_wasm'] == {'path': 'sapi/cgi/php-cgi.wasm', 'bytes': 40002084,
-                'sha256': '6fb1d3c02e57aef7fbd9f06b315a93eab1d985453d104aab9147bc34c6837c43',
+                'sha256': expected_sha,
                 'wasm_header_verified': True, 'executed': False}, 'CGI output observation changed')
         return {'tool_preparation_passed': True, 'configure_passed': True, 'cgi_build_passed': True,
                 'cgi_guest_executed': False, 'cgi_wasm': build['cgi_wasm']}
@@ -146,6 +173,110 @@ def raw_toolchain(data):
     return data['_raw_toolchain']
 
 
+def verify_memory_startup_failure(data):
+    expected = dict.fromkeys(['dependencies', 'rust', 'php', 'cargo', 'llvm', 'fixture_fs',
+                              'probe', 'reuse'], 'success')
+    expected.update(php_memory='failure', language='skipped')
+    require(data['ci-stages.json']['stages'] == expected, 'unexpected memory failure stages')
+    version, reuse, memory = [data[name] for name in
+        ['linux-llvm.json', 'linux-llvm-module-reuse.json', 'linux-llvm-php-memory-cap.json']]
+    for report in [version, reuse, memory]:
+        verify_sources(report)
+    require(version['outcome'] == 'version_only_passed' and version['php_version_verified'] is True,
+            'version control failed')
+    require(reuse['outcome'] == 'module_reuse_passed' and reuse['reuse_passed'] is True
+            and reuse['exit_code'] == 0, 'reuse control failed')
+    reuse_check.validate_result(reuse['native_result'], reuse['owned_process_pid'], 'llvm')
+    require(len({r['native_artifact_sha256'] for r in [version, reuse, memory]}) == 1,
+            'modes used different host binaries')
+    require(memory['outcome'] == 'execution_failed' and memory['diagnostic_passed'] is False
+            and memory['exit_code'] == 1, 'memory failure became success')
+    result = memory['native_result']
+    require(result['ok'] is False and result['diagnostic_verified'] is False
+            and result['php_linear_memory_cap_verified_for_fixed_cases'] is False
+            and result['test_cap_pages'] == 1024 and result['allocation_bytes'] == 134217728,
+            'original failed trial changed')
+    cases = result['cases']
+    require([c['name'] for c in cases] == ['capped_normal', 'capped_allocation_oom',
+            'capped_normal_recovery', 'uncapped_allocation_control'], 'wrong memory cases')
+    require([c['ok'] for c in cases] == [False, False, False, True], 'memory results changed')
+    require([c['expectation_met'] for c in cases] == [False, False, False, True],
+            'startup failures became expected script OOM or recovery')
+    for case in cases:
+        require(case['memory_observation_count'] == 1 and case['memory']['shared'] is True
+                and case['stdout_eof'] is True and case['stderr_eof'] is True
+                and case['stdout_overflow'] is False and case['stderr_overflow'] is False
+                and case['runtime_shutdown_returned'] is True, 'incomplete memory observation')
+    for case in cases[:3]:
+        require(case['cap_pages'] == case['memory']['maximum_pages'] == 1024
+                and case['memory']['size_pages'] <= 1024 and case['php'] is None
+                and case['stdout_bytes'] == 0 and case['oom_observed'] is False
+                and 'Unable to allocate shared memory segment of 134217728 bytes' in case['stderr']
+                and 'Out of memory' in case['stderr']
+                and 'RP_PHP_MEMORY_ALLOCATION_READY' not in case['stderr'],
+                'failure did not precede the PHP script')
+    control = cases[3]
+    require(control['cap_pages'] is None and control['memory']['maximum_pages'] == 65536
+            and control['memory']['size_pages'] > 1024
+            and control['php']['allocated_bytes'] == 134217728
+            and control['php']['memory_limit'] == '-1', 'uncapped control changed')
+    return {'module_reuse_passed': True, 'php_memory_diagnostic_passed': False,
+            'failed_cap_bytes': 67108864, 'failure_phase': 'OPcache startup before PHP script',
+            'capped_script_execution_verified': False, 'recovery_verified': False,
+            'uncapped_allocation_control_passed': True, 'language_cases_executed': False}
+
+
+def verify_cgi_contract(data):
+    summary = verify_cgi(data, True, contract=True)
+    contract, native = data['linux-llvm-cgi-contract.json'], data['native-cgi-contract.json']
+    verify_sources(contract)
+    verify_sources(native)
+    original_native = reader.original('experiments/php-wasix-host-probe/evidence/native-cgi-contract.json')
+    require(sha(original_native) == sha(data['_raw_native']), 'CI native baseline changed')
+    cgi_check.validate_native_baseline(native)
+    require(contract['outcome'] == 'cgi_contract_passed' and contract['cgi_contract_passed'] is True
+            and contract['native_comparison_passed'] is True and contract['native_comparison_performed'] is True
+            and contract['owned_host_reaped'] is True and contract['exit_code'] == 0,
+            'CGI contract or process cleanup failed')
+    provenance = contract['generated_provenance']
+    manifest_wire = reader.original('experiments/php-wasix-cgi-build/manifest.json')
+    manifest = json.loads(manifest_wire)
+    require(provenance == {
+        'build_receipt_sha256': sha(data['_raw_build']),
+        'toolchain_receipt_sha256': sha(data['_raw_toolchain']),
+        'manifest_sha256': sha(manifest_wire), 'module_bytes': data['build.json']['cgi_wasm']['bytes'],
+        'module_sha256': data['build.json']['cgi_wasm']['sha256'],
+        'source_commit': manifest['sources']['php']['commit'],
+        'patch_sha256': manifest['source_patches'][0]['sha256'],
+        'verification_scope': 'same trusted job observations; not signed attestation or reproducible build'},
+        'CGI build and host execution were not bound to the same bytes')
+    require(contract['native_reference']['receipt_sha256'] == sha(original_native)
+            and contract['native_reference']['native_executed_by_this_helper'] is False,
+            'wrong native oracle or fallback execution claim')
+    cgi_check.validate_result(contract['native_result'], contract['owned_process_pid'], 'llvm', provenance)
+    comparisons = cgi_check.compare_native_requests(contract['native_result'], native)
+    require(comparisons == contract['native_comparison_results']
+            and all(row['equal_to_native'] is True for row in comparisons.values()),
+            'native CGI comparison changed')
+    llvm = data['llvm-toolchain-verification.json']
+    llvm_wire = reader.original('experiments/php-wasix-host-probe/llvm-toolchain.json')
+    llvm_manifest = json.loads(llvm_wire)
+    require(llvm['llvm_toolchain_manifest_sha256'] == sha(llvm_wire)
+            and llvm['archive_sha256'] == llvm_manifest['archive_sha256']
+            and llvm['archive_bytes'] == llvm_manifest['archive_bytes']
+            and llvm['llvm_config_version'] == '22.1.8'
+            and llvm['verifier_source_sha256'] == sha(reader.original(
+                'experiments/php-wasix-host-probe/prepare_host_llvm.py')), 'host LLVM identity changed')
+    summary.update(cgi_guest_executed=True, builder_executed_guest=False,
+                   native_comparison_passed=True, native_comparison_results=comparisons,
+                   compile_elapsed_ms=contract['native_result']['compile_elapsed_ms'],
+                   request_execution_elapsed_ms=[r['php_execution_elapsed_ms']
+                                                 for r in contract['native_result']['requests']],
+                   actual_http_listener_tested=False, real_db=False, wordpress_bootstrapped=False,
+                   reproducible_build_verified=False)
+    return summary
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', required=True, choices=sorted(SPECS))
@@ -159,16 +290,19 @@ def main():
     with zipfile.ZipFile(path) as archive:
         entries = archive.infolist()
         names = {entry.filename for entry in entries}
-        require(len(names) == len(entries) and len(entries) <= 64 and set(spec['current']) <= names,
+        members = spec.get('archive_members', {name: name for name in spec['current']})
+        require(len(names) == len(entries) and len(entries) <= 64 and set(members.values()) <= names,
                 'unexpected or duplicate artifact entries')
         for entry in entries:
             require(0 < entry.file_size <= 512 * 1024 and not entry.is_dir()
                     and (entry.external_attr >> 16) & 0o170000 != 0o120000, 'invalid evidence member')
-        raw = {name: archive.read(name) for name in names}
-    for name in names - set(spec['current']):
-        require(spec['kind'] == 'module-reuse', 'unexpected CGI artifact member')
-        require(raw[name] == reader.original(spec['directory'] + '/evidence/' + name),
+        archived = {name: archive.read(name) for name in names}
+    for name in names - set(members.values()):
+        require(spec['kind'] in ['module-reuse', 'php-memory-startup-failed'],
+                'unexpected CGI artifact member')
+        require(archived[name] == reader.original(spec['directory'] + '/evidence/' + name),
                 'historical evidence changed in CI')
+    raw = {name: archived[member] for name, member in members.items()}
     data = {name: language_check.parse_json(raw[name]) for name in spec['current']}
     stages = data['ci-stages.json']
     require(stages['source_commit'] == source and stages['run_id'] == args.run
@@ -176,22 +310,28 @@ def main():
     verify_sources(stages)
     if spec['kind'] == 'module-reuse':
         summary = verify_reuse(data)
+    elif spec['kind'] == 'php-memory-startup-failed':
+        summary = verify_memory_startup_failure(data)
     else:
         data['_raw_toolchain'] = raw['toolchain.json']
-        summary = verify_cgi(data, spec['kind'] == 'cgi-build-passed')
+        if spec['kind'] == 'cgi-contract':
+            data['_raw_build'], data['_raw_native'] = raw['build.json'], raw['native-cgi-contract.json']
+            summary = verify_cgi_contract(data)
+        else:
+            summary = verify_cgi(data, spec['kind'] == 'cgi-build-passed')
     destination = ROOT / spec['directory'] / 'evidence' / ('ci-' + args.run)
     destination.mkdir(parents=True, exist_ok=True)
     for name in spec['current']:
         (destination / name).write_bytes(raw[name])
     sources = [Path(__file__).resolve(), HERE / 'import_ci_evidence.py', HERE / 'language_check.py',
-               HERE / 'reuse_check.py', HERE / 'check.py']
+               HERE / 'reuse_check.py', HERE / 'check.py', HERE / 'cgi_check.py']
     report = {
         'format_version': 1, 'kind': 'source_verified_import_of_pinned_ci_checkpoint',
         'source_commit': source,
         'run_url': f'https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/{args.run}',
         'artifact_id': spec['artifact'], 'artifact_zip_bytes': len(wire), 'artifact_zip_sha256': spec['sha256'],
         'original_git_source_hashes_verified': True,
-        'ci_verdict': 'success' if spec['kind'] == 'cgi-build-passed' else 'failure',
+        'ci_verdict': 'success' if spec['kind'] in ['cgi-build-passed', 'cgi-contract'] else 'failure',
         'php_executed_by_importer': False, 'product_runtime_selected': False,
         'native_or_wasm_binaries_acquired_by_importer': False,
         'input_files': {source.relative_to(ROOT).as_posix(): sha(source.read_bytes()) for source in sources},

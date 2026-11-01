@@ -75,9 +75,25 @@ source `98215a2`のtest専用実装は、公開`VirtualTaskManager::task_wasm`�
 python experiments/php-wasix-host-probe/memory_check.py --llvm --record
 ```
 
-追加`--php-memory-cap`モードではWATと共通のsafe policyを使い、通常要求→64MiB capでの128MiB確保失敗→通常要求の回復→同確保の無cap対照を、同じコンパイル済みmodule・4つの新規環境で観測する。PHP自身のmemory_limit=-1の実出力、期待OOMの失敗、callbackの実max/size、無capの成功をすべて要求する。
+追加`--php-memory-cap`モードではWATと共通のsafe policyを使い、通常要求→256MiB capでの128MiB確保失敗→通常要求の回復→同確保の無cap対照を、同じコンパイル済みmodule・4つの新規環境で観測する。PHP自身のmemory_limit=-1の実出力、期待OOMの失敗、callbackの実max/size、無capの成功をすべて要求する。上限は製品設定ではない。
 
 期待OOMの要求は`ok=false`と実行errorを保持し、4ケース全体の制御実証と区別する。PHPのmemoryはmetadataだけを読み、WAT用の先頭20B読取りは流用しない。既存の通常モード・製品メモリ上限のverdictは変えない。実PHPの正実行はLinux CIで別途確認する。
+
+初回の[64MiB試験](evidence/ci-41302992753/provenance.json)は失敗した。source `7c57fad`の通常・過剰確保・回復の3ケースとも、スクリプト前のOPcache用128MiB shared segment確保で停止し、READYにも到達していない。実max=1024 pagesは観測したが、PHPコードによる期待OOM・回復は未実証である。無capの128MiB確保だけ成功した。元receiptを保持し、通常起動の余地を設ける256MiB試験へ分ける。PHPのOPcache設定と128MiB確保量は維持する。
+
+## PHPからRustへの専用RPC
+
+```text
+python experiments/php-wasix-host-probe/rpc_check.py --llvm --record
+```
+
+固定`--rpc-contract`は同じPHP moduleを1回compileし、正常2要求→PHPが不完全frameを無視して終了する要求→正常回復の4環境を新設する。要求専用の`/rp-p0-rpc/channel`だけでRustへ渡し、cache miss→set7→get7→DB固定行→close/reopen後get7を照合する。各要求のnonce・GLOBALS・cache初期値と5 callbackを確認する。stdoutにはRPCに似た文字列とNUL/0xffを出し、呼出し数が増えず元byteのまま回収できることを要求する。
+
+固定FSは1 channel、frame/write各128B、要求総量1024B、最大8操作、1応答1024B、応答読取り総量8192Bを上限とし、未知操作・未読応答への書込み・未完了frame等を要求全体の失敗として保持する。同じ応答の再読でも転送総量を消費し、seek/reopenで残量を戻さない。正常close/reopenはcacheを同要求内に維持し、新要求では空にする。不完全frameはPHPがexit0を返しても`finish()`で拒否し、当該caseの`ok=false`を維持する。
+
+WASIXがI/O直前に行う現在offsetへのseekとゼロ長readは許可し、FSが受け取る任意位置変更を拒否する。ただしWASIXの`fd_seek(SET/CUR)`はdescriptorだけを動かす場合があり、guestの途中seekをすべて即時拒否する保証はない。空read・seek・metadata照会を含む全I/O回数の上限も別で、外側のprocess期限を残す。bad complete frameの拒否はRust unitの範囲で、実PHP4ケースには含まれない。
+
+実DB・標準wpdb・WP bootstrap・製品ABIは未実装。ローカルでは全23 unit、release build、fmtと引数拒否を確認し、実PHP4要求はLinux CIで別に観測する。CIはRPCとmemoryの失敗後も他の独立比較を実行するが、失敗したstepを成功へ置き換えない。
 
 ## 生成CGIの3要求
 
@@ -92,6 +108,10 @@ compile1回から3つのfresh CGI環境へcloneし、GET/Cookie、POSTとphp://i
 [native CGI比較基準](evidence/native-cgi-contract.json)は通常PHP8.5.12の配布78ファイルを検証し、実`php-cgi.exe`で3要求を実行したもの。CIのcheckerはその基準を検証して比較するがnative PHPを起動しない。SCRIPT_FILENAMEだけを明示正規化し、JSON型・値・status・Cookie・binaryは維持する。公開証跡ではローカル絶対pathを除き、元JSON byte数/SHAと正規化済み比較値を区別する。
 
 新たな共通FS化後にrelease build・14 unit（FS2、memory3、CGI parser9）・fmtを確認した。native3要求と合成改変の拒否はWasmの実行成功へ数えず、CGI実物の3要求は専用CIで別に観測する。
+
+[CI run 41302992818](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41302992818)はsource `7c57fad`でビルドからRust実行・native比較まで成功した。[原記録と由来の照合](../php-wasix-cgi-build/evidence/ci-41302992818/provenance.json)を保存し、GET/Cookie・POST/raw body・404/2 Cookie/binaryの3要求が一致した。compile1回は157,978ms、各`run_wasm`は69/70/65ms。HTTP listener、実DB、通常WP bootstrap、Fiber、製品性能の実証へは広げない。
+
+同じ固定source・patchで作った前回と今回はWasmのサイズは同じでもSHAが異なる。今回実行したSHAを同jobのbuild receiptへ結び付けており、再現ビルドの成立は未確認である。builder自身の`guest_executed=false`と、その後の別Rust-host receiptでの実行成功を区別して保持する。
 
 ## 実験の制御範囲
 

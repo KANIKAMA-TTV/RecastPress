@@ -1,4 +1,4 @@
-//! Fixed PHP diagnostics only; 64MiB is an experiment value, not a product setting.
+//! Fixed PHP diagnostics only; 256MiB is an experiment value, not a product setting.
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
@@ -17,7 +17,9 @@ use wasmer_wasix::{
 use super::memory_policy::{MemoryPolicyManager, MemorySnapshot, snapshot};
 use super::{LimitedPipe, OUTPUT_LIMIT, collect_pipe, make_engine};
 
-const CAP: Pages = Pages(1024);
+// The stock artifact allocates a 128MiB OPcache segment before script startup.
+// A 64MiB trial prevented even the normal control from reaching PHP code.
+const CAP: Pages = Pages(4096);
 const ALLOCATION_BYTES: u64 = 128 * 1024 * 1024;
 const READY: &str = "RP_PHP_MEMORY_ALLOCATION_READY memory_limit=-1\n";
 const ECHO: &str = "recastpress-v0.5-php-memory-cap";
@@ -92,7 +94,7 @@ pub fn describe(report: &mut Value) {
     report["verdict_scope"] =
         json!("Top-level ok describes the diagnostic; the expected OOM case remains ok=false.");
     report["limitations"] = json!([
-        "64MiB bounds one imported shared linear memory in fixed diagnostic cases; no product limit is selected.",
+        "256MiB bounds one imported shared linear memory in fixed diagnostic cases; no product limit is selected.",
         "RSS, compiler allocations, aggregate memory, CPU and in-process deadlines remain unverified.",
         "Only four fixed PHP cases are exercised; WordPress, database and full PHP compatibility remain unverified.",
         "Wasmer 7.2.0 MSVC exception runtime entry points remain unimplemented."

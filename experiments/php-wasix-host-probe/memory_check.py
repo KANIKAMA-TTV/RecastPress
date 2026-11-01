@@ -1,4 +1,4 @@
-"""Verify a fixed 64MiB PHP linear-memory cap and an uncapped control.
+"""Verify a fixed 256MiB PHP linear-memory cap and an uncapped control.
 
 The expected OOM case remains a failed execution. Only the four-case diagnostic
 can pass; this does not select a product limit or establish an RSS limit.
@@ -38,8 +38,8 @@ def validate_result(value, pid, backend):
                 'native_comparison_performed', 'product_adopted', 'real_db',
                 'wordpress_executed', 'full_php_compatibility_verified']:
         equal(value[key], False, key)
-    equal(value['test_cap_pages'], 1024, 'trial page cap')
-    equal(value['test_cap_bytes'], 64 * 1024 * 1024, 'trial byte cap')
+    equal(value['test_cap_pages'], 4096, 'trial page cap')
+    equal(value['test_cap_bytes'], 256 * 1024 * 1024, 'trial byte cap')
     equal(value['allocation_bytes'], 128 * 1024 * 1024, 'allocation size')
     equal(value['artifact']['verified'], True, 'artifact verification')
     equal(value['artifact']['expected_bytes'], 39727549, 'artifact length')
@@ -66,7 +66,7 @@ def validate_result(value, pid, backend):
         equal(case['configured_engine_identity'], reuse['configured_engine_identity'], 'same configured engine')
         equal(case['module_delivery'], 'Module.clone', 'compiled module reuse')
         equal(case['module_compile_invocations'], 0, 'per-case compilation')
-        equal(case['cap_pages'], 1024 if index < 3 else None, 'case cap')
+        equal(case['cap_pages'], 4096 if index < 3 else None, 'case cap')
         equal(case['success_expected'], index != 1, 'expected execution outcome')
         equal(case['ok'], index != 1, 'actual execution outcome')
         equal(case['expectation_met'], True, 'case expectation')
@@ -85,7 +85,7 @@ def validate_result(value, pid, backend):
             equal(len(case[stream].encode('utf-8')), count, stream + ' encoded count')
         equal(case['memory_observation_count'], 1, 'safe recycle observation count')
         memory = case['memory']
-        maximum = 1024 if index < 3 else 65536
+        maximum = 4096 if index < 3 else 65536
         equal(memory['maximum_pages'], maximum, 'actual maximum pages')
         equal(memory['shared'], True, 'actual shared type')
         require(type(memory['size_pages']) is int and 403 <= memory['size_pages'] <= maximum,
@@ -115,7 +115,7 @@ def validate_result(value, pid, backend):
                     'echo': 'recastpress-v0.5-php-memory-cap'}, 'fixed PHP result')
         equal(case['stderr'], READY if allocation else '', 'case stderr')
         if allocation:
-            require(memory['size_pages'] > 1024, 'uncapped allocation did not exceed the trial cap')
+            require(memory['size_pages'] > 4096, 'uncapped allocation did not exceed the trial cap')
     equal(widths, [widths[0]] * 3, 'PHP width consistency')
     equal(value['observed_php_int_size'], widths[0], 'observed PHP width')
 
