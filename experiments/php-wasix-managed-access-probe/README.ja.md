@@ -23,9 +23,12 @@ Linuxの専用CIはソース・ツール・3patch・最終Wasmを照合してか
 python experiments/php-wasix-managed-access-probe/build.py --record
 python experiments/php-wasix-managed-access-probe/managed_check.py --fiber --record
 python experiments/php-wasix-managed-access-probe/managed_check.py --record
+python experiments/php-wasix-managed-access-probe/cgi_check.py --record
 ```
 
-LLVMは後2つに`--llvm`を付ける。runtime比較の前に既存のWPソース準備が必要。各比較はcompile済みmoduleから3つのfresh要求を作り、native CGIの既存6ケースと応答全体を照合する。PHP JSON・warning・native期待値を補正して合格にはしない。実権限照会のallow/deny、応答読了、invalid/IOエラーなし、scratch実書込み・readonly不変も検証する。providerのopen/close計数はRust VirtualFile単位であり、guest fd数ではない。
+LLVMは実行checkerに`--llvm`を付ける。runtime比較の前に既存のWPソース準備が必要。Fiber/runtime比較はcompile済みmoduleから3つのfresh要求を作り、native CGIの既存6ケースと応答全体を照合する。PHP JSON・warning・native期待値を補正して合格にはしない。実権限照会のallow/deny、応答読了、invalid/IOエラーなし、scratch実書込み・readonly不変も検証する。providerのopen/close計数はRust VirtualFile単位であり、guest fd数ではない。
+
+`cgi_check.py`は同じ3patch生成物で、既存のGET/Cookie・POST/raw body・404/2 Cookie/7B binaryの3要求を比較する。通常のCGI検証と同じ実行・検証処理を使い、固定生成物のloaderだけを替える。Fiber/権限照会の実行をこの3要求で証明したとは扱わない。
 
 実装時点でWindowsのRust36単体テストと閉じたbuild定義の検証が通過。PHP patchを含む実ビルドとguest比較は次のLinux CIで確認する。既存の2差分を記録したfailureは保持する。
 

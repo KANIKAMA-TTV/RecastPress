@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "observed_at_utc": "2026-11-01T18:33:35.142409+00:00",
+  "observed_at_utc": "2026-11-01T18:45:08.949245+00:00",
   "backend": "cranelift",
   "platform": {
     "system": "Windows",
@@ -19,7 +19,7 @@
   "input_files": {
     "experiments/php-wasix-host-probe/Cargo.toml": "9e39660f960e4d4cf91eca63a3d24f660a87f9c10ed2a0bc58090fe151c89545",
     "experiments/php-wasix-host-probe/Cargo.lock": "028ce5e3747f78459e0fe6776901cb5c340b1920dfdca882ff61f8ee09b89be5",
-    "experiments/php-wasix-host-probe/src/cgi_contract.rs": "90e5b89655c752467dc16c65f2f1b25abf6554db5a64618e21e2c276b096c27c",
+    "experiments/php-wasix-host-probe/src/cgi_contract.rs": "511e4025cf544954d10b965d330450a620cdab976c1961868327b60ca8b8b703",
     "experiments/php-wasix-host-probe/src/cgi_execution.rs": "d7d4632337af7279df722a5df5c1bada56dfd220b2bd3f0e09847b7e0f0ff6bf",
     "experiments/php-wasix-host-probe/src/cgi_runtime_contract.rs": "addca76d6b0d4fde368961815352b660d22913d5528e857a0458513e95c629a9",
     "experiments/php-wasix-host-probe/src/context_contract.rs": "0b3bacd902e9c967ec96262d478ee6a57cb1d5aa4b2751e3e62f8e38545fd0f6",
@@ -27,9 +27,9 @@
     "experiments/php-wasix-host-probe/src/fiber_cgi_contract.rs": "9b8d4500832d372e1c85aa2f5552f4f6a1bb0dddc1d3b8abc152a6d6e131cf21",
     "experiments/php-wasix-host-probe/src/fiber_contract.rs": "896fb24560462bb5d73f4d1ee6de8740cf81883d49f7f94d680e3baad201bfd3",
     "experiments/php-wasix-host-probe/src/language_contract.rs": "02d314e638a54e3d7d5165467535badff0a4eba7e0220b0f14977d0a5dd620ff",
-    "experiments/php-wasix-host-probe/src/main.rs": "e5d101b777b256ed0e26fbb291958d85ace29ef8aedcb1d086de8c3244128e88",
+    "experiments/php-wasix-host-probe/src/main.rs": "8d68c94b38fdfd732a517d85c74dfae874ec56c56c359560e9ece01859971b73",
     "experiments/php-wasix-host-probe/src/managed_access_fs.rs": "6ab85fc73932616b1e91a0971906053a5196490ed86942a986f705fcd7e875c4",
-    "experiments/php-wasix-host-probe/src/managed_contract.rs": "b48a8fce9b818c0110832846df51a9671b29c3ec5858d09406fa489fc251a2a5",
+    "experiments/php-wasix-host-probe/src/managed_contract.rs": "345cae298c908b4cce9256d8dc5a73d3f950d6e388a1b96a109c57fb043d6851",
     "experiments/php-wasix-host-probe/src/memory_limits.rs": "497f44ff22db8b20b7601bdfe41731fe22b53cd328f2d11ad0c667c2314cd550",
     "experiments/php-wasix-host-probe/src/memory_policy.rs": "290d71d9d13320e731085f9ecfc1b96a729d307ed31576de7bf41a2732c932c8",
     "experiments/php-wasix-host-probe/src/metering_limits.rs": "b06d830c9e4f2fa87be00f8eeaa02ef727b4fd2e6a43c844a45bc2d46fe9f4d0",
@@ -72,8 +72,8 @@
   },
   "build_exit_code": 0,
   "test_artifact": "target/php-wasix-host-probe/release/deps/recastpress_php_wasix_host_probe-bbbe6634625312d5.exe",
-  "test_artifact_sha256": "958e1af8843ae247aaec1c675d1de1ec21047cf3aeb1d46644357899c7248374",
-  "owned_list_pid": 6112,
+  "test_artifact_sha256": "9afaa74898ee9ee84c7b259156e244af7c50bc139712ab1148892ac961d179c1",
+  "owned_list_pid": 24844,
   "list_exit_code": 0,
   "listed_tests": [
     "cgi_contract::cgi_response::tests::default_status_redirect_and_explicit_redirect_are_distinct",
@@ -113,7 +113,7 @@
     "runtime_fixture_fs::tests::scratch_regular_binary_io_and_truncate_are_request_local",
     "runtime_fixture_fs::tests::wp_source_namespace_and_mutating_opens_are_confined"
   ],
-  "owned_test_pid": 12856,
+  "owned_test_pid": 24976,
   "exit_code": 0,
   "stdout_sha256": "a9e47a1936a594ed0c81337f0312675b12f7a8f033582590ffc6ed4f63b45a3c",
   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",

@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "observed_at_utc": "2026-11-01T18:34:27.230069+00:00",
+  "observed_at_utc": "2026-11-01T18:44:44.676863+00:00",
   "role": "native CGI comparison oracle only; never a Wasm or product fallback",
   "outcome": "native_cgi_contract_passed",
   "wasm_executed": false,
@@ -79,7 +79,7 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 25024,
+      "owned_process_pid": 25036,
       "exit_code": 0,
       "elapsed_ms": 111,
       "owned_process_reaped": true,
@@ -87,7 +87,7 @@
       "stderr_eof": true,
       "stdout_bytes": 573,
       "stderr_bytes": 0,
-      "stdout_sha256": "91da218949a16216cbcde6052785bad5e077c07e73baf5bf4d5f1cd6cf634a73",
+      "stdout_sha256": "2d4cd652715daf7a5a6b52b26d4033cbe23267ddf9ca0dceef2591f56c2cc96f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -103,7 +103,7 @@
           }
         ],
         "body_bytes": 492,
-        "body_sha256": "f6cd2effeee67e41a73501499e1f072452750313b4e7e4709deb6ef4fa6520b6",
+        "body_sha256": "a0c438841e4b353bd3e63ab03a8ac4ac98799ecdc5a8f4cf1fdf445d6e632820",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -238,15 +238,15 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 22860,
+      "owned_process_pid": 23788,
       "exit_code": 0,
-      "elapsed_ms": 107,
+      "elapsed_ms": 124,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
       "stdout_bytes": 655,
       "stderr_bytes": 0,
-      "stdout_sha256": "de4ce1a3dfb35022d4e99d56675dee617d8c832d825396dd1ed0ab0d3796a991",
+      "stdout_sha256": "cac3a66469428d84c4215e8a6193ea5aa8e00200f39840c1fc35491317552c16",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_record_kind": "original-digest-and-length-only",
       "response": {
@@ -262,7 +262,7 @@
           }
         ],
         "body_bytes": 574,
-        "body_sha256": "e5df92cd307eac69d350fd3734cd0893f58dde984d9ef58c57412c869f87a0a0",
+        "body_sha256": "4a2fd62f10f73d86fea2d4a0a353eef23ebcd864f739af460059a596ae3e745a",
         "representation_length": null,
         "body_record_kind": "original-digest-and-length-only"
       },
@@ -401,9 +401,9 @@
       "command_arguments": [
         "-n"
       ],
-      "owned_process_pid": 25976,
+      "owned_process_pid": 22836,
       "exit_code": 0,
-      "elapsed_ms": 106,
+      "elapsed_ms": 111,
       "owned_process_reaped": true,
       "stdout_eof": true,
       "stderr_eof": true,
@@ -570,7 +570,7 @@
     "executed": false
   },
   "fixture_copy": {
-    "path": "target/php-wasix-host-probe/native-cgi-contract/25504-6f4029cb2bfd4231825202a215fbae9c/cgi_contract.php",
+    "path": "target/php-wasix-host-probe/native-cgi-contract/10324-c3797d9a8b57422d82acbccc377cfdd9/cgi_contract.php",
     "sha256": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
     "bytes": 1573
   },
@@ -594,7 +594,7 @@
   "input_files": {
     "experiments/php-wasix-host-probe/native_cgi_contract.py": "6efd7d2009221d823e0a7471791e8de75c412cefaaba1b8bd61be690a1b935c3",
     "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
-    "experiments/php-wasix-host-probe/cgi_check.py": "b410fc62e4357ce5daf2db2578b7ff474818d70810d5d17a03dc5d669f80b5b6",
+    "experiments/php-wasix-host-probe/cgi_check.py": "49de8a40ef2f4bd964d1980f2f4989a2b3935d116422847cbe6e1d1f2dbd01fa",
     "experiments/php-wasix-host-probe/check.py": "ae5f79d2993284ee920ec8e7f936e86985c2c2cd0825375af02d69d97bc62916",
     "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
     "experiments/php-runtime-candidate-probe/native_contract.py": "d4b7268982df8cc9c223d7610cc2c0242db05f18f5ed65f470ed143639807b82",

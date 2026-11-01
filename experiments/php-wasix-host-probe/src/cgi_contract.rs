@@ -204,11 +204,18 @@ fn load_module(report: &mut Value) -> Result<Vec<u8>> {
 }
 
 pub fn verify(report: &mut Value) -> Result<()> {
+    verify_candidate(report, load_module)
+}
+
+pub(crate) fn verify_candidate(
+    report: &mut Value,
+    loader: fn(&mut Value) -> Result<Vec<u8>>,
+) -> Result<()> {
     report["phase"] = json!("cgi_build_verification");
     ensure!(sha(FIXTURE) == FIXTURE_SHA, "CGI fixture hash mismatch");
     report["fixture"]["verified"] = json!(true);
     report["fixture"]["observed_sha256"] = json!(sha(FIXTURE));
-    let data = HashedModuleData::new(load_module(report)?);
+    let data = HashedModuleData::new(loader(report)?);
     let engine = make_engine();
     report["phase"] = json!("module_compile");
     eprintln!("PHP_WASIX_PHASE=module_compile");

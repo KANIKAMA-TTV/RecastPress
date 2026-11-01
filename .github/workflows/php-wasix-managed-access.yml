@@ -32,6 +32,11 @@ name: PHP WASIX managed access candidate
       - "experiments/php-wasi-host-probe/wordpress-fixture.json"
       - "experiments/php-wasi-host-probe/src/cgi_response.rs"
       - "experiments/php-wasix-host-probe/check.py"
+      - "experiments/php-wasix-host-probe/cgi_check.py"
+      - "experiments/php-wasix-host-probe/native_cgi_contract.py"
+      - "experiments/php-wasix-host-probe/evidence/native-cgi-contract.json"
+      - "experiments/php-wasix-cgi-build/build.py"
+      - "experiments/php-wasix-cgi-build/patch_source.py"
       - "experiments/php-wasix-host-probe/language_check.py"
       - "scripts/owned_probe.py"
       - "experiments/php-wasix-fiber-cgi-probe/build.py"
@@ -55,6 +60,7 @@ name: PHP WASIX managed access candidate
       - "experiments/php-wasix-managed-access-probe/source_profile.py"
       - "experiments/php-wasix-managed-access-probe/patch_source.py"
       - "experiments/php-wasix-managed-access-probe/managed_check.py"
+      - "experiments/php-wasix-managed-access-probe/cgi_check.py"
       - "experiments/php-wasix-managed-access-probe/manifest.json"
       - "experiments/php-wasix-managed-access-probe/patch-plan.json"
       - "experiments/php-wasix-managed-access-probe/patches/*.patch"
@@ -187,6 +193,11 @@ jobs:
             https://wordpress.org/wordpress-7.1.3.tar.gz
           python3 experiments/php-wasix-cgi-runtime-probe/prepare.py --record
 
+      - name: Compare fixed GET, POST, status, cookies and binary response with native
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.units.outcome == 'success' }}
+        id: cgi_contract
+        run: python3 experiments/php-wasix-managed-access-probe/cgi_check.py ${{ matrix.backend == 'llvm' && '--llvm' || '' }} --record
+
       - name: Compare fixed CGI language, pure hooks and actual IO with native
         if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.units.outcome == 'success' && steps.wordpress_source.outcome == 'success' }}
         id: runtime_contract
@@ -208,6 +219,7 @@ jobs:
           STAGE_WORDPRESS_SOURCE: ${{ steps.wordpress_source.outcome }}
           STAGE_RUNTIME_CONTRACT: ${{ steps.runtime_contract.outcome }}
           STAGE_FIBER_CONTRACT: ${{ steps.fiber_contract.outcome }}
+          STAGE_CGI_CONTRACT: ${{ steps.cgi_contract.outcome }}
           PROBE_BACKEND: ${{ matrix.backend }}
         run: |
           python3 - <<'PY'
@@ -224,6 +236,9 @@ jobs:
           inputs += sorted(experiment.glob('*.py')) + sorted(experiment.glob('*.json'))
           inputs += sorted(experiment.glob('patches/*.patch')) + sorted(experiment.glob('fixtures/*'))
           inputs += [root / 'experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json']
+          inputs += [root / 'experiments/php-wasix-host-probe/evidence/native-cgi-contract.json',
+                     root / 'experiments/php-wasix-host-probe/cgi_check.py',
+                     root / 'experiments/php-wasix-host-probe/native_cgi_contract.py']
           inputs += [root / 'experiments/php-wasix-host-probe/llvm-toolchain.json',
                      root / 'experiments/php-wasix-host-probe/prepare_host_llvm.py',
                      root / 'experiments/php-wasix-host-probe/unit_check.py']
@@ -234,7 +249,7 @@ jobs:
               'format_version': 1,
               'scope': 'Three-patch NTS CGI build with pure Rust access queries, native Fiber and runtime comparisons; no product adoption',
               'backend': os.environ['PROBE_BACKEND'],
-              'guest_execution_verdict': 'see the separate Fiber and runtime comparison receipts',
+              'guest_execution_verdict': 'see the separate Fiber, CGI and runtime comparison receipts',
               'product_runtime_selected': False,
               'redistributed_binaries': False,
               'source_commit': os.environ['GITHUB_SHA'],
@@ -243,7 +258,7 @@ jobs:
               'stages': {name.lower(): os.environ.get('STAGE_' + name, '') or 'not_run'
                          for name in ['PHP_SOURCE', 'DEPS_SOURCE', 'PARSER_SOURCE',
                                       'DEPENDENCIES', 'DEFINITIONS', 'TOOLS', 'BUILD',
-                                      'RUST', 'HOST_LLVM', 'UNITS', 'WORDPRESS_SOURCE', 'FIBER_CONTRACT', 'RUNTIME_CONTRACT']},
+                                      'RUST', 'HOST_LLVM', 'UNITS', 'WORDPRESS_SOURCE', 'FIBER_CONTRACT', 'CGI_CONTRACT', 'RUNTIME_CONTRACT']},
               'input_files': {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                               for path in inputs if path.is_file()},
           }
@@ -260,6 +275,7 @@ jobs:
           path: |
             experiments/php-wasix-managed-access-probe/evidence/*.json
             experiments/php-wasix-fiber-cgi-probe/evidence/native-cgi-fiber-contract.json
+            experiments/php-wasix-host-probe/evidence/native-cgi-contract.json
             experiments/php-wasix-cgi-runtime-probe/evidence/native-cgi-runtime-contract.json
             experiments/php-wasix-cgi-runtime-probe/evidence/wordpress-source.json
             experiments/php-wasix-cgi-build/evidence/toolchain.json

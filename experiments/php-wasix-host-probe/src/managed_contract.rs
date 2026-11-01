@@ -97,6 +97,27 @@ fn profile(report: &mut Value) {
     report["build_receipt"] = json!({"path":RECEIPT,"verified":false,"full_source_tool_chain_verified_by_host":false,
         "chain_owner":"managed_check.py verifies all source/tool/patch/module provenance"});
     report["product_abi_selected"] = json!(false);
+    report["source"] = json!({"repository":"wasix-org/php",
+        "commit":"f4bfae79d5c19028349082f707930cf0951d23b9",
+        "kind":"same-job-patched-source-build"});
+}
+pub fn describe_cgi(report: &mut Value) {
+    super::cgi_contract::describe(report);
+    profile(report);
+    report["schema"] = json!("recastpress.php-wasix-managed-cgi-host.v0.5");
+    report["scope"] = json!("three-patch-managed-candidate-fixed-CGI-request-regression-only");
+    report["build_receipt"]["full_source_tool_config_chain_verified_by_host"] = json!(false);
+    report["product_runtime_selected"] = json!(false);
+    report["managed_access_verified_for_fixed_cases"] = json!(false);
+}
+pub fn verify_cgi(report: &mut Value) -> Result<()> {
+    super::cgi_contract::verify_candidate(report, load_cgi_module)
+}
+fn load_cgi_module(report: &mut Value) -> Result<Vec<u8>> {
+    let bytes = load_module(report)?;
+    report["phase"] = json!("fiber_adapter_verification");
+    report["postopt_adapter"] = super::fiber_adapter::inspect(&bytes)?;
+    Ok(bytes)
 }
 pub fn describe_fiber(report: &mut Value) {
     super::fiber_cgi_contract::describe(report);
@@ -176,6 +197,8 @@ fn load_module(report: &mut Value) -> Result<Vec<u8>> {
     report["artifact"]["verified"] = json!(true);
     report["source"]["verified"] = json!(true);
     report["build_receipt"]["observed_sha256"] = json!(sha(&wire));
+    report["build_receipt"]["manifest_sha256"] =
+        receipt["input_files"]["experiments/php-wasix-managed-access-probe/manifest.json"].clone();
     report["build_receipt"]["verified"] = json!(true);
     Ok(bytes)
 }

@@ -20,7 +20,7 @@
   "input_files": {
     "experiments/php-wasix-cgi-build/import_link_evidence.py": "8edffc7fd117b25db54f020621cd682d5aeae7d78d1167ca3dcfca12025792ac",
     "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
-    "experiments/php-wasix-host-probe/cgi_check.py": "b410fc62e4357ce5daf2db2578b7ff474818d70810d5d17a03dc5d669f80b5b6",
+    "experiments/php-wasix-host-probe/cgi_check.py": "49de8a40ef2f4bd964d1980f2f4989a2b3935d116422847cbe6e1d1f2dbd01fa",
     "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2"
   },
   "archive_member_map": {

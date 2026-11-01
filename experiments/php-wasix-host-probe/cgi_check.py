@@ -348,10 +348,21 @@ def compare_native_requests(value, native):
     return results
 
 
-def validate_result(value, pid, backend, provenance):
-    for field, expected in [('schema', 'recastpress.php-wasix-cgi-contract.v0.5'),
+def validate_result(value, pid, backend, provenance, *,
+                    schema='recastpress.php-wasix-cgi-contract.v0.5',
+                    phase='cgi_contract_verified', module_path=None):
+    """Validate actual host output; callers select their closed build profile.
+
+    The default is the original one-patch CGI candidate. Shared request/body
+    expectations are unchanged when a caller supplies another fixed profile.
+    """
+    if module_path is None:
+        module_path = MODULE.relative_to(ROOT).as_posix()
+    require(type(schema) is str and type(phase) is str and type(module_path) is str,
+            'explicit CGI validation profile strings required')
+    for field, expected in [('schema', schema),
                             ('process_pid', pid), ('engine', 'wasmer-7.2.0/' + backend),
-                            ('phase', 'cgi_contract_verified'), ('ok', True), ('cgi_contract_verified', True),
+                            ('phase', phase), ('ok', True), ('cgi_contract_verified', True),
                             ('real_db', False), ('wordpress_executed', False),
                             ('native_comparison_performed', False), ('full_php_compatibility_verified', False)]:
         equal(value[field], expected, 'host ' + field)
@@ -359,7 +370,7 @@ def validate_result(value, pid, backend, provenance):
     equal(value['build_receipt']['manifest_sha256'], provenance['manifest_sha256'], 'host manifest snapshot')
     equal(value['build_receipt']['verified'], True, 'host build receipt')
     equal(value['build_receipt']['full_source_tool_config_chain_verified_by_host'], False, 'verification owner')
-    equal(value['artifact']['path'], MODULE.relative_to(ROOT).as_posix(), 'host fixed generated path')
+    equal(value['artifact']['path'], module_path, 'host fixed generated path')
     equal(value['artifact']['observed_sha256'], provenance['module_sha256'], 'host exact compiled bytes')
     equal(value['artifact']['observed_bytes'], provenance['module_bytes'], 'host compiled size')
     equal(value['artifact']['verified'], True, 'host module identity')
