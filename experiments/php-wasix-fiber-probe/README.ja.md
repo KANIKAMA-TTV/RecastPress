@@ -34,3 +34,5 @@ python experiments/php-wasix-fiber-probe/fiber_check.py --record
 Rustの`--fiber-contract`は専用build receipt/生成物を照合し、元の公式CLI artifactを読む前に分岐する。compile前に最終Wasmの3定義関数・ABI・非alias、mutable i32 SP、bootstrap address、7/9命令switch、6命令entryを検査する。parser専用の正常2形と危険な79変形の拒否はWindowsで確認したが、これはPHP実行ではない。
 
 Linuxの[独立CI](../../.github/workflows/php-wasix-fiber.yml)は両compilerで生成物を作り、compile1回・fresh環境3回で通常PHPの同じ6ケースを厳密比較する。所有Rust processはcompile込み600秒で回収する。失敗時も生出力と失敗phaseを保持し、JSON記録だけをアップロードする。PHPの実ビルド・移植版の6ケース実行は次のCIで確認する段階である。[manifest](manifest.json)のstatic verificationはpatch起案時点の観測であり、後続のbuild/execution receiptへ成功を移さない。
+
+source `a05a2ca`の初回CI `41320223325`は両backendともtool/source/patch照合を通過したが、configureのC compiler確認で停止した。PHP make・module生成・guest実行へは進んでいない。adapter専用exportはconfigureの小さいconftestには存在しないため、指定をmake_cli時だけへ限定して再診断する。最初の記録にはconfig.log内の実link診断が無く、初回の具体的なlinker error自体を確認したとは主張しない。次のfailure時にはその限定excerptも記録する。

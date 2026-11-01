@@ -49,8 +49,9 @@ OPT_FLAGS = ['--emit-exnref', '--all-features', '--strip-debug', '--asyncify',
              '--pass-arg=asyncify-ignore-indirect', '--pass-arg=max-func-params@32']
 FLAGS = ['--enable-rp-wasix-fibers', '--disable-zts']
 LINK_FLAGS = ['--export=' + name for name in EXPORTS]
-EXTRA_ENV = {'WASIXCC_COMPILER_POST_FLAGS': '-fno-lto', 'WASIXCC_LINKER_FLAGS': ':'.join(LINK_FLAGS),
+EXTRA_ENV = {'WASIXCC_COMPILER_POST_FLAGS': '-fno-lto',
              'WASIXCC_RUN_WASM_OPT': 'no', 'WASIXCC_PIC': 'no', 'WASIXCC_GENERATE_SHELL_SCRIPT': 'no'}
+MAKE_ENV = {'WASIXCC_LINKER_FLAGS': ':'.join(LINK_FLAGS)}
 RAW = 'target/php-wasix-fiber-probe/php-fiber.raw.wasm'
 WASM = 'target/php-wasix-fiber-probe/php-fiber.wasm'
 LINKED = 'target/php-wasix-fiber-probe/source/php/sapi/cli/php'
@@ -320,7 +321,9 @@ def wasm_identity(name):
 def build_config():
     return {'variant': VARIANT, 'sources': SOURCE_PINS, 'configure_command': ['bash', 'wasix-configure-eh-64.sh'],
             'extra_configure_flags': FLAGS, 'make_target': 'cli', 'make_jobs': 2,
-            'tool_environment_additions': EXTRA_ENV, 'required_exports': EXPORTS,
+            'tool_environment_additions': EXTRA_ENV, 'make_only_environment_additions': MAKE_ENV,
+            'link_export_scope': 'make_cli only; configure conftests do not define the PHP adapter symbols',
+            'required_exports': EXPORTS,
             'raw_output': RAW, 'wasm_output': WASM, 'linked_output': LINKED,
             'optimizer_flags': OPT_FLAGS, 'module_limit_bytes': MODULE_LIMIT,
             'command_recipe': [{'name': name, 'command': command, 'working_directory': cwd, 'timeout_seconds': timeout}
@@ -431,6 +434,10 @@ def main():
             ('configure', ['bash', 'wasix-configure-eh-64.sh'], 600),
             ('make_cli', ['make', '-j2', 'PHP=' + str(host_php), 'cli'], 1200),
         ]:
+            if name == 'make_cli':
+                # Autoconf links tiny conftests without Zend's adapter. Requiring
+                # its symbols there makes an otherwise working compiler fail.
+                environment.update(MAKE_ENV)
             step = {'name': name, 'command': normalized_command(command, host_php), 'working_directory': 'target/php-wasix-fiber-probe/source/php'}
             recipe = command_recipe()[len(report['build_steps'])]
             require((step['name'], step['command'], step['working_directory'], timeout) == recipe, 'build command differs from fixed recipe')
@@ -469,6 +476,19 @@ def main():
         report['outcome'], report['phase'], passed = 'fiber_candidate_built_not_executed', 'build_complete', True
     except (Exception, KeyboardInterrupt) as failure:
         report['outcome'], report['diagnostics'] = 'fiber_build_failed', public(failure)[:8192]
+        if report['phase'] == 'configure':
+            try:
+                log = fixed(owned('source/php/config.log'), 8 * 1024 * 1024)
+                text = log.read_text(encoding='utf-8', errors='replace')
+                # Only the failed C link check is published, not autoconf's
+                # trailing environment/configuration dump.
+                start = text.find('checking whether the C compiler works')
+                end = text.find('C compiler cannot create executables', max(start, 0))
+                report['configure_failure_log'] = {'bytes':log.stat().st_size,'sha256':digest(log),
+                    'compiler_check_excerpt':public(text[start:end])[-8192:] if start >= 0 and end >= start else '',
+                    'scope':'bounded compiler-check diagnostics only; no full config.log publication'}
+            except (Exception, KeyboardInterrupt) as log_error:
+                report['configure_failure_log_error'] = public(log_error)[:1024]
     finally:
         if args.record and not args.validate_only:
             if 'input_files' not in report:
