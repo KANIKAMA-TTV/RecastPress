@@ -1,0 +1,13 @@
+{
+  "purpose": "P0 capability experiment only; not the product PHP release",
+  "php_version": "8.2.6",
+  "abi": "wasm32-wasi / wasi_snapshot_preview1 / CGI command",
+  "filename": "php-cgi-8.2.6-slim.wasm",
+  "bytes": 6259973,
+  "sha256": "4fd2e8c42ae529ba72f88a0f1e46de1fc69a4b4f01e01fedd65ca966b8ffe6fa",
+  "url": "https://github.com/vmware-labs/webassembly-language-runtimes/releases/download/php/8.2.6%2B20230714-11be424/php-cgi-8.2.6-slim.wasm",
+  "upstream_checksum_url": "https://github.com/vmware-labs/webassembly-language-runtimes/releases/download/php/8.2.6%2B20230714-11be424/php-cgi-8.2.6-slim.wasm.sha256sum",
+  "source_repository": "https://github.com/vmware-labs/webassembly-language-runtimes",
+  "release_tag": "php/8.2.6+20230714-11be424",
+  "redistributed": false
+}

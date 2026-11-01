@@ -1,0 +1,69 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T06:46:19.367476+00:00",
+  "platform": {
+    "system": "Windows",
+    "machine": "AMD64"
+  },
+  "input_files": {
+    "experiments/php-wasi-host-probe/Cargo.lock": "76ccd0927ea52fc5d669c7e7be0bf4d5a8f88aff8576d3b612339e899fb701e9",
+    "experiments/php-wasi-host-probe/Cargo.toml": "372903b4dec937d4e4371d7e46395c38aec60979e1a37e957709fbdc38f66b2c",
+    "experiments/php-wasi-host-probe/check.py": "de0e97ebb95faf0a0a8efeccd6d25407804651ac73a35629bb7c51f8d230fbfb",
+    "experiments/php-wasi-host-probe/fixture.json": "7264b620fd804d6b14921c7202af36262da2571e541f8ba6d2e3e8ef7bf597e5",
+    "experiments/php-wasi-host-probe/fixtures/include.php": "10c0341b3516521c91fb16e1174f66df77aa4cb8699a70d9fb7046014769ba1a",
+    "experiments/php-wasi-host-probe/fixtures/probe.php": "fbc38586951be6dfa21aaed99fa1356baa80b86b6fb0e58dc3d497d88ceedfb4",
+    "experiments/php-wasi-host-probe/outside.txt": "e05720083b6071868cf70213cfe0394d2e885ed55d8f029900257c208439376b",
+    "experiments/php-wasi-host-probe/prepare_fixture.py": "4301bd227a14984124b4efcd1d46ae6003b8f6cda0602952a8c4c14b6e47ebec",
+    "experiments/php-wasi-host-probe/src/file_bridge.rs": "ffe4d45bc0f67b323edf63b0ccf92be6da96267d53d93b91fdacb1d3860e215f",
+    "experiments/php-wasi-host-probe/src/main.rs": "aa8813eb2d25a292de143ba6a02ef54dc8eda45bef6d27b7d421f1cfe9f69aad",
+    "scripts/dependency_inventory.py": "c179a10577b8317e7b080cc66d5313f82dd8906f5c67b0c4a30409159e23bdb6",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  },
+  "native_artifact": "target/php-wasi-host-probe/release/recastpress-php-wasi-host-probe.exe",
+  "native_artifact_sha256": "61edca0c3e15eb949c4b57685aadec62c61f8cfcd1c4108e9abfb0540fddf9ea",
+  "result": {
+    "artifact_sha256": "4fd2e8c42ae529ba72f88a0f1e46de1fc69a4b4f01e01fedd65ca966b8ffe6fa",
+    "bridge": "fixed-fixture stdout commands/read-only reply file; not the product ABI",
+    "checks": [
+      "real_php_wasi",
+      "binary_input",
+      "cgi_output",
+      "include_read",
+      "shared_request_state",
+      "live_rust_cache_callback",
+      "live_rust_db_fixture_callback",
+      "fresh_request_state",
+      "read_only_preopen",
+      "outside_file_denied",
+      "no_inherited_environment",
+      "fuel",
+      "epoch",
+      "fatal",
+      "output",
+      "memory",
+      "bad_rpc"
+    ],
+    "cranelift_opt_level": "none",
+    "format_version": 1,
+    "fuel_per_request": 200000000,
+    "memory_limit_bytes": 268435456,
+    "milestone": "v0.5-P0-experiment",
+    "php_version": "8.2.6",
+    "process_pid": 19056,
+    "product_ready": false,
+    "real_database_connected": false,
+    "recovery_requests": 6,
+    "stdout_limit_bytes": 65536,
+    "wasmtime_version": "36.0.19",
+    "wordpress_executed": false
+  },
+  "limitations": [
+    "P0 experiment, not P0 product acceptance or an engine/license adoption decision.",
+    "Old PHP 8.2.6 upstream WASI fixture; not the planned production PHP build.",
+    "DB callbacks use fixed Rust data; no MySQL/MariaDB or standard wpdb execution.",
+    "Fresh stores are disposed; this does not prove process RSS reclamation or database rollback.",
+    "Wasm linear memory is limited; compiler, Rust, WASI and total process RSS are not capped here.",
+    "Deadline interrupts guest execution; blocking host calls need separate production supervision.",
+    "No WordPress bootstrap, real HTTP, theme/plugin compatibility, or three-platform claim."
+  ]
+}

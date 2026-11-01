@@ -1,0 +1,1 @@
+Known existing file outside the guest's read-only /site preopen.
