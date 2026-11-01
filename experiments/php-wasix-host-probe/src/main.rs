@@ -8,6 +8,8 @@ mod language_contract;
 #[cfg(test)]
 mod memory_limits;
 mod memory_policy;
+#[cfg(test)]
+mod metering_limits;
 mod module_reuse;
 mod php_memory_cap;
 mod rpc_contract;

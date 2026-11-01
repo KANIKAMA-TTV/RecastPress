@@ -2340,6 +2340,7 @@ dependencies = [
  "wasmer",
  "wasmer-compiler-cranelift",
  "wasmer-compiler-llvm",
+ "wasmer-middlewares",
  "wasmer-wasix",
  "wat",
 ]
@@ -3523,6 +3524,7 @@ dependencies = [
  "wasmer-derive",
  "wasmer-types",
  "wasmer-vm",
+ "wasmparser 0.252.0",
  "windows-sys 0.61.2",
 ]
 
@@ -3673,6 +3675,17 @@ dependencies = [
  "wasmer",
  "wasmer-config",
  "wasmer-wasix-types",
+]
+
+[[package]]
+name = "wasmer-middlewares"
+version = "7.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "084208330bb6a6e01f4506077217810d80186b68c291349acd886b1873ab7d0a"
+dependencies = [
+ "wasmer",
+ "wasmer-types",
+ "wasmer-vm",
 ]
 
 [[package]]

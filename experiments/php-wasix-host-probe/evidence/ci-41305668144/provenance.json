@@ -1,0 +1,98 @@
+{
+  "format_version": 1,
+  "kind": "source_verified_import_of_pinned_ci_checkpoint",
+  "source_commit": "e9a2e6c050f69c325a75378aa78dc847abe8581f",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41305668144",
+  "artifact_id": 13084011078,
+  "artifact_zip_bytes": 78874,
+  "artifact_zip_sha256": "e754bae66ee90740b8eb0770659ec0613c9f8e184bc43994fca1f8cf4cfbc5a3",
+  "original_git_source_hashes_verified": true,
+  "ci_verdict": "failure",
+  "php_executed_by_importer": false,
+  "product_runtime_selected": false,
+  "native_or_wasm_binaries_acquired_by_importer": false,
+  "input_files": {
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "6a1092df49e28397871206e7b602f576ed892a480a169f2fafd2f83e9a780888",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/reuse_check.py": "b600b1159b05e623a0b742987c9793c971d2fb0717238ff58eb1f5dd1d0dc418",
+    "experiments/php-wasix-host-probe/check.py": "2e74181453ed24bb1988792ce91227374d7a1e55340d454a1e900147345b854a",
+    "experiments/php-wasix-host-probe/cgi_check.py": "39e855c49af42323b8c1816574903c00470bea1e457de5d437c69a8b4e0e54ae",
+    "experiments/php-wasix-host-probe/memory_check.py": "1dd73f00dbc46473babc7ad65f916c9cc6276aba598b7f4bff88617b53c8c2a8",
+    "experiments/php-wasix-host-probe/rpc_check.py": "fd66a2163eded99a45cadaeb746adfc568b973a4efc756c86b26b4e76cad57a7"
+  },
+  "imported_files": {
+    "ci-stages.json": "cfaa193b288ff20b0641d408d2773a7628ff6892ae8483af50233225bffc136a",
+    "linux-llvm.json": "f93996526db54e8c0ea92c81db7f447335df3e1acbeabb4cd3b02a1d2bae2e75",
+    "linux-llvm-module-reuse.json": "a676c6814545db450e3ef89d78e4dee71925566e8ec3dc72f6d291cd47c544b1",
+    "linux-llvm-rpc-contract.json": "0d156be1fc92b63785a9cbc7bd71324175bed2587e02b418b29bb9c40c1ca19b",
+    "linux-llvm-php-memory-cap.json": "40a7700b253cf3e6739dd5b1d5ad699b1ca27966bed1bbf18ac2d712b2b855a8",
+    "linux-llvm-language-contract.json": "a69462ae207c8569608611a9102cf4093106a3cc3c974ca1b887bdfd8b43fabd",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  },
+  "observations": {
+    "module_reuse_passed": true,
+    "language_comparison_passed": false,
+    "case_results": {
+      "basic": {
+        "equal_to_native": true
+      },
+      "exceptions": {
+        "equal_to_native": true
+      },
+      "fiber": {
+        "equal_to_native": false,
+        "difference": "contract fields mismatch: fiber"
+      }
+    },
+    "compile_elapsed_ms": 159732,
+    "request_execution_elapsed_ms": [
+      76,
+      62,
+      68
+    ],
+    "counter_scope": "explicit PHP Module::new call site; internal backend operations are not instrumented",
+    "timing_scope": "one CI runner; run_wasm includes startup/shutdown; not a product latency benchmark",
+    "private_rpc_diagnostic_passed": true,
+    "php_memory_diagnostic_passed": true,
+    "incomplete_rpc_case_accepted": false,
+    "test_memory_cap_bytes": 268435456,
+    "production_memory_limit_verified": false,
+    "real_db": false,
+    "standard_wpdb": false,
+    "rpc_case_acceptance": [
+      true,
+      true,
+      false,
+      true
+    ],
+    "memory_case_execution_results": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "memory_observations": [
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 4096,
+        "shared": true,
+        "size_pages": 2605
+      },
+      {
+        "maximum_pages": 65536,
+        "shared": true,
+        "size_pages": 6734
+      }
+    ]
+  }
+}

@@ -81,6 +81,8 @@ python experiments/php-wasix-host-probe/memory_check.py --llvm --record
 
 初回の[64MiB試験](evidence/ci-41302992753/provenance.json)は失敗した。source `7c57fad`の通常・過剰確保・回復の3ケースとも、スクリプト前のOPcache用128MiB shared segment確保で停止し、READYにも到達していない。実max=1024 pagesは観測したが、PHPコードによる期待OOM・回復は未実証である。無capの128MiB確保だけ成功した。元receiptを保持し、通常起動の余地を設ける256MiB試験へ分ける。PHPのOPcache設定と128MiB確保量は維持する。
 
+続く[run 41305668144](evidence/ci-41305668144/provenance.json)、source `e9a2e6c`の256MiB試験は4ケースの期待をすべて満たした。cap付き通常/回復は2605 pages、最大4096 pagesを観測し、過剰確保はPHPのREADYと実`memory_limit=-1`を出してからOOMで失敗した。無cap対照は同じ128MiB確保に成功し6734 pagesに達した。失敗caseの`ok=false`を維持し、固定4ケースの線形メモリ制御だけを成功とする。RSS・compiler・合計上限、製品設定は未確定である。
+
 ## PHPからRustへの専用RPC
 
 ```text
@@ -94,6 +96,8 @@ python experiments/php-wasix-host-probe/rpc_check.py --llvm --record
 WASIXがI/O直前に行う現在offsetへのseekとゼロ長readは許可し、FSが受け取る任意位置変更を拒否する。ただしWASIXの`fd_seek(SET/CUR)`はdescriptorだけを動かす場合があり、guestの途中seekをすべて即時拒否する保証はない。空read・seek・metadata照会を含む全I/O回数の上限も別で、外側のprocess期限を残す。bad complete frameの拒否はRust unitの範囲で、実PHP4ケースには含まれない。
 
 実DB・標準wpdb・WP bootstrap・製品ABIは未実装。ローカルでは全23 unit、release build、fmtと引数拒否を確認し、実PHP4要求はLinux CIで別に観測する。CIはRPCとmemoryの失敗後も他の独立比較を実行するが、失敗したstepを成功へ置き換えない。
+
+同じ[run 41305668144のRPC実測](evidence/ci-41305668144/linux-llvm-rpc-contract.json)は受入`true/true/false/true`で通った。正常要求ごとにRust callback5回、入力90B、応答生成/実読取り76Bを照合し、stdoutのNUL/0xffを含むRPC風文字列はdispatchされなかった。PHPがexit0を返す未完了要求はRustが拒否し、次のfresh要求は正常に戻った。言語契約のFiberは引き続き不一致であり、このrun全体のCI verdictはfailureのまま保存する。
 
 ## 生成CGIの3要求
 
@@ -113,10 +117,40 @@ compile1回から3つのfresh CGI環境へcloneし、GET/Cookie、POSTとphp://i
 
 同じ固定source・patchで作った前回と今回はWasmのサイズは同じでもSHAが異なる。今回実行したSHAを同jobのbuild receiptへ結び付けており、再現ビルドの成立は未確認である。builder自身の`guest_executed=false`と、その後の別Rust-host receiptでの実行成功を区別して保持する。
 
+RPCを追加したsource `e9a2e6c`の[追試run 41305668059](../php-wasix-cgi-build/evidence/ci-41305668059/provenance.json)でも、同じ3要求のnative比較と所有process回収が成功した。初回の記録へ成功を付け替えず、各runの実物SHA・原観測を別保存する。
+
 ## 実験の制御範囲
 
 host環境・home・host directoryをguestへ渡さず、networkはUnsupportedVirtualNetworking、HTTP clientは無し。stdinは閉じ、stdout/stderrは各64KiBを超える書込みをpipeへ入れる前に拒否する。EOF回収にも期限を設ける。
 
-メモリ・CPU・実行内の期限の制御は未達。外側の所有プロセス期限と、virtual threadingの上限を、悪意あるPHPや全process spawnの制御の証明にしない。`unsafe_code=forbid`を保ち、任意のguest入力・製品listener・実DBへ接続しない。Node.js・native PHPをホスト実行の代替に使わない。
+固定PHPの単一線形memoryと小WATの演算予算を検証した。実PHP全体のメモリ上限・CPU・実行内の期限の制御は受入未達。外側の所有プロセス期限と、virtual threadingの上限を、悪意あるPHPや全process spawnの制御の証明にしない。`unsafe_code=forbid`を保ち、任意のguest入力・製品listener・実DBへ接続しない。Node.js・native PHPをホスト実行の代替に使わない。
 
 PHP_INT_SIZEは実行値を記録し、保存済みnative基準の8Bと別項目で比較する。名前の`-64`やWasm32という情報だけで合否を決めない。版の基本実行が通った後にも、例外・Fiber・権限照会・WP・要求I/O・RPC・異常回収・全配備先・依存と配布の監査が必要である。
+
+## 小WATの演算予算と有限のテスト実行
+
+```text
+python experiments/php-wasix-host-probe/unit_check.py --record
+python experiments/php-wasix-host-probe/unit_check.py --llvm --record
+```
+
+dev依存の`wasmer-middlewares=7.2.0`を使い、[固定WAT](src/metering_limits.rs)の正常→無限loop→正常を同module・3つの新store/instanceで実行する。各開始値10000、正常値42と正の残量、loopの実trap・`Exhausted`・到達状態、最後の初期予算復帰を照合する。WATごとに新Metering/Engineを用意し、別moduleへのmiddleware再利用はしない。hostcall importとstart sectionは無い固定対象である。
+
+[Windows Craneliftの記録](evidence/windows-cranelift-unit-contract.json)では全24件が成功し、通常の残量は9996、loopだけ実`Exhausted`になった。PHPを実行した記録ではない。Linuxにはformal EHのthrow/catchと、catchから入るloopの予算trapが外側のcatchに飲み込まれないことを確認する25件目を追加したが、Windowsではcompile対象に含めず、Linuxでの結果を別に取得する。
+
+無限loopの試験を通常の無期限test実行へ任せず、checkerが`cargo test --no-run`のJSONから選んだ所有test executableを、一覧10秒・本実行30秒で監督する。全件成功・ignoredなし・記録の型/順序/実残量・byte hash・source不変・子process回収を要求する。これはWasm演算の重み付き予算であり、PHP opcode・CPU時間・hostcallやcompile時間の上限ではない。
+
+Linux CIはLLVMとCraneliftを独立したmatrix jobで比較し、片方の失敗で他方を中止しない。LLVMの実績をCraneliftの合格へ移さず、Cranelift jobではhost LLVM archiveを取得しない。各backendの結果と証跡名を分け、製品engineは選定保留のままにする。
+
+## 宣言された依存ライセンスの棚卸し
+
+```text
+python experiments/php-wasix-host-probe/license_inventory.py --record
+python experiments/php-wasix-host-probe/license_inventory.py --llvm --record
+```
+
+固定manifest/lockからLinux x86_64を対象とするoffline metadataを、所有processの60秒期限で取得する。normal/build/dev辺の到達集合を分け、packageの宣言licenseと別LICENSEの有無、入力不変、対象compilerを記録する。proc-macroのhost分類、実compile unit、最終リンク、法的な採用・配布可否の判定ではない。集合の重複を含むため件数を加算しない。
+
+Windows上で取得した[Cranelift graph](evidence/windows-cranelift-dependency-inventory.json)と[LLVM graph](evidence/windows-llvm-dependency-inventory.json)を保存した。Cranelift側ではLLVM compilerにどの分類からも到達しなかった。Linuxでの実compileをこのmetadataで代用しない。`wasmer-compiler-llvm=7.2.0`は別LICENSEにBusiness Source License 1.1の独自利用条件を持ち、製品採用は未判定である。`saffron=0.1.0`も宣言文字列の代わりに別LICENSEを持つ。両者は配布crateのlock checksum・内部LICENSE・ローカル本文の一致とbyte/SHAを確認し、本文やhost絶対pathは証跡へ保存しない。
+
+PHPの28静的archiveは[CGI build receipt](../php-wasix-cgi-build/evidence/ci-41302992818/build.json)にbyte/SHAがあるが、各archiveの元repo/commit・build flags・patch・個別license/noticeの対応は未確認で、全28本が最終リンクへ入ったとの証明でもない。`libwasix_rust_libs.a`等の内部依存はhost Cargo.lockでは追跡できない。PHP本体・Zend・TSRM、host LLVM22.1とcross-build LLVM21.1も別の来歴・配布確認対象として残す。

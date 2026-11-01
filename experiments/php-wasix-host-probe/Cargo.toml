@@ -25,6 +25,7 @@ wasmer-wasix = { version = "=0.702.0", default-features = false, features = ["sy
 tokio = { version = "1.0", features = ["rt-multi-thread", "time", "sync", "io-util"] }
 
 [dev-dependencies]
+wasmer-middlewares = { version = "=7.2.0", default-features = false }
 wat = "=1.262.0"
 
 [lints.rust]

@@ -41,3 +41,5 @@ CIは準備後に`build.py --record`で由来、ツール検証、configure生�
 後続workflowでは、別系統のhost LLVM22.1/Rust1.94を準備して[固定CGI checker](../php-wasix-host-probe/cgi_check.py)を同jobで実行する。生成物をuploadして受け渡さず、builderのguest未実行receiptと実行checkerのreceiptを分ける。uploadは両実験の該当JSONだけで、バイナリは含まない。GET/POST等が通っても、WP bootstrap・DB・Fiber・製品採用を合格にしない。
 
 [run 41302992818](https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41302992818)はsource `7c57fad`でbuildとRust内の3要求・native比較に成功した。[原記録と元source照合](evidence/ci-41302992818/provenance.json)を保存した。今回のWasmは同じ40,002,084BだがSHAは`2879787251cea507843d6ab98c0f0fd4eea5005b5fe74120c8c512541a73ed59`であり、bit単位の再現性は成立確認していない。実行したバイトは同jobのbuilder receiptと前後照合されている。
+
+RPC追加後のsource `e9a2e6c`も[run 41305668059](evidence/ci-41305668059/provenance.json)でbuildと3要求のnative比較が成功した。このrunの実物hashとraw記録を別保存し、以前の結果で代用しない。
