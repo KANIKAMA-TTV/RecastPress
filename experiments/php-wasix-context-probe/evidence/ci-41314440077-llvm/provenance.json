@@ -1,0 +1,95 @@
+{
+  "format_version": 1,
+  "source_commit": "1462082b72205096ee7549862347818aa5a789a1",
+  "backend": "llvm",
+  "run_url": "https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/41314440077",
+  "artifact_id": 13085909494,
+  "artifact_zip_bytes": 13729,
+  "artifact_zip_sha256": "5baa43062fab46160865e661a7f08ff7ead94a8d8762f6b9a6d5739d1472ac15",
+  "ci_job_verdict": "success",
+  "original_git_source_hashes_verified": true,
+  "php_or_guest_executed_by_importer": false,
+  "module_binaries_acquired_by_importer": false,
+  "product_runtime_selected": false,
+  "imported_files": {
+    "ci-stages.json": "a161f59d3e632161016574e0c393c1f262b7e63a54ab73de67bacced40801889",
+    "build.json": "f09d64d60e91eb7e47fb5dd4d7c104be874383616a37248c77e7b39f039cf679",
+    "toolchain.json": "278089ec612f18da274663b589b4f4cf242d5f79286b5dd78ac6482511c2c7d1",
+    "context-contract.json": "b7020465106e7a384f1d1e6672c8cce100eca7d744968e1cfd7a31d0591005c9",
+    "llvm-toolchain-verification.json": "858ad6ce5322c491f0bccbd03900aa00b0b460c6eb4f56ece5096ecc3895e854"
+  },
+  "input_files": {
+    "experiments/php-wasix-context-probe/import_ci_evidence.py": "63839b0faabbc956d092bc82a7c6ccd7c1cbda97aeabc17ab77d28eb1e62a1c0",
+    "experiments/php-wasix-host-probe/import_checkpoint.py": "c507d79563c574743f32ebe8adba5c73d829be0742b1834fa6da4f572377d6d5",
+    "experiments/php-wasix-host-probe/import_ci_evidence.py": "c4832190c2ce44469d5f925fbff21f51a6921cea4b51f9698a5de55df9a4e625",
+    "experiments/php-wasix-host-probe/language_check.py": "3e23ba2d10cdbc8df24e6f1c446212cb9c26c9c66fc16824ebe877667591d6b2",
+    "experiments/php-wasix-host-probe/context_check.py": "fb81dcec983ca0a8f859caa7f2455d68611085d63993248d97f0992cda1ea5fc"
+  },
+  "observations": {
+    "managed_fixture_passed": true,
+    "original_fixture_source_sha256": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "initial_ranges_disjoint": true,
+    "suspended_b_preserved_after_a_unwind": true,
+    "all_fixed_checks_passed": 19,
+    "trace_events": 22,
+    "heap_stacks_freed": false,
+    "heap_stacks_reused": false,
+    "php_fiber_compatibility_verified": false,
+    "module_bytes": 46942,
+    "module_sha256": "631784ea32dcfe49cd66abb6c7f990a9d1499be323be462979adb3a92c4227ad",
+    "postopt_inspection": {
+      "entry_metadata_addresses": [
+        10640,
+        10644
+      ],
+      "entry_operator_sequence": [
+        "i32.const",
+        "i32.load",
+        "global.set",
+        "call",
+        "unreachable",
+        "end"
+      ],
+      "function_exports": [
+        "rp_stack_switch_raw",
+        "rp_stack_entry_a",
+        "rp_stack_entry_b",
+        "rp_stack_dispatch_a",
+        "rp_stack_dispatch_b"
+      ],
+      "inspected_bytes_sha256": "631784ea32dcfe49cd66abb6c7f990a9d1499be323be462979adb3a92c4227ad",
+      "linear_stack_memory_writes_in_shims": 0,
+      "parser": "wasmer::wasmparser",
+      "restores_before_return_to_C": true,
+      "scope": "exact closed final-Wasm assembly shapes; not a compiler/runtime/native-stack correctness proof",
+      "sets_stack_before_initial_C_dispatch": true,
+      "stack_global_export": "__stack_pointer",
+      "stack_global_index": 0,
+      "stack_global_type": "mutable i32",
+      "switch_import": {
+        "module": "wasix_32v1",
+        "name": "context_switch",
+        "parameters": [
+          "i64"
+        ],
+        "results": [
+          "i32"
+        ]
+      },
+      "switch_operator_sequence": [
+        "global.get",
+        "local.set",
+        "local.get",
+        "call",
+        "local.set",
+        "local.get",
+        "global.set",
+        "local.get",
+        "end"
+      ],
+      "switch_wasm_local_count": 2,
+      "target_stack_pointer_changed_before_switch": false,
+      "verified": true
+    }
+  }
+}

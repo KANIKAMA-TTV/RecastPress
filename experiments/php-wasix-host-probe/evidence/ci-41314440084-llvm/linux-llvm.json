@@ -1,0 +1,124 @@
+{
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T14:10:31.640768+00:00",
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "backend": "llvm",
+  "outcome": "version_only_passed",
+  "php_version_verified": true,
+  "production_compatible": false,
+  "memory_limit_verified": false,
+  "outer_execution_timeout_seconds": 300,
+  "native_artifact": "target/php-wasix-host-probe/release/recastpress-php-wasix-host-probe",
+  "native_artifact_sha256": "2e68fc88749f94bd55153e45ddec9fc79b9cc935034c602faf3d607b31025a18",
+  "owned_process_pid": 11076,
+  "exit_code": 0,
+  "stderr_sha256": "659e52e993ba10b527c66aa967c7e67ca8a3e60fe300453bc55f7400ff7caaae",
+  "stderr_excerpt": "PHP_WASIX_PHASE=module_compile\nPHP_WASIX_PHASE=fixed_php_execution\n",
+  "observed_phases": [
+    "module_compile",
+    "fixed_php_execution"
+  ],
+  "native_result": {
+    "artifact": {
+      "expected_bytes": 39727549,
+      "expected_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "observed_sha256": "e64850fde91d98dff0bce2b95ed467591376586469b1f4d8bad5c8759c4edbe4",
+      "path": ".reference/php-wasix-8.5.12/php.wasm",
+      "verified": true
+    },
+    "compile_elapsed_ms": 97409,
+    "engine": "wasmer-7.2.0/llvm",
+    "exception_support": {
+      "execution_verdict": "not-exercised",
+      "msvc_source_verdict": "negative-unimplemented-panic-stubs"
+    },
+    "exceptions_executed": false,
+    "full_php_compatibility_verified": false,
+    "host": {
+      "arch": "x86_64",
+      "os": "linux"
+    },
+    "integer_width_matches_native": null,
+    "isolation": {
+      "configured_guest_max_threads": 1,
+      "deadline_owner": "required-external-owned-child-supervisor",
+      "home_mapped": false,
+      "host_directories_mapped": false,
+      "host_environment_forwarded": false,
+      "http_client": false,
+      "in_process_deadline_enforced": false,
+      "memory_limit_enforced": false,
+      "networking": "UnsupportedVirtualNetworking",
+      "stderr_limit_bytes": 65536,
+      "stdin": "closed-pipe",
+      "stdout_limit_bytes": 65536
+    },
+    "limitations": [
+      "A basic version result does not verify thrown exceptions or full PHP compatibility.",
+      "Wasmer 7.2.0 MSVC exception runtime entry points are unimplemented and may panic.",
+      "Memory, CPU and execution deadline enforcement are not established by this probe.",
+      "PHP integer width is observed separately from wasm32 linear-memory width."
+    ],
+    "ok": true,
+    "phase": "version_only_verified",
+    "php": {
+      "echo": "recastpress-v0.5-wasix-version-only",
+      "php_int_size": 8,
+      "php_version": "8.5.12"
+    },
+    "php_execution_elapsed_ms": 61,
+    "process_pid": 11076,
+    "real_db": false,
+    "schema": "recastpress.php-wasix-version-only.v0.5",
+    "scope": "fixed-version-only-no-user-code-no-product-integration",
+    "source": {
+      "commit": "f4bfae79d5c19028349082f707930cf0951d23b9",
+      "kind": "official-github-actions-artifact",
+      "repository": "https://github.com/wasix-org/php"
+    },
+    "stderr": "",
+    "stderr_bytes": 0,
+    "stderr_overflow": false,
+    "stdout": "{\"php_version\":\"8.5.12\",\"php_int_size\":8,\"echo\":\"recastpress-v0.5-wasix-version-only\"}",
+    "stdout_bytes": 86,
+    "stdout_overflow": false,
+    "wasmer_wasix": "0.702.0",
+    "wordpress_executed": false
+  },
+  "integer_width_comparison": {
+    "native_bytes": 8,
+    "wasm_bytes": 8,
+    "equal": true,
+    "reference_sha256": "10265c9acf7935f09678911d43e3093c62bbcec868d0b236fed3714d8be7b0b2"
+  },
+  "input_files": {
+    "experiments/php-wasix-host-probe/Cargo.toml": "9e39660f960e4d4cf91eca63a3d24f660a87f9c10ed2a0bc58090fe151c89545",
+    "experiments/php-wasix-host-probe/Cargo.lock": "028ce5e3747f78459e0fe6776901cb5c340b1920dfdca882ff61f8ee09b89be5",
+    "experiments/php-wasix-host-probe/src/cgi_contract.rs": "9b4fb604211dfc42b05857ac7086598ffe96f35470ccfd4c0f35d45b196f7557",
+    "experiments/php-wasix-host-probe/src/context_contract.rs": "0b3bacd902e9c967ec96262d478ee6a57cb1d5aa4b2751e3e62f8e38545fd0f6",
+    "experiments/php-wasix-host-probe/src/language_contract.rs": "02d314e638a54e3d7d5165467535badff0a4eba7e0220b0f14977d0a5dd620ff",
+    "experiments/php-wasix-host-probe/src/main.rs": "e6776b3de1fe6be060cb087fe158672588a4d6ead242f3a20d433d0b630bcde3",
+    "experiments/php-wasix-host-probe/src/memory_limits.rs": "497f44ff22db8b20b7601bdfe41731fe22b53cd328f2d11ad0c667c2314cd550",
+    "experiments/php-wasix-host-probe/src/memory_policy.rs": "290d71d9d13320e731085f9ecfc1b96a729d307ed31576de7bf41a2732c932c8",
+    "experiments/php-wasix-host-probe/src/metering_limits.rs": "b06d830c9e4f2fa87be00f8eeaa02ef727b4fd2e6a43c844a45bc2d46fe9f4d0",
+    "experiments/php-wasix-host-probe/src/module_reuse.rs": "8616b0033cee1a969a28b0ac90fcf7e0f9ff90c2be8e7efa201fd49f7f8c30a4",
+    "experiments/php-wasix-host-probe/src/php_memory_cap.rs": "ca479e7b55e954e01ba656a4d8da21666a99f546304ee0d81ebfc44b54efc9ba",
+    "experiments/php-wasix-host-probe/src/php_operation_budget.rs": "5734b9e818d705bbb0826db8cbf5afb3d3e6b59f4278c4d86ac09d157984c6a2",
+    "experiments/php-wasix-host-probe/src/rpc_contract.rs": "b13eab4d70aa56afa2b1423f8d68ece6942acc0fc9945d036293a0ecd104c04e",
+    "experiments/php-wasix-host-probe/src/rpc_fs.rs": "f46092f470e70d27b54c18808204a709b15f3b791920cfbed4b36d3dc69eed5e",
+    "experiments/php-wasix-host-probe/fixtures/cgi_contract.php": "ac0e2fb549a7fb0c8620effcbe7cc40dd84f171f0b6dfad639f1fafb65e51bc0",
+    "experiments/php-runtime-candidate-probe/fixtures/runtime_contract.php": "5ab341e1207fc6bfb8634758bc38b6af7f6b60ba3c621c8acf52b603e5023080",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasix-context-probe/manifest.json": "f0239d83ebab0d1a15c48f1273cda579f45bdbc05a68650660fbe6366dfc9e8f",
+    "experiments/php-wasix-context-probe/fixtures/context_contract.c": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.c": "7a18d8121e58b07c92c2270f59b4a8285a4abf0d91f703f74e49a3108a4f0bb5",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.h": "16977226b643017517dc94ea11771f3d7aba07d4642bdb2fd640349e8ba0e437",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.S": "f5be8b435353a655547ac85a076af1af012182c5a11aef95d1db858f4470a3a1",
+    "experiments/php-wasi-host-probe/src/cgi_response.rs": "d7ef796e0bea093c862e67b3591d97ecf4a8ce53428e17196a22a7d06551bc49",
+    "experiments/php-wasix-host-probe/check.py": "efdd0eb588cec4bd66fb8fa76f78013f5fddfa36a999deba42bbdbfe66a338ff",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761"
+  }
+}

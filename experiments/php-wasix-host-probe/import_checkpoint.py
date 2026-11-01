@@ -17,6 +17,29 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SOURCE = '071c9443ba56b2b5dd27032567ed3e7a9c8d0045'
 SPECS = {
+    '41314440084-cranelift': {
+        'run_id': '41314440084', 'backend': 'cranelift',
+        'source': '1462082b72205096ee7549862347818aa5a789a1',
+        'kind': 'compiler-matrix-start-rejected', 'artifact': 13087405096, 'bytes': 68046,
+        'sha256': '6e01744b660e3da0de395fb3649328af7a5aee241afdc2091b9a4d5d9465d7fd',
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-cranelift.json', 'linux-cranelift-module-reuse.json',
+                    'linux-cranelift-rpc-contract.json', 'linux-cranelift-php-memory-cap.json',
+                    'linux-cranelift-language-contract.json', 'linux-cranelift-unit-contract.json',
+                    'linux-cranelift-dependency-inventory.json', 'linux-cranelift-php-operation-budget.json'],
+    },
+    '41314440084-llvm': {
+        'run_id': '41314440084', 'backend': 'llvm',
+        'source': '1462082b72205096ee7549862347818aa5a789a1',
+        'kind': 'compiler-matrix-start-rejected', 'artifact': 13087491798, 'bytes': 68264,
+        'sha256': 'b738ae248910275ef292b1a4728e84e75d68ea523d7878b6b494385f1fab7b6a',
+        'directory': 'experiments/php-wasix-host-probe',
+        'current': ['ci-stages.json', 'linux-llvm.json', 'linux-llvm-module-reuse.json',
+                    'linux-llvm-rpc-contract.json', 'linux-llvm-php-memory-cap.json',
+                    'linux-llvm-language-contract.json', 'linux-llvm-unit-contract.json',
+                    'linux-llvm-dependency-inventory.json', 'linux-llvm-php-operation-budget.json',
+                    'llvm-toolchain-verification.json'],
+    },
     '41310853946-cranelift': {
         'run_id': '41310853946', 'backend': 'cranelift',
         'source': 'a0cbadeb83916ad4896c0026235990a18fb40099',
@@ -155,7 +178,7 @@ def verify_sources(report):
         require(sha(reader.original(path)) == expected, 'original source mismatch: ' + path)
 
 
-def verify_reuse(data, extended=False, backend='llvm', matrix=False):
+def verify_reuse(data, extended=False, backend='llvm', matrix=False, operation_start_rejected=False):
     prefix = 'linux-' + backend
     stages = data['ci-stages.json']['stages']
     expected = dict.fromkeys(['dependencies', 'rust', 'php', 'cargo', 'llvm', 'fixture_fs', 'probe', 'reuse'], 'success')
@@ -165,6 +188,8 @@ def verify_reuse(data, extended=False, backend='llvm', matrix=False):
     if matrix:
         expected.update(license_inventory='success', llvm='success' if backend == 'llvm' else 'skipped')
         require(data['ci-stages.json']['backend'] == backend, 'wrong CI backend')
+    if operation_start_rejected:
+        expected['php_operations'] = 'failure'
     require(stages == expected, 'unexpected reuse CI stage outcomes')
     for name in [prefix + '.json', prefix + '-module-reuse.json', prefix + '-language-contract.json']:
         verify_sources(data[name])
@@ -368,9 +393,10 @@ def verify_cgi_contract(data, backend='llvm', matrix=False):
     return summary
 
 
-def verify_rpc_memory(data, backend='llvm', matrix=False):
+def verify_rpc_memory(data, backend='llvm', matrix=False, operation_start_rejected=False):
     prefix = 'linux-' + backend
-    summary = verify_reuse(data, extended=True, backend=backend, matrix=matrix)
+    summary = verify_reuse(data, extended=True, backend=backend, matrix=matrix,
+                           operation_start_rejected=operation_start_rejected)
     rpc, memory = data[prefix + '-rpc-contract.json'], data[prefix + '-php-memory-cap.json']
     for report in [rpc, memory]:
         verify_sources(report)
@@ -396,15 +422,15 @@ def verify_rpc_memory(data, backend='llvm', matrix=False):
     return summary
 
 
-def verify_compiler_matrix(data, backend):
-    summary = verify_rpc_memory(data, backend, matrix=True)
+def verify_compiler_matrix(data, backend, operation_start_rejected=False):
+    summary = verify_rpc_memory(data, backend, matrix=True, operation_start_rejected=operation_start_rejected)
     prefix = 'linux-' + backend
     unit, inventory = data[prefix + '-unit-contract.json'], data[prefix + '-dependency-inventory.json']
     for report in [unit, inventory]:
         verify_sources(report)
     require(unit['outcome'] == 'fixed_p0_unit_tests_passed' and unit['tests_passed'] is True
             and unit['owned_test_reaped'] is True and unit['exit_code'] == 0
-            and len(unit['listed_tests']) == 25 and unit['backend'] == backend
+            and len(unit['listed_tests']) == (26 if operation_start_rejected else 25) and unit['backend'] == backend
             and unit['php_executed'] is False and unit['php_cpu_budget_verified'] is False,
             'missing bounded WAT unit result')
     summaries = unit_check.validate_metering_rows(unit['wat_metering_observations'], backend, 'Linux')
@@ -431,9 +457,25 @@ def verify_compiler_matrix(data, backend):
                 and llvm['llvm_config_version'] == '22.1.8'
                 and llvm['verifier_source_sha256'] == sha(reader.original(
                     'experiments/php-wasix-host-probe/prepare_host_llvm.py')), 'host LLVM identity changed')
-    summary.update(backend=backend, bounded_unit_tests_passed=25, formal_eh_wat_metering_passed=True,
+    summary.update(backend=backend, bounded_unit_tests_passed=26 if operation_start_rejected else 25,
+                   formal_eh_wat_metering_passed=True,
                    php_cpu_budget_verified=False, declared_license_inventory_recorded=True,
                    legal_compatibility_evaluated=False, compiler_reachability=reach)
+    if operation_start_rejected:
+        operation = data[prefix + '-php-operation-budget.json']
+        verify_sources(operation)
+        require(operation['outcome'] == 'execution_failed' and operation['diagnostic_passed'] is False
+                and operation['owned_host_reaped'] is True and operation['exit_code'] == 1
+                and operation['observed_phases'] == ['module_compile'], 'operation rejection changed')
+        value = operation['native_result']
+        require(value['phase'] == 'module_compile' and value['cases'] == []
+                and value['module_start_section_present'] is True and value['trial_points'] == 100000000
+                and value['php_wasm_operation_budget_verified_for_fixed_cases'] is False
+                and value['error'] == 'operation trial rejects Wasm start sections before setup observation',
+                'pre-instance start-section rejection became an execution or budget pass')
+        summary.update(php_operation_budget_diagnostic_passed=False,
+                       operation_failure_phase='before instantiation: Wasm start section guard',
+                       php_operation_cases_executed=0)
     return summary
 
 
@@ -459,7 +501,8 @@ def main():
                     and (entry.external_attr >> 16) & 0o170000 != 0o120000, 'invalid evidence member')
         archived = {name: archive.read(name) for name in names}
     for name in names - set(members.values()):
-        require(spec['kind'] in ['module-reuse', 'php-memory-startup-failed', 'rpc-memory-passed', 'compiler-matrix'],
+        require(spec['kind'] in ['module-reuse', 'php-memory-startup-failed', 'rpc-memory-passed',
+                                'compiler-matrix', 'compiler-matrix-start-rejected'],
                 'unexpected CGI artifact member')
         require(archived[name] == reader.original(spec['directory'] + '/evidence/' + name),
                 'historical evidence changed in CI')
@@ -475,8 +518,9 @@ def main():
         summary = verify_memory_startup_failure(data)
     elif spec['kind'] == 'rpc-memory-passed':
         summary = verify_rpc_memory(data)
-    elif spec['kind'] == 'compiler-matrix':
-        summary = verify_compiler_matrix(data, spec['backend'])
+    elif spec['kind'] in ['compiler-matrix', 'compiler-matrix-start-rejected']:
+        summary = verify_compiler_matrix(data, spec['backend'],
+                                        operation_start_rejected=spec['kind'] == 'compiler-matrix-start-rejected')
     else:
         data['_raw_toolchain'] = raw['toolchain.json']
         if spec['kind'] == 'cgi-contract':

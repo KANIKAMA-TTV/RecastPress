@@ -1,0 +1,33 @@
+{
+  "format_version": 1,
+  "scope": "finite C context and live stack observations; not PHP Fiber compatibility",
+  "source_commit": "1462082b72205096ee7549862347818aa5a789a1",
+  "run_id": "41314440077",
+  "run_attempt": "1",
+  "backend": "cranelift",
+  "php_executed": false,
+  "php_fiber_compatible": false,
+  "product_runtime_selected": false,
+  "stages": {
+    "dependencies": "success",
+    "definitions": "success",
+    "guest_tools": "success",
+    "build": "success",
+    "rust": "success",
+    "host_llvm": "skipped",
+    "contract": "success"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-context.yml": "e71f6804f3252658d88b3a0cd4cfe61d8b44a3736148d76021d35ac360f24368",
+    "experiments/php-wasix-context-probe/build.py": "45960b91dbac91d82daff0856c044dd44095f26ff8c1e8bd70f552b3ee4d2549",
+    "experiments/php-wasix-context-probe/import_ci_evidence.py": "01839841935d7849a2e00f0630c00e1062dfd208808d3936c07a1057e62eef35",
+    "experiments/php-wasix-context-probe/manifest.json": "f0239d83ebab0d1a15c48f1273cda579f45bdbc05a68650660fbe6366dfc9e8f",
+    "experiments/php-wasix-context-probe/fixtures/context_contract.c": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.c": "7a18d8121e58b07c92c2270f59b4a8285a4abf0d91f703f74e49a3108a4f0bb5",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.h": "16977226b643017517dc94ea11771f3d7aba07d4642bdb2fd640349e8ba0e437",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.S": "f5be8b435353a655547ac85a076af1af012182c5a11aef95d1db858f4470a3a1",
+    "experiments/php-wasix-host-probe/context_check.py": "fb81dcec983ca0a8f859caa7f2455d68611085d63993248d97f0992cda1ea5fc",
+    "experiments/php-wasix-host-probe/prepare_host_llvm.py": "47cdd0336d6e0652486c15a03dc8ec83f709dd5538b36f0e423c0ac0873d8761",
+    "experiments/php-wasix-host-probe/llvm-toolchain.json": "a269e36704ea222ed4cf72da2ca2cc121ae44da35388770b015df6d5c80d2388"
+  }
+}

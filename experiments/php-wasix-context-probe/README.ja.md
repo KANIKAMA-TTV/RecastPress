@@ -38,4 +38,6 @@ source `a0cbade`の[LLVM](evidence/ci-41310854007-llvm/provenance.json)と[Crane
 
 元のC fixtureは変更せず、fixture objectだけにheaderを強制includeし、create/switch/destroyを小adapterへ渡す。A/Bに各64KiBの16B整列heap stackを用意し、初回entryはassembly thunkがC prologより前にstackを切り替える。switchはWasm localへSPを保存し、raw importから通常復帰した直後に戻す。errnoの処理はその後のCで行う。
 
-最適化後のWasmもRustの公開parserで検査し、export/type/importの同一性、shimの7/9命令の閉じた形、thunkの6命令、復帰前の余分なcallやlinear-memory書込みが無いことを必須にする。errnoをWasm localへ置く9命令形でも、old SPと別のlocalであることを検査する。正常2形と危険な29変形をguest実行なしで確認した。生成物名も`context.managed.wasm`へ分ける。2つのheap stackは実験の終了まで保持し、destroy直後のfree/reuse、trap/cancelからの通常復帰、即時全資源回収は主張しない。managed版の実C実行とPHP適合は未確認である。
+最適化後のWasmもRustの公開parserで検査し、export/type/importの同一性、shimの7/9命令の閉じた形、thunkの6命令、復帰前の余分なcallやlinear-memory書込みが無いことを必須にする。errnoをWasm localへ置く9命令形でも、old SPと別のlocalであることを検査する。正常2形と危険な29変形をguest実行なしで確認した。生成物名も`context.managed.wasm`へ分ける。2つのheap stackは実験の終了まで保持し、destroy直後のfree/reuse、trap/cancelからの通常復帰、即時全資源回収は主張しない。
+
+source `1462082`の[Cranelift](evidence/ci-41314440077-cranelift/provenance.json)と[LLVM](evidence/ci-41314440077-llvm/provenance.json)は同じ46,942Bのmanaged Wasmを実行し、19項目・22イベントすべてに成功した。最終Wasmの9命令shim/6命令entryを検査し、元と同じC fixtureでA終了後のB保持、A破棄後のB継続、errno・破棄を確認した。PHP Fiber、stack guard、free/reuse、全資源即時回収の受入へは広げない。

@@ -1,4 +1,4 @@
-"""Import the pinned raw-context stack-corruption observations, never a pass."""
+"""Import pinned raw failures or managed successes without changing verdicts."""
 import argparse
 import hashlib
 import json
@@ -12,6 +12,7 @@ HOST = ROOT / 'experiments/php-wasix-host-probe'
 sys.path.insert(0, str(HOST))
 import import_checkpoint as checkpoint
 from language_check import equal, parse_json
+import context_check
 
 reader = checkpoint.reader
 SOURCE = 'a0cbadeb83916ad4896c0026235990a18fb40099'
@@ -20,6 +21,10 @@ MODULE_SHA = 'f9591248d09700b7f67d9cd44d39fa5881b7447cacdd4aa153f58accad648ad3'
 SPECS = {
     'llvm': (13084639405, 11665, 'a853f76dfdc7ac8132a1df25184128fa1607a464235c11b48384e0c26b19b7ce'),
     'cranelift': (13084664564, 11199, '1a99bb3a87308990402189f4e9f723c9faef8384cb2112162fee4f7e7c835507'),
+}
+MANAGED_SPECS = {
+    'cranelift': (13087435111, 13264, '59be0d14d6939266d29e4f72618e7f9a196e82d2c2b5ef8c1086765df0d93d78'),
+    'llvm': (13085909494, 13729, '5baa43062fab46160865e661a7f08ff7ead94a8d8762f6b9a6d5739d1472ac15'),
 }
 require, sha = reader.require, reader.sha
 
@@ -138,11 +143,96 @@ def verify(data, raw, backend):
             'php_fiber_compatibility_verified': False}
 
 
+def verify_managed(data, raw, backend):
+    stages, build, tools, host = [data[name] for name in
+        ['ci-stages.json', 'build.json', 'toolchain.json', 'context-contract.json']]
+    equal(stages['source_commit'], SOURCE, 'managed original commit')
+    equal(stages['run_id'], RUN, 'managed run')
+    equal(stages['run_attempt'], '1', 'managed attempt')
+    equal(stages['backend'], backend, 'managed backend')
+    expected = dict.fromkeys(['dependencies', 'definitions', 'guest_tools', 'build', 'rust', 'contract'], 'success')
+    expected['host_llvm'] = 'success' if backend == 'llvm' else 'skipped'
+    equal(stages['stages'], expected, 'managed CI outcomes')
+    for report in [stages, build, tools, host]:
+        checkpoint.verify_sources(report)
+    manifest_wire = reader.original('experiments/php-wasix-context-probe/manifest.json')
+    manifest = parse_json(manifest_wire)
+    equal(build['outcome'], 'context_candidate_built_not_executed', 'managed builder outcome')
+    equal(build['variant'], 'managed-guest-linear-stacks-v1', 'managed builder variant')
+    equal(build['guest_executed'], False, 'builder execution scope')
+    equal(build['binaryen_validation_enabled'], True, 'managed optimizer validation')
+    equal(build['context_wasm'], {'path': 'target/php-wasix-context-probe/context.managed.wasm',
+          'bytes': 46942, 'sha256': MODULE_SHA, 'wasm_header_verified': True, 'executed': False},
+          'managed module')
+    adapters = {path: {'bytes': len(reader.original(path)), 'sha256': sha(reader.original(path))}
+                for path in manifest['adapter_sources']}
+    equal(build['adapter_sources'], adapters, 'original adapter sources')
+    cc = 'target/php-wasix-cgi-build/tools/bin/wasixcc'
+    source = manifest['fixture']
+    adapter_c, header, assembly = manifest['adapter_sources']
+    fixture_o, adapter_o, assembly_o = manifest['object_outputs']
+    expected_commands = [
+        [cc, *manifest['compile_flags'], '-include', header, '-c', source, '-o', fixture_o],
+        [cc, *manifest['compile_flags'], '-c', adapter_c, '-o', adapter_o],
+        [cc, *manifest['assembly_flags'], '-c', assembly, '-o', assembly_o],
+        [cc, *manifest['link_flags'], *manifest['object_outputs'], '-o', manifest['raw_output']],
+        ['target/php-wasix-cgi-build/tools/binaryen/bin/wasm-opt', manifest['raw_output'],
+         *manifest['optimizer_flags'], '-o', manifest['wasm_output']],
+    ]
+    equal([s['command'] for s in build['build_steps']], expected_commands, 'managed exact build commands')
+    for step in build['build_steps']:
+        equal(step['completed'], True, 'managed step completion')
+        equal(step['exit_code'], 0, 'managed build exit')
+        equal(step['timeout_seconds'], 120, 'managed step deadline')
+        equal(step['process_group_timeout_cleanup'], False, 'managed build cleanup scope')
+    equal(build['toolchain']['receipt_sha256'], sha(raw['toolchain.json']), 'managed tool receipt')
+    tool_manifest = parse_json(reader.original('experiments/php-wasix-cgi-build/manifest.json'))
+    for asset in tool_manifest['assets']:
+        row = next(row for row in tools['assets'] if row['name'] == asset['name'])
+        equal(row['verified'], True, 'managed tool verified')
+        equal(row['observed_bytes'], asset['bytes'], 'managed tool bytes')
+        equal(row['observed_sha256'], asset['sha256'], 'managed tool hash')
+    if backend == 'llvm':
+        llvm = data['llvm-toolchain-verification.json']
+        llvm_wire = reader.original('experiments/php-wasix-host-probe/llvm-toolchain.json')
+        llvm_manifest = parse_json(llvm_wire)
+        equal(llvm['llvm_toolchain_manifest_sha256'], sha(llvm_wire), 'managed host LLVM manifest')
+        equal(llvm['archive_bytes'], llvm_manifest['archive_bytes'], 'managed host LLVM bytes')
+        equal(llvm['archive_sha256'], llvm_manifest['archive_sha256'], 'managed host LLVM hash')
+        equal(llvm['llvm_config_version'], '22.1.8', 'managed host LLVM version')
+        equal(llvm['verifier_source_sha256'], sha(reader.original(
+            'experiments/php-wasix-host-probe/prepare_host_llvm.py')), 'managed host LLVM verifier')
+    equal(host['outcome'], 'fixed_c_context_contract_passed', 'managed host outcome')
+    equal(host['context_contract_passed'], True, 'managed contract passed')
+    equal(host['owned_host_reaped'], True, 'managed owned host reaped')
+    equal(host['exit_code'], 0, 'managed host exit')
+    provenance = host['generated_provenance']
+    for key, expected_value in [
+        ('build_receipt_sha256', sha(raw['build.json'])), ('manifest_sha256', sha(manifest_wire)),
+        ('source_sha256', sha(reader.original(source))), ('module_sha256', MODULE_SHA),
+        ('module_bytes', 46942), ('variant', 'managed-guest-linear-stacks-v1'), ('adapter_sources', adapters),
+    ]:
+        equal(provenance[key], expected_value, 'managed provenance ' + key)
+    context_check.validate_result(host['native_result'], host['owned_process_pid'], backend, provenance)
+    return {'managed_fixture_passed': True, 'original_fixture_source_sha256': provenance['source_sha256'],
+            'initial_ranges_disjoint': True, 'suspended_b_preserved_after_a_unwind': True,
+            'all_fixed_checks_passed': 19, 'trace_events': 22, 'heap_stacks_freed': False,
+            'heap_stacks_reused': False, 'php_fiber_compatibility_verified': False,
+            'module_bytes': 46942, 'module_sha256': MODULE_SHA,
+            'postopt_inspection': host['native_result']['stack_adapter']['postopt']}
+
+
 def main():
+    global SOURCE, RUN, MODULE_SHA
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--backend', required=True, choices=sorted(SPECS))
+    parser.add_argument('--managed', action='store_true')
     args = parser.parse_args()
-    artifact, size, expected_sha = SPECS[args.backend]
+    if args.managed:
+        SOURCE = '1462082b72205096ee7549862347818aa5a789a1'
+        RUN = '41314440077'
+        MODULE_SHA = '631784ea32dcfe49cd66abb6c7f990a9d1499be323be462979adb3a92c4227ad'
+    artifact, size, expected_sha = (MANAGED_SPECS if args.managed else SPECS)[args.backend]
     reader.COMMIT = SOURCE
     path = ROOT / 'target/php-wasix-ci-evidence' / f'run-{RUN}-{args.backend}-1.zip'
     wire = path.read_bytes()
@@ -163,23 +253,24 @@ def main():
                     and (e.external_attr >> 16) & 0o170000 != 0o120000 for e in entries), 'context member type/size')
         raw = {name: archive.read(member) for name, member in members.items()}
     data = {name: parse_json(value) for name, value in raw.items()}
-    summary = verify(data, raw, args.backend)
+    summary = verify_managed(data, raw, args.backend) if args.managed else verify(data, raw, args.backend)
     destination = HERE / 'evidence' / f'ci-{RUN}-{args.backend}'
     destination.mkdir(parents=True, exist_ok=True)
     for name, value in raw.items():
         (destination / name).write_bytes(value)
     inputs = [Path(__file__).resolve(), HOST / 'import_checkpoint.py', HOST / 'import_ci_evidence.py',
-              HOST / 'language_check.py']
+              HOST / 'language_check.py', HOST / 'context_check.py']
     report = {'format_version': 1, 'source_commit': SOURCE, 'backend': args.backend,
               'run_url': f'https://github.com/KANIKAMA-Carcinization/RecastPress/actions/runs/{RUN}',
               'artifact_id': artifact, 'artifact_zip_bytes': size, 'artifact_zip_sha256': expected_sha,
-              'ci_job_verdict': 'failure', 'original_git_source_hashes_verified': True,
+              'ci_job_verdict': 'success' if args.managed else 'failure',
+              'original_git_source_hashes_verified': True,
               'php_or_guest_executed_by_importer': False, 'module_binaries_acquired_by_importer': False,
               'product_runtime_selected': False, 'imported_files': {name: sha(value) for name, value in raw.items()},
               'input_files': {p.relative_to(ROOT).as_posix(): sha(p.read_bytes()) for p in inputs},
               'observations': summary}
     (destination / 'provenance.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
-    print('Imported raw-context stack corruption; original failure preserved: ' + args.backend)
+    print('Imported context evidence with its original verdict: ' + args.backend)
 
 
 if __name__ == '__main__':

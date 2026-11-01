@@ -1,0 +1,365 @@
+{
+  "format_version": 1,
+  "schema": "recastpress.wasix-context-build.v0.5",
+  "observed_at_utc": "2026-11-01T14:06:14.577606+00:00",
+  "outcome": "context_candidate_built_not_executed",
+  "phase": "build_complete",
+  "build_steps": [
+    {
+      "name": "compile_fixture",
+      "command": [
+        "target/php-wasix-cgi-build/tools/bin/wasixcc",
+        "-std=c11",
+        "-O1",
+        "-g0",
+        "-fno-optimize-sibling-calls",
+        "-fno-lto",
+        "-include",
+        "experiments/php-wasix-context-probe/fixtures/stack_adapter.h",
+        "-c",
+        "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+        "-o",
+        "target/php-wasix-context-probe/context.fixture.o"
+      ],
+      "working_directory": "<workspace>",
+      "completed": true,
+      "timeout_seconds": 120,
+      "process_group_timeout_cleanup": false,
+      "log_budget_checked_after_exit": true,
+      "elapsed_ms": 114,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "name": "compile_adapter_c",
+      "command": [
+        "target/php-wasix-cgi-build/tools/bin/wasixcc",
+        "-std=c11",
+        "-O1",
+        "-g0",
+        "-fno-optimize-sibling-calls",
+        "-fno-lto",
+        "-c",
+        "experiments/php-wasix-context-probe/fixtures/stack_adapter.c",
+        "-o",
+        "target/php-wasix-context-probe/context.adapter-c.o"
+      ],
+      "working_directory": "<workspace>",
+      "completed": true,
+      "timeout_seconds": 120,
+      "process_group_timeout_cleanup": false,
+      "log_budget_checked_after_exit": true,
+      "elapsed_ms": 32,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "name": "compile_adapter_asm",
+      "command": [
+        "target/php-wasix-cgi-build/tools/bin/wasixcc",
+        "-g0",
+        "-fno-lto",
+        "-c",
+        "experiments/php-wasix-context-probe/fixtures/stack_adapter.S",
+        "-o",
+        "target/php-wasix-context-probe/context.adapter-asm.o"
+      ],
+      "working_directory": "<workspace>",
+      "completed": true,
+      "timeout_seconds": 120,
+      "process_group_timeout_cleanup": false,
+      "log_budget_checked_after_exit": true,
+      "elapsed_ms": 16,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "name": "link_context",
+      "command": [
+        "target/php-wasix-cgi-build/tools/bin/wasixcc",
+        "-sMODULE_KIND=static-main",
+        "-fno-lto",
+        "-Wl,--export=rp_stack_switch_raw",
+        "-Wl,--export=rp_stack_entry_a",
+        "-Wl,--export=rp_stack_entry_b",
+        "-Wl,--export=rp_stack_dispatch_a",
+        "-Wl,--export=rp_stack_dispatch_b",
+        "-Wl,--export=__stack_pointer",
+        "target/php-wasix-context-probe/context.fixture.o",
+        "target/php-wasix-context-probe/context.adapter-c.o",
+        "target/php-wasix-context-probe/context.adapter-asm.o",
+        "-o",
+        "target/php-wasix-context-probe/context.managed.raw.wasm"
+      ],
+      "working_directory": "<workspace>",
+      "completed": true,
+      "timeout_seconds": 120,
+      "process_group_timeout_cleanup": false,
+      "log_budget_checked_after_exit": true,
+      "elapsed_ms": 64,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    },
+    {
+      "name": "optimize_context",
+      "command": [
+        "target/php-wasix-cgi-build/tools/binaryen/bin/wasm-opt",
+        "target/php-wasix-context-probe/context.managed.raw.wasm",
+        "--emit-exnref",
+        "--all-features",
+        "--strip-debug",
+        "--asyncify",
+        "--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot",
+        "--pass-arg=asyncify-ignore-indirect",
+        "--pass-arg=max-func-params@32",
+        "-o",
+        "target/php-wasix-context-probe/context.managed.wasm"
+      ],
+      "working_directory": "<workspace>",
+      "completed": true,
+      "timeout_seconds": 120,
+      "process_group_timeout_cleanup": false,
+      "log_budget_checked_after_exit": true,
+      "elapsed_ms": 16,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0
+    }
+  ],
+  "guest_executed": false,
+  "php_executed": false,
+  "php_backend_modified": false,
+  "sysroot_source_build_attestation_verified": false,
+  "variant": "managed-guest-linear-stacks-v1",
+  "stack_adapter": {
+    "slots": 2,
+    "stack_bytes_per_context": 65536,
+    "alignment_bytes": 16,
+    "buffers_freed": false,
+    "buffers_reused": false,
+    "allocation_lifetime": "owned guest process exit",
+    "forced_include_scope": "original fixture translation unit only",
+    "switch_policy": "Wasm local saves current SP; raw import returns before SP restoration; no target-SP prechange",
+    "postopt_exports": [
+      "rp_stack_switch_raw",
+      "rp_stack_entry_a",
+      "rp_stack_entry_b",
+      "rp_stack_dispatch_a",
+      "rp_stack_dispatch_b"
+    ],
+    "postopt_stack_global": "__stack_pointer",
+    "postopt_stackless_verified_by_builder": false
+  },
+  "adapter_sources": {
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.c": {
+      "bytes": 2859,
+      "sha256": "7a18d8121e58b07c92c2270f59b4a8285a4abf0d91f703f74e49a3108a4f0bb5"
+    },
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.h": {
+      "bytes": 579,
+      "sha256": "16977226b643017517dc94ea11771f3d7aba07d4642bdb2fd640349e8ba0e437"
+    },
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.S": {
+      "bytes": 1130,
+      "sha256": "f5be8b435353a655547ac85a076af1af012182c5a11aef95d1db858f4470a3a1"
+    }
+  },
+  "object_files": {
+    "target/php-wasix-context-probe/context.fixture.o": {
+      "path": "target/php-wasix-context-probe/context.fixture.o",
+      "bytes": 18913,
+      "sha256": "94abb3686a02b774c6019537d1f4f955184d334c40a23a049985b0c76dde7c5d",
+      "wasm_header_verified": true,
+      "executed": false
+    },
+    "target/php-wasix-context-probe/context.adapter-c.o": {
+      "path": "target/php-wasix-context-probe/context.adapter-c.o",
+      "bytes": 1574,
+      "sha256": "0404a8b26d48fdfd273d333755e4b2acd82861e2479cc272930b75643d5c24ab",
+      "wasm_header_verified": true,
+      "executed": false
+    },
+    "target/php-wasix-context-probe/context.adapter-asm.o": {
+      "path": "target/php-wasix-context-probe/context.adapter-asm.o",
+      "bytes": 460,
+      "sha256": "dbf004264e5ac6ed12c614a69c747b899287e48e3ed08fefe45e2327e6f5186d",
+      "wasm_header_verified": true,
+      "executed": false
+    }
+  },
+  "product_runtime_selected": false,
+  "redistributed_binaries": false,
+  "binaryen_validation_enabled": true,
+  "runtime_module_validation_performed": false,
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "input_files": {
+    ".github/workflows/php-wasix-cgi-build.yml": "d95d9b6b28f0c915a9541b7e3c5e89818d5254db2c5a4e7798052a9a8d52a208",
+    "experiments/php-wasix-cgi-build/README.ja.md": "8b59a8d7cb60a63967ddf2514dd43afba1f26750589ae92e585173473ff710e6",
+    "experiments/php-wasix-cgi-build/build.py": "cd79682626052d796ed0b60c178d7ec60bb6b160dd8b7dee1865831747597085",
+    "experiments/php-wasix-cgi-build/manifest.json": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "experiments/php-wasix-cgi-build/patch_source.py": "751fa61d9e81af55098bc1a8f67fd87c188490b30bdef30664969cb29b9e8d9d",
+    "experiments/php-wasix-cgi-build/patches/0001-wasi-disable-cgi-prefork.patch": "941f0f2ce80edcc0077e746bb7e080b163e837a1e60fb3a2faa21ca4008da1e2",
+    "experiments/php-wasix-cgi-build/prepare.py": "b21138e94eb32f33f8cd51412e1fd9708211c480888e934fca800ba727578540",
+    "experiments/php-wasix-context-probe/build.py": "45960b91dbac91d82daff0856c044dd44095f26ff8c1e8bd70f552b3ee4d2549",
+    "experiments/php-wasix-context-probe/fixtures/context_contract.c": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.S": "f5be8b435353a655547ac85a076af1af012182c5a11aef95d1db858f4470a3a1",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.c": "7a18d8121e58b07c92c2270f59b4a8285a4abf0d91f703f74e49a3108a4f0bb5",
+    "experiments/php-wasix-context-probe/fixtures/stack_adapter.h": "16977226b643017517dc94ea11771f3d7aba07d4642bdb2fd640349e8ba0e437",
+    "experiments/php-wasix-context-probe/manifest.json": "f0239d83ebab0d1a15c48f1273cda579f45bdbc05a68650660fbe6366dfc9e8f"
+  },
+  "build_config": {
+    "format_version": 1,
+    "schema": "recastpress.wasix-context-build.v0.5",
+    "scope": "fixed small C context candidate; no PHP backend or product adoption",
+    "context_api_reference": {
+      "repository": "wasix-org/wasix-libc",
+      "commit": "09503b230e8acc721c1e013ca28a41bf149e4ee2",
+      "header": "libc-bottom-half/headers/public/wasix/context.h",
+      "role": "consulted public ABI source; not a verified source-build identity of the downloaded sysroot"
+    },
+    "sysroot_source_build_attestation_verified": false,
+    "toolchain_manifest": "experiments/php-wasix-cgi-build/manifest.json",
+    "toolchain_receipt": "experiments/php-wasix-cgi-build/evidence/toolchain.json",
+    "fixture": "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+    "rounds": 8,
+    "depth": 4,
+    "b_extra_rounds": 2,
+    "stack_lifetime_case": "A unwinds while B remains suspended; main clobbers before B resumes",
+    "raw_output": "target/php-wasix-context-probe/context.managed.raw.wasm",
+    "wasm_output": "target/php-wasix-context-probe/context.managed.wasm",
+    "compile_flags": [
+      "-std=c11",
+      "-O1",
+      "-g0",
+      "-fno-optimize-sibling-calls",
+      "-fno-lto"
+    ],
+    "optimizer_flags": [
+      "--emit-exnref",
+      "--all-features",
+      "--strip-debug",
+      "--asyncify",
+      "--pass-arg=asyncify-imports@wasix_32v1.proc_snapshot",
+      "--pass-arg=asyncify-ignore-indirect",
+      "--pass-arg=max-func-params@32"
+    ],
+    "tool_environment": {
+      "WASIXCC_WASM_EXCEPTIONS": "legacy",
+      "WASIXCC_INCLUDE_CPP_SYMBOLS": "yes",
+      "WASIXCC_RUN_WASM_OPT": "no",
+      "WASIXCC_PIC": "no",
+      "WASIXCC_GENERATE_SHELL_SCRIPT": "no"
+    },
+    "command_timeout_seconds": 120,
+    "command_cleanup_timeout_seconds": 5,
+    "command_log_limit_bytes": 65536,
+    "module_limit_bytes": 67108864,
+    "guest_executed": false,
+    "php_executed": false,
+    "product_runtime_selected": false,
+    "redistributed_binaries": false,
+    "variant": "managed-guest-linear-stacks-v1",
+    "adapter_sources": [
+      "experiments/php-wasix-context-probe/fixtures/stack_adapter.c",
+      "experiments/php-wasix-context-probe/fixtures/stack_adapter.h",
+      "experiments/php-wasix-context-probe/fixtures/stack_adapter.S"
+    ],
+    "stack_adapter": {
+      "slots": 2,
+      "stack_bytes_per_context": 65536,
+      "alignment_bytes": 16,
+      "buffers_freed": false,
+      "buffers_reused": false,
+      "allocation_lifetime": "owned guest process exit",
+      "forced_include_scope": "original fixture translation unit only",
+      "switch_policy": "Wasm local saves current SP; raw import returns before SP restoration; no target-SP prechange",
+      "postopt_exports": [
+        "rp_stack_switch_raw",
+        "rp_stack_entry_a",
+        "rp_stack_entry_b",
+        "rp_stack_dispatch_a",
+        "rp_stack_dispatch_b"
+      ],
+      "postopt_stackless_verified_by_builder": false,
+      "postopt_stack_global": "__stack_pointer"
+    },
+    "object_outputs": [
+      "target/php-wasix-context-probe/context.fixture.o",
+      "target/php-wasix-context-probe/context.adapter-c.o",
+      "target/php-wasix-context-probe/context.adapter-asm.o"
+    ],
+    "assembly_flags": [
+      "-g0",
+      "-fno-lto"
+    ],
+    "link_flags": [
+      "-sMODULE_KIND=static-main",
+      "-fno-lto",
+      "-Wl,--export=rp_stack_switch_raw",
+      "-Wl,--export=rp_stack_entry_a",
+      "-Wl,--export=rp_stack_entry_b",
+      "-Wl,--export=rp_stack_dispatch_a",
+      "-Wl,--export=rp_stack_dispatch_b",
+      "-Wl,--export=__stack_pointer"
+    ]
+  },
+  "toolchain": {
+    "manifest": "experiments/php-wasix-cgi-build/manifest.json",
+    "manifest_sha256": "8c625e73920e6dc3fa7f842da0f553b75b6f65ff17e64349dcb98359a62ffd28",
+    "receipt": "experiments/php-wasix-cgi-build/evidence/toolchain.json",
+    "receipt_sha256": "123ba44c501d8fa6eb1bc8501fda52811b12f7d375e72bea8d0a291cc5ec2a88",
+    "verification_scope": "pinned archive size/SHA and extracted tool identities; no source-build attestation",
+    "assets": [
+      {
+        "name": "wasixcc",
+        "asset_id": 496323636,
+        "bytes": 3554031,
+        "sha256": "f4c7d4417d4699adc9e56972ab033bb7c05acc87553fd34ea81243470fe8de45"
+      },
+      {
+        "name": "sysroot",
+        "asset_id": 465375751,
+        "bytes": 6142222,
+        "sha256": "8c54240afabda1106c19f284bdfff77f29932caa55f82756f87d01f69ffd50f4"
+      },
+      {
+        "name": "llvm",
+        "asset_id": 504888362,
+        "bytes": 81191584,
+        "sha256": "4066b52816c3382d10c5a7d7cfd6252a5f432459f007c143f07e23bf367c43ea"
+      },
+      {
+        "name": "binaryen",
+        "asset_id": 435610959,
+        "bytes": 107371282,
+        "sha256": "0a18362361ad05465118cd8eeb72edaeec89de6894bc283576ef4e07aa3babcc"
+      }
+    ]
+  },
+  "source": {
+    "path": "experiments/php-wasix-context-probe/fixtures/context_contract.c",
+    "bytes": 15250,
+    "sha256": "0a27a13ceeede80b0af9677fbd0bfe9b4b7ee757993d417181ed1baccc9bde37"
+  },
+  "raw_context_wasm": {
+    "path": "target/php-wasix-context-probe/context.managed.raw.wasm",
+    "bytes": 76389,
+    "sha256": "f6cebcfbeea60e38c54bc02b08cfa273dba1d3b646915b3b901d7600ea4f7dc2",
+    "wasm_header_verified": true,
+    "executed": false
+  },
+  "context_wasm": {
+    "path": "target/php-wasix-context-probe/context.managed.wasm",
+    "bytes": 46942,
+    "sha256": "631784ea32dcfe49cd66abb6c7f990a9d1499be323be462979adb3a92c4227ad",
+    "wasm_header_verified": true,
+    "executed": false
+  }
+}

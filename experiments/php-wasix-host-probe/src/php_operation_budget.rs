@@ -14,7 +14,8 @@ use sha2::{Digest, Sha256};
 use wasmer::sys::CompilerConfig;
 use wasmer::wasmparser::Operator;
 use wasmer::{
-    AsStoreMut, Engine, GlobalType, Instance, Memory, Module, Mutability, StoreMut, Type,
+    AsStoreMut, Engine, ExportIndex, GlobalInit, GlobalType, Instance, Memory, Module, Mutability,
+    StoreMut, Type,
 };
 use wasmer_middlewares::{
     Metering,
@@ -71,6 +72,12 @@ pub fn describe(report: &mut Value) {
         report[name] = json!(false);
     }
     report["trial_points"] = json!(POINTS);
+    report["configured_initial_points"] = json!({"kind":"remaining","points":POINTS});
+    report["budget_reset_count"] = json!(0);
+    report["start_execution_included"] = json!(true);
+    report["setup_observation_phase"] = json!("after-Instance.new-start-before-_initialize");
+    report["fresh_post_start_points_equal"] = json!(false);
+    report["post_start_reference_points"] = Value::Null;
     report["cost_policy"] = json!("one-point-per-original-Wasm-operator");
     report["isolation"]["guest_environment_supplied"] = json!([]);
     report["isolation"]["guest_fixture_files"] = json!([]);
@@ -85,6 +92,7 @@ pub fn describe(report: &mut Value) {
     report["limitations"] = json!([
         "100000000 is a fixed experiment value, not a product budget or wall-clock deadline.",
         "Metering weights original Wasm operators, not PHP opcodes, native instructions or CPU seconds.",
+        "The compiled globals initialize each fresh instance to the fixed budget. Start-section execution spends it before setup observes the remainder; no points are reset.",
         "Hostcall duration, blocking IO, compiler work, RSS and guest linear memory are not bounded by these points.",
         "Only this closed mode instruments its single PHP module; other host modes are unchanged.",
         "The outer owned-child supervisor must enforce its deadline and confirm host exit/reap.",
@@ -102,6 +110,84 @@ fn engine() -> Engine {
     let mut compiler = wasmer_compiler_cranelift::Cranelift::default();
     compiler.push_middleware(middleware);
     compiler.into()
+}
+
+fn inspect_compiled_budget(module: &Module, report: &mut Value) -> Result<()> {
+    let info = module.info();
+    let start = info.start_function;
+    report["module_start_section_present"] = json!(start.is_some());
+    report["module_start_function"] = start.map_or(Value::Null, |index| {
+        let exports: Vec<_> = info
+            .exports
+            .iter()
+            .filter_map(|(name, export)| {
+                matches!(export, ExportIndex::Function(value) if *value == index).then_some(name)
+            })
+            .collect();
+        json!({"index":index.as_u32(),"name":info.function_names.get(&index),
+            "exported_names":exports,"imported":info.is_imported_function(index)})
+    });
+    if let Some(index) = start {
+        ensure!(
+            !info.is_imported_function(index),
+            "start must be a locally metered Wasm function"
+        );
+    }
+    let mut globals = Vec::new();
+    for (name, ty, expected) in [
+        (
+            "wasmer_metering_remaining_points",
+            Type::I64,
+            GlobalInit::I64Const(POINTS as i64),
+        ),
+        (
+            "wasmer_metering_points_exhausted",
+            Type::I32,
+            GlobalInit::I32Const(0),
+        ),
+    ] {
+        let index = match info.exports.get(name) {
+            Some(ExportIndex::Global(index)) => *index,
+            _ => anyhow::bail!("compiled metering export is not a global"),
+        };
+        ensure!(
+            info.globals.get(index) == Some(&GlobalType::new(ty, Mutability::Var)),
+            "compiled metering global has the wrong type"
+        );
+        let local = info
+            .local_global_index(index)
+            .context("metering initializer cannot be imported")?;
+        let initializer = info
+            .global_initializers
+            .get(local)
+            .context("missing compiled metering initializer")?;
+        ensure!(
+            *initializer == expected,
+            "compiled metering initializer differs from the fixed constructor budget"
+        );
+        globals.push(json!({"export":name,"global_index":index.as_u32(),
+            "type":if ty == Type::I64 {"mutable i64"} else {"mutable i32"},
+            "initializer_kind":if ty == Type::I64 {"I64Const"} else {"I32Const"},
+            "initializer_value":if ty == Type::I64 {POINTS} else {0}}));
+    }
+    report["compiled_metering_initializers"] = json!({"verified":true,"globals":globals,
+        "scope":"public ModuleInfo initializers before instantiation/start; not a post-start observation"});
+    Ok(())
+}
+
+fn post_start_remaining(points: &Value) -> Result<u64> {
+    ensure!(
+        points["kind"] == "remaining",
+        "start did not leave a Remaining observation"
+    );
+    let remaining = points["points"]
+        .as_u64()
+        .context("post-start points are not an unsigned integer")?;
+    ensure!(
+        remaining > 0 && remaining <= POINTS,
+        "post-start budget is exhausted or exceeds the compiled initial value"
+    );
+    Ok(remaining)
 }
 
 fn read_points(store: &mut impl AsStoreMut, instance: &Instance) -> Result<Value> {
@@ -130,7 +216,7 @@ fn read_points(store: &mut impl AsStoreMut, instance: &Instance) -> Result<Value
 struct Observations {
     setup_calls: usize,
     recycle_calls: usize,
-    initial: Option<Value>,
+    post_start: Option<Value>,
     final_points: Option<Value>,
     error: Option<String>,
 }
@@ -153,20 +239,22 @@ fn observe_setup(
             anyhow::bail!("more than one instance setup callback");
         }
     }
-    let observed = read_points(store, instance).and_then(|points| {
-        ensure!(
-            points == json!({"kind":"remaining","points":POINTS}),
-            "fresh instance budget is not the fixed initial value"
-        );
-        Ok(points)
-    });
+    let observed = read_points(store, instance);
     let mut state = state
         .lock()
         .map_err(|_| anyhow::anyhow!("metering setup observation mutex poisoned"))?;
     match observed {
         Ok(points) => {
-            state.initial = Some(points);
-            Ok(())
+            // Instance::new already ran start. Preserve even an invalid raw
+            // observation, never replenish it or relabel it the initial value.
+            state.post_start = Some(points.clone());
+            match post_start_remaining(&points) {
+                Ok(_) => Ok(()),
+                Err(error) => {
+                    state.error.get_or_insert(format!("{error:#}"));
+                    Err(error)
+                }
+            }
         }
         Err(error) => {
             state.error.get_or_insert(format!("{error:#}"));
@@ -237,10 +325,7 @@ impl VirtualTaskManager for MeteredTaskManager {
     fn task_wasm(&self, mut task: TaskWasm) -> Result<(), WasiThreadError> {
         // Resuming store snapshots could restore a spent global. This closed
         // no-snapshot/no-deep-sleep mode accepts only new static executions.
-        if task.globals.is_some()
-            || task.callbacks.trigger.is_some()
-            || task.module.info().start_function.is_some()
-        {
+        if task.globals.is_some() || task.callbacks.trigger.is_some() {
             return Err(WasiThreadError::Unsupported);
         }
         let previous = task.callbacks.recycle.take();
@@ -280,12 +365,9 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
     let compiled = Module::new(&engine, &data.wasm()[..]);
     report["compile_elapsed_ms"] = json!(started.elapsed().as_millis());
     let module = compiled.context("compile the fixed PHP module once with operation metering")?;
-    report["module_start_section_present"] = json!(module.info().start_function.is_some());
-    ensure!(
-        module.info().start_function.is_none(),
-        "operation trial rejects Wasm start sections before setup observation"
-    );
+    inspect_compiled_budget(&module, report)?;
     let mut all_met = true;
+    let mut reference = None;
     for (index, name) in NAMES.iter().enumerate() {
         report["phase"] = json!(name);
         eprintln!("PHP_WASIX_PHASE={name}");
@@ -296,13 +378,25 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
             "fixed_program_sha256":sha(program.as_bytes()),"guest_arguments":["-n","-r",if index == 1 {"<fixed-loop>"} else {"<fixed-normal>"}],
             "success_expected":index != 1,"ok":false,"expectation_met":false,
             "ok_scope":"WasiRunner outcome only; the expected exhausted loop remains false",
-            "initial_points":null,"final_points":null,"setup_observation_count":0,"recycle_observation_count":0,
+            "configured_initial_points":{"kind":"remaining","points":POINTS},"budget_reset_count":0,
+            "setup_observation_phase":"after-Instance.new-start-before-_initialize",
+            "post_start_points":null,"start_charged_points":null,"post_start_difference_from_first":null,
+            "post_start_matches_first":false,"final_points":null,"setup_observation_count":0,"recycle_observation_count":0,
             "metering_observation_error":null,"ready_reached":false,"budget_exhausted":false,"php":null,
             "guest_environment_supplied":[],"host_environment_forwarded":false,"host_directories_mapped":false,
             "home_mapped":false,"networking":"UnsupportedVirtualNetworking","http_client":false,
             "stdin":"closed-pipe","stdout_limit_bytes":OUTPUT_LIMIT,"stderr_limit_bytes":OUTPUT_LIMIT});
-        let result = execute(&engine, module.clone(), &data, index, &mut record)
-            .and_then(|()| validate(&record, index));
+        let execution = execute(&engine, module.clone(), &data, index, &mut record);
+        let observed = post_start_remaining(&record["post_start_points"]).ok();
+        if index == 0 {
+            reference = observed;
+            report["post_start_reference_points"] = json!(reference);
+        }
+        if let (Some(points), Some(first)) = (observed, reference) {
+            record["post_start_difference_from_first"] = json!(points as i64 - first as i64);
+            record["post_start_matches_first"] = json!(points == first);
+        }
+        let result = execution.and_then(|()| validate(&record, index));
         record["expectation_met"] = json!(result.is_ok());
         if let Err(error) = result {
             all_met = false;
@@ -315,6 +409,13 @@ pub fn verify(bytes: Vec<u8>, report: &mut Value) -> Result<()> {
             .push(record);
         report["reuse"]["observed_cases"] = json!(index + 1);
     }
+    report["fresh_post_start_points_equal"] =
+        json!(report["cases"].as_array().is_some_and(|cases| {
+            cases.len() == 3
+                && cases
+                    .iter()
+                    .all(|case| case["post_start_matches_first"] == true)
+        }));
     ensure!(
         all_met,
         "fixed PHP operation-budget expectations were not all met"
@@ -412,7 +513,12 @@ fn execute(
             .map_err(|_| anyhow::anyhow!("metering observation snapshot poisoned"))?;
         record["setup_observation_count"] = json!(observation.setup_calls);
         record["recycle_observation_count"] = json!(observation.recycle_calls);
-        record["initial_points"] = json!(observation.initial);
+        record["post_start_points"] = json!(observation.post_start);
+        if let Some(points) = &observation.post_start {
+            if let Ok(remaining) = post_start_remaining(points) {
+                record["start_charged_points"] = json!(POINTS - remaining);
+            }
+        }
         record["final_points"] = json!(observation.final_points);
         record["metering_observation_error"] = json!(observation.error);
         record["budget_exhausted"] =
@@ -444,9 +550,17 @@ fn validate(record: &Value, index: usize) -> Result<()> {
             && record["metering_observation_error"].is_null(),
         "missing/repeated/failed safe metering observations"
     );
+    let post_start = post_start_remaining(&record["post_start_points"])?;
     ensure!(
-        record["initial_points"] == json!({"kind":"remaining","points":POINTS}),
-        "instance did not start with fixed budget"
+        record["configured_initial_points"] == json!({"kind":"remaining","points":POINTS})
+            && record["budget_reset_count"] == 0
+            && record["start_charged_points"] == POINTS - post_start,
+        "configured budget, start charge or no-reset record mismatch"
+    );
+    ensure!(
+        record["post_start_matches_first"] == true
+            && record["post_start_difference_from_first"] == 0,
+        "fresh instances differ in their observed post-start budget"
     );
     ensure!(
         record["ok"] == (index != 1),
@@ -475,8 +589,8 @@ fn validate(record: &Value, index: usize) -> Result<()> {
             .as_u64()
             .context("normal case missing remaining points")?;
         ensure!(
-            record["final_points"]["kind"] == "remaining" && points > 0 && points < POINTS,
-            "normal case did not consume a positive bounded number of points"
+            record["final_points"]["kind"] == "remaining" && points > 0 && points < post_start,
+            "normal case did not consume points after start and leave a positive remainder"
         );
         ensure!(
             record["php"]

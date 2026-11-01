@@ -2,6 +2,8 @@
 
 The weighted Wasm points are neither CPU seconds nor PHP opcodes. No arbitrary
 code, argument, path, product limit or native PHP fallback is accepted.
+Start-section execution spends the compiled initial budget before setup reads
+the remainder. That observed remainder is never reset or called the initial B.
 """
 import argparse
 from datetime import datetime, timezone
@@ -48,9 +50,33 @@ def validate_result(value, pid, backend):
         ('engine', 'wasmer-7.2.0/' + backend), ('phase', 'php_operation_budget_diagnostic_verified'),
         ('ok', True), ('php_wasm_operation_budget_verified_for_fixed_cases', True),
         ('trial_points', POINTS), ('cost_policy', 'one-point-per-original-Wasm-operator'),
-        ('module_start_section_present', False),
+        ('module_start_section_present', True), ('budget_reset_count', 0),
+        ('configured_initial_points', {'kind': 'remaining', 'points': POINTS}),
+        ('start_execution_included', True), ('fresh_post_start_points_equal', True),
+        ('setup_observation_phase', 'after-Instance.new-start-before-_initialize'),
     ]:
         equal(value[field], expected, 'host ' + field)
+    start = value['module_start_function']
+    require(type(start) is dict and set(start) == {'index', 'name', 'exported_names', 'imported'}, 'start metadata shape')
+    require(type(start['index']) is int and 0 <= start['index'] <= 2**32 - 1, 'start function index')
+    require(start['name'] is None or type(start['name']) is str, 'optional start name')
+    require(type(start['exported_names']) is list and all(type(name) is str for name in start['exported_names']),
+            'start export names')
+    equal(start['imported'], False, 'start must be a metered local function')
+    initializers = value['compiled_metering_initializers']
+    equal(initializers['verified'], True, 'compiled global initializers verified through public ModuleInfo')
+    rows = initializers['globals']
+    require(type(rows) is list and len(rows) == 2, 'exactly two compiled metering globals')
+    for row, name, kind, ty, number in [
+        (rows[0], 'wasmer_metering_remaining_points', 'I64Const', 'mutable i64', POINTS),
+        (rows[1], 'wasmer_metering_points_exhausted', 'I32Const', 'mutable i32', 0),
+    ]:
+        require(type(row) is dict and set(row) == {'export', 'global_index', 'type', 'initializer_kind', 'initializer_value'},
+                'compiled global metadata shape')
+        for key, expected in [('export', name), ('type', ty), ('initializer_kind', kind), ('initializer_value', number)]:
+            equal(row[key], expected, 'compiled initializer ' + key)
+        require(type(row['global_index']) is int and 0 <= row['global_index'] <= 2**32 - 1, 'compiled global index')
+    require(rows[0]['global_index'] != rows[1]['global_index'], 'compiled budget globals alias')
     for field in ['production_operation_budget_verified', 'cpu_time_budget_verified', 'php_opcode_budget_verified',
                   'hostcall_timeout_verified', 'production_memory_limit_verified', 'fiber_compatibility_verified',
                   'native_comparison_performed', 'product_adopted', 'real_db', 'wordpress_executed',
@@ -80,6 +106,8 @@ def validate_result(value, pid, backend):
         equal(reuse[field], expected, 'reuse ' + field)
     require(type(value['compile_elapsed_ms']) is int and value['compile_elapsed_ms'] >= 0, 'compile duration')
     require(type(value['cases']) is list and len(value['cases']) == 3, 'exactly three operation-budget cases required')
+    reference = value['post_start_reference_points']
+    require(type(reference) is int and 0 < reference <= POINTS, 'valid first post-start remaining points')
     for index, case in enumerate(value['cases']):
         loop = index == 1
         for field, expected in [
@@ -88,7 +116,11 @@ def validate_result(value, pid, backend):
             ('module_compile_invocations', 0), ('fixed_program_sha256', LOOP_SHA if loop else NORMAL_SHA),
             ('guest_arguments', ['-n', '-r', '<fixed-loop>' if loop else '<fixed-normal>']),
             ('success_expected', not loop), ('ok', not loop), ('expectation_met', True),
-            ('initial_points', {'kind': 'remaining', 'points': POINTS}),
+            ('configured_initial_points', {'kind': 'remaining', 'points': POINTS}), ('budget_reset_count', 0),
+            ('setup_observation_phase', 'after-Instance.new-start-before-_initialize'),
+            ('post_start_points', {'kind': 'remaining', 'points': reference}),
+            ('start_charged_points', POINTS - reference), ('post_start_difference_from_first', 0),
+            ('post_start_matches_first', True),
             ('setup_observation_count', 1), ('recycle_observation_count', 1),
             ('metering_observation_error', None), ('ready_reached', loop), ('budget_exhausted', loop),
             ('runtime_shutdown_returned', True), ('runtime_shutdown_wait_limit_ms', 2000),
@@ -99,6 +131,7 @@ def validate_result(value, pid, backend):
             ('stdout_limit_bytes', 65536), ('stderr_limit_bytes', 65536),
         ]:
             equal(case[field], expected, 'case ' + field)
+        require('initial_points' not in case, 'post-start observation must not be relabeled initial points')
         require('expectation_error' not in case, 'case expectation failure must not become success')
         require(type(case['php_execution_elapsed_ms']) is int and case['php_execution_elapsed_ms'] >= 0,
                 'execution duration')
@@ -120,8 +153,8 @@ def validate_result(value, pid, backend):
             points = case['final_points']
             require(type(points) is dict and set(points) == {'kind', 'points'}, 'normal remaining-points shape')
             equal(points['kind'], 'remaining', 'normal remaining kind')
-            require(type(points['points']) is int and 0 < points['points'] < POINTS,
-                    'normal must consume points and leave a positive remainder')
+            require(type(points['points']) is int and 0 < points['points'] < reference,
+                    'normal must consume points after start and leave a positive remainder')
             php = parse_json(captured['stdout'])
             equal(php, expected_php(), 'normal PHP JSON/types and fresh globals')
             equal(case['php'], php, 'normal decoded/captured consistency')
@@ -140,6 +173,7 @@ def main():
               'owned_process_cleanup_completed': False,
               'php_wasm_operation_budget_verified_for_fixed_cases': False,
               'expected_execution_results': [True, False, True], 'trial_points': POINTS,
+              'budget_reset_count': 0, 'start_execution_included': True,
               'production_operation_budget_verified': False, 'cpu_time_budget_verified': False,
               'php_opcode_budget_verified': False, 'hostcall_timeout_verified': False,
               'memory_limit_verified': False, 'product_runtime_selected': False,
