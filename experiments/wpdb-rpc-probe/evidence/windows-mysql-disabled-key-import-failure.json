@@ -1,0 +1,91 @@
+{
+  "schema": "recastpress.wpdb-owned-database-wire.v0.5",
+  "format_version": 1,
+  "observed_at_utc": "2026-11-01T23:53:35.252192+00:00",
+  "platform": "Windows",
+  "backend": "mysql",
+  "tls_profile": "disabled",
+  "outcome": "owned_database_wire_profile_failed",
+  "passed": false,
+  "commands": [
+    {
+      "stage": "mysql_release_key",
+      "timeout_seconds": 30,
+      "owned_reaped": true,
+      "pid": 10300,
+      "exit_code": 0,
+      "stdout_bytes": 380,
+      "stdout_sha256": "103837b6c5ef3500702b76c18a6832a95727be3d531caa8be9dda92811b85751",
+      "stderr_bytes": 298,
+      "stderr_sha256": "970745495bdc07c9621415b4668a031c2dac29c529b83a4b4fd370581b5f2942",
+      "cleanup": {
+        "pid": 10300,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "mysql_key_import",
+      "timeout_seconds": 30,
+      "owned_reaped": true,
+      "pid": 1972,
+      "exit_code": 2,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 264,
+      "stderr_sha256": "a34355dcd6634f235a4bee07d00da34749538d7128bd551a1e926eab1818d8a2",
+      "cleanup": {
+        "pid": 1972,
+        "reaped": true,
+        "exit_code": 2,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    }
+  ],
+  "database_started": false,
+  "database_identity_verified_before_ddl": false,
+  "database_closed_and_reaped": false,
+  "all_command_children_reaped": true,
+  "run_retained": true,
+  "separate_admin_and_limited_credentials": true,
+  "mysql_environment_forwarded": false,
+  "credentials_in_command_line": false,
+  "credentials_in_public_record": false,
+  "native_wpdb_comparison_passed": false,
+  "standard_wpdb_compatibility_verified": false,
+  "product_driver_selected": false,
+  "product_abi_selected": false,
+  "existing_editing_sqlx_changed": false,
+  "production_database_used": false,
+  "binary_redistributed": false,
+  "production_tls_policy_selected": false,
+  "cleanup_scope": "captured child handles only; Windows tree cleanup is requested while leader is live, without independent descendant enumeration",
+  "process_tree_inventory_verified": false,
+  "input_files": {
+    "experiments/wpdb-rpc-probe/database_check.py": "c7f2ef94070e8ef508b475929e6b20d528db4cce7e7294dca22fcff5cbe788ef",
+    "experiments/wpdb-rpc-probe/wire_check.py": "5293179ba3ee1b42bbe9b79186c08b0aeca2fb4048e04766ff83d32df31f532d",
+    "scripts/wordpress_reference.py": "b1ef6a84c6fd704913fa6dc1e87877f951ca808a10d48a5aab1882f25e969303",
+    "scripts/setup_mysql.py": "4b139d532a1c6f3cb9e1c6f0ad1a5677e589f21f8c326b2473b4ab58a0408e6a",
+    "scripts/setup_mariadb.py": "8beed162f951e8fb0306aaffce60a478d69a9e05af6ee1e3669ac4a8d7a55caa",
+    "scripts/pinned_zip_tool.py": "5986aad74d5ad1b6e33ea594ec55cb64024bfb4e90085d9274e5007f1610651f"
+  },
+  "wire_build_receipt_sha256": "84258dba90192b37bb28a861f6ee2202cc22548a9e21e6459992be3a595d1983",
+  "wire_binary": {
+    "path": "target/wpdb-rpc-wire-probe/debug/recastpress-wpdb-wire-probe.exe",
+    "bytes": 10601984,
+    "sha256": "b11da57e145ed56967b60963623eab7370c90c42c9ae0e9e92d7e0a036760bf8"
+  },
+  "run": "target/wpdb-rpc-probe/database-runs/mysql-disabled-927d03ba47b2469db40dcf1832d5a50a",
+  "failure_stage": "tool_verification",
+  "failure_class": "ValueError",
+  "failure_reason": "mysql_key_import_failed"
+}

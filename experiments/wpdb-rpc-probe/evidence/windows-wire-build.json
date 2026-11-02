@@ -1,0 +1,153 @@
+{
+  "schema": "recastpress.wpdb-wire-build.v0.5",
+  "outcome": "locked_offline_wire_build_passed",
+  "passed": true,
+  "observed_at_utc": "2026-11-02T00:01:15.798135+00:00",
+  "platform": "Windows",
+  "locked_offline": true,
+  "outer_build_timeout_seconds": 1200,
+  "owned_cleanup_completed": true,
+  "original_inputs_unchanged_after": true,
+  "database_started": false,
+  "database_connected": false,
+  "product_driver_selected": false,
+  "input_files": {
+    "experiments/wpdb-rpc-probe/Cargo.toml": "bc464f7c81e6271b16289b6e8853bc627a8b53193d539ee9bcbb03a85bd97bd7",
+    "experiments/wpdb-rpc-probe/Cargo.lock": "7524f51ce82ba934b787e69da09c40facef9b5a5154685fb4c18de69250a188a",
+    "experiments/wpdb-rpc-probe/src/main.rs": "e7f74f663eb6e727b6dd140c104543875706fe3de747daf76deb461032bfa816",
+    "experiments/wpdb-rpc-probe/wire_check.py": "5293179ba3ee1b42bbe9b79186c08b0aeca2fb4048e04766ff83d32df31f532d",
+    "experiments/wpdb-rpc-probe/prepare_driver.py": "2dd38414fefa10147b6d25b54bdb2bbd264c11e0d5e0063ecb2a5c6734b2bc7c",
+    "experiments/wpdb-rpc-probe/driver-plan.json": "0fa784b6d444a9e981e2ce36ea2e7dca0294134b75d9700d0992dce83f095220",
+    "experiments/wpdb-rpc-probe/patches/0001-mysql-async-wpdb-handshake.patch": "7b8330555a2589bbb13a68a2c3e90b31f7a569d85285058248d325bf1f0d8dcd",
+    "scripts/owned_probe.py": "b372f65a9fcedc2c3f498d747c5c2886ac662069124315d661edc3a615d20761",
+    "Cargo.lock": "f85f9fcd4ffc85079f7596f700286d497a4c48663b5e214c535ca6eb98d75c1c",
+    "experiments/binlog-probe/Cargo.lock": "24ce8f6b88f8e3dc8ba341a4297629455013d1581b9ec7ddc319b83616f9574c",
+    "experiments/binlog-probe/Cargo.toml": "5bb59bc54c1fa07b384a29c7f945d8b961e9f29f69b629ce588d768ce8344377"
+  },
+  "preparation_before": {
+    "schema": "recastpress.wpdb-rpc-driver-preparation.v0.5",
+    "outcome": "fixed_driver_sources_staged",
+    "plan_sha256": "0fa784b6d444a9e981e2ce36ea2e7dca0294134b75d9700d0992dce83f095220",
+    "patch_sha256": "7b8330555a2589bbb13a68a2c3e90b31f7a569d85285058248d325bf1f0d8dcd",
+    "workspace": "target/wpdb-rpc-probe/workspace",
+    "source_trees": {
+      "mysql_async": {
+        "files": 63,
+        "inventory_sha256": "94666cfd911233c5c60ee9e24d2c8f5311e9c89d2829a9e632c3ee259933590f"
+      },
+      "mysql_common": {
+        "files": 85,
+        "inventory_sha256": "137b46503cbbb774cc86610b65e9489290791a7c0960548430c399fff8ff209b"
+      }
+    },
+    "seed_lock_sha256": "24ce8f6b88f8e3dc8ba341a4297629455013d1581b9ec7ddc319b83616f9574c",
+    "workspace_manifest_sha256": "9135d92182bc552f1093064f9808f6c0b30d6755e4ccadc9b2a94b11ceaa24fa",
+    "staged_lock": {
+      "bytes": 60763,
+      "sha256": "5a9fa8a5ce89f1abc15be8594eac30d2cdde2c79702c3cd8ad5242bdc3b49cb0"
+    },
+    "patch_applied_in_owned_stage": true,
+    "pinned_registry_sources_and_archives_modified": false,
+    "existing_lock_modified": false,
+    "network_used_by_preparer": false,
+    "database_started": false,
+    "database_connected": false,
+    "driver_compiled": false,
+    "handshake_wire_verified": false,
+    "standard_wpdb_compatibility_verified": false
+  },
+  "owned_build_pid": 7172,
+  "build_exit_code": 0,
+  "owned_build_reaped": true,
+  "build_stdout_sha256": "0df426126a1ab6294bb7428f5639ce8e9b7cd53a475e8901f37605173d68c6c8",
+  "build_stderr_sha256": "f111115785af29d2212853237e12c6247f101d9719784020add660491e9a8ec9",
+  "executable": "target/wpdb-rpc-wire-probe/debug/recastpress-wpdb-wire-probe.exe",
+  "executable_identity": {
+    "bytes": 10620928,
+    "sha256": "18dec241dad065f48f4a5ce95e78871194c0afb2b62fc9e0cdc9210809524dd6"
+  },
+  "input_rejections": [
+    {
+      "case": "non_loopback_destination",
+      "owned_pid": 12856,
+      "exit_code": 1,
+      "reaped": true,
+      "observation": {
+        "database_started_by_probe": false,
+        "ddl_executed_by_probe": false,
+        "failure": "input_closed_destination",
+        "fresh_disconnect_completed": false,
+        "fresh_disconnect_error": null,
+        "handshakes": [],
+        "initial_disconnect_completed": false,
+        "initial_disconnect_error": null,
+        "native_wpdb_comparison_passed": false,
+        "observations": [],
+        "outcome": "fixed_wire_cases_failed",
+        "passed": false,
+        "physical_session_only": true,
+        "product_driver_selected": false,
+        "raw_non_utf8_err_verified": false,
+        "schema": "recastpress.wpdb-wire-observation.v0.5",
+        "standard_wpdb_compatibility_verified": false
+      }
+    },
+    {
+      "case": "invalid_secret_shape",
+      "owned_pid": 16636,
+      "exit_code": 1,
+      "reaped": true,
+      "observation": {
+        "database_started_by_probe": false,
+        "ddl_executed_by_probe": false,
+        "failure": "input_secret_shape",
+        "fresh_disconnect_completed": false,
+        "fresh_disconnect_error": null,
+        "handshakes": [],
+        "initial_disconnect_completed": false,
+        "initial_disconnect_error": null,
+        "native_wpdb_comparison_passed": false,
+        "observations": [],
+        "outcome": "fixed_wire_cases_failed",
+        "passed": false,
+        "physical_session_only": true,
+        "product_driver_selected": false,
+        "raw_non_utf8_err_verified": false,
+        "schema": "recastpress.wpdb-wire-observation.v0.5",
+        "standard_wpdb_compatibility_verified": false
+      }
+    }
+  ],
+  "preparation_after": {
+    "schema": "recastpress.wpdb-rpc-driver-preparation.v0.5",
+    "outcome": "fixed_driver_sources_staged",
+    "plan_sha256": "0fa784b6d444a9e981e2ce36ea2e7dca0294134b75d9700d0992dce83f095220",
+    "patch_sha256": "7b8330555a2589bbb13a68a2c3e90b31f7a569d85285058248d325bf1f0d8dcd",
+    "workspace": "target/wpdb-rpc-probe/workspace",
+    "source_trees": {
+      "mysql_async": {
+        "files": 63,
+        "inventory_sha256": "94666cfd911233c5c60ee9e24d2c8f5311e9c89d2829a9e632c3ee259933590f"
+      },
+      "mysql_common": {
+        "files": 85,
+        "inventory_sha256": "137b46503cbbb774cc86610b65e9489290791a7c0960548430c399fff8ff209b"
+      }
+    },
+    "seed_lock_sha256": "24ce8f6b88f8e3dc8ba341a4297629455013d1581b9ec7ddc319b83616f9574c",
+    "workspace_manifest_sha256": "9135d92182bc552f1093064f9808f6c0b30d6755e4ccadc9b2a94b11ceaa24fa",
+    "staged_lock": {
+      "bytes": 60763,
+      "sha256": "5a9fa8a5ce89f1abc15be8594eac30d2cdde2c79702c3cd8ad5242bdc3b49cb0"
+    },
+    "patch_applied_in_owned_stage": true,
+    "pinned_registry_sources_and_archives_modified": false,
+    "existing_lock_modified": false,
+    "network_used_by_preparer": false,
+    "database_started": false,
+    "database_connected": false,
+    "driver_compiled": false,
+    "handshake_wire_verified": false,
+    "standard_wpdb_compatibility_verified": false
+  }
+}

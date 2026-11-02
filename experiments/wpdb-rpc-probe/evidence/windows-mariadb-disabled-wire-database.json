@@ -1,0 +1,1106 @@
+{
+  "schema": "recastpress.wpdb-owned-database-wire.v0.5",
+  "format_version": 1,
+  "observed_at_utc": "2026-11-02T00:01:32.944261+00:00",
+  "platform": "Windows",
+  "backend": "mariadb",
+  "tls_profile": "disabled",
+  "mode": "wire",
+  "outcome": "fixed_owned_database_wire_profile_passed",
+  "passed": true,
+  "commands": [
+    {
+      "stage": "tls_fixture_0",
+      "timeout_seconds": 20,
+      "owned_reaped": true,
+      "pid": 26472,
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 899,
+      "stderr_sha256": "9885475a51f30cea6866ce4e45b077aa7974322ca755477725f3619a9c6f3d1f",
+      "cleanup": {
+        "pid": 26472,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "tls_fixture_1",
+      "timeout_seconds": 20,
+      "owned_reaped": true,
+      "pid": 23084,
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 725,
+      "stderr_sha256": "d26e32e5f16a3b707f8fd81258f711e96c5a9bc041ba16168a04610030711e72",
+      "cleanup": {
+        "pid": 23084,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "tls_fixture_2",
+      "timeout_seconds": 20,
+      "owned_reaped": true,
+      "pid": 16812,
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 59,
+      "stderr_sha256": "92d31139d88abe48934583908f7cd3d6c59eb7e49992afe3552b7542414b21cf",
+      "cleanup": {
+        "pid": 16812,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "tls_fixture_3",
+      "timeout_seconds": 20,
+      "owned_reaped": true,
+      "pid": 16776,
+      "exit_code": 0,
+      "stdout_bytes": 132,
+      "stdout_sha256": "d8d1b940858d05b91a7d41ed64ea3a2538ea146a3cc3aa73ae84f64ed074c32d",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 16776,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "initialize_fresh_database",
+      "timeout_seconds": 90,
+      "owned_reaped": true,
+      "pid": 4220,
+      "exit_code": 0,
+      "stdout_bytes": 61,
+      "stdout_sha256": "963d5fe3d23c1c0ce765f960bfe7882916f081abf15e64092db48067c7f20d33",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 4220,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "db_identity",
+      "timeout_seconds": 5,
+      "owned_reaped": true,
+      "pid": 23284,
+      "exit_code": 0,
+      "stdout_bytes": 140,
+      "stdout_sha256": "5abe2c9f7e8436a777f4b3f4c6d356971f8a827f4d8ddc23bb37b2c9d021fb1a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 23284,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "owned_schema_and_limited_account",
+      "timeout_seconds": 30,
+      "owned_reaped": true,
+      "pid": 20888,
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 20888,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "db_identity",
+      "timeout_seconds": 5,
+      "owned_reaped": true,
+      "pid": 24588,
+      "exit_code": 0,
+      "stdout_bytes": 140,
+      "stdout_sha256": "5abe2c9f7e8436a777f4b3f4c6d356971f8a827f4d8ddc23bb37b2c9d021fb1a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 24588,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "limited_fixture_empty",
+      "timeout_seconds": 5,
+      "owned_reaped": true,
+      "pid": 20572,
+      "exit_code": 0,
+      "stdout_bytes": 2,
+      "stdout_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 20572,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "limited_user_grants",
+      "timeout_seconds": 5,
+      "owned_reaped": true,
+      "pid": 23628,
+      "exit_code": 0,
+      "stdout_bytes": 206,
+      "stdout_sha256": "fdbf8bcf5358bcc5bb810722aac9b9248c68c0db2ce2d75e51bcd404c62b70cf",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 23628,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "owned_wire_probe",
+      "timeout_seconds": 75,
+      "owned_reaped": true,
+      "pid": 10192,
+      "exit_code": 0,
+      "stdout_bytes": 15110,
+      "stdout_sha256": "1e4d940d5b4b74a7e05de7cc68b33db0ce959babb0ebc46915ce96bd67ad49f7",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 10192,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "db_identity",
+      "timeout_seconds": 5,
+      "owned_reaped": true,
+      "pid": 25484,
+      "exit_code": 0,
+      "stdout_bytes": 140,
+      "stdout_sha256": "5abe2c9f7e8436a777f4b3f4c6d356971f8a827f4d8ddc23bb37b2c9d021fb1a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 25484,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "admin_final_rows",
+      "timeout_seconds": 5,
+      "owned_reaped": true,
+      "pid": 16884,
+      "exit_code": 0,
+      "stdout_bytes": 9,
+      "stdout_sha256": "802a107261b926a0aaf4338484c0b5f8e3d747b0d2e221f0fe5f4056130e5ad3",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 16884,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    },
+    {
+      "stage": "admin_shutdown",
+      "timeout_seconds": 10,
+      "owned_reaped": true,
+      "pid": 25272,
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanup": {
+        "pid": 25272,
+        "reaped": true,
+        "exit_code": 0,
+        "forced_tree_cleanup": false,
+        "tree_cleanup_command_exit_code": null,
+        "tree_cleanup_failure_class": null,
+        "direct_captured_kill_used": false,
+        "independent_descendant_inventory_verified": false
+      }
+    }
+  ],
+  "database_started": true,
+  "database_identity_verified_before_fixture_ddl": true,
+  "controller_account_bootstrapped_by_owned_server": true,
+  "admin_transport": "verified_tls",
+  "database_closed_and_reaped": true,
+  "all_command_children_reaped": true,
+  "run_retained": true,
+  "separate_admin_and_limited_credentials": true,
+  "mysql_environment_forwarded": false,
+  "credentials_in_command_line": false,
+  "credentials_in_public_record": false,
+  "native_wpdb_comparison_passed": false,
+  "standard_wpdb_compatibility_verified": false,
+  "product_driver_selected": false,
+  "product_abi_selected": false,
+  "existing_editing_sqlx_changed": false,
+  "production_database_used": false,
+  "binary_redistributed": false,
+  "production_tls_policy_selected": false,
+  "cleanup_scope": "captured child handles only; Windows tree cleanup is requested while leader is live, without independent descendant enumeration",
+  "process_tree_inventory_verified": false,
+  "input_files": {
+    "experiments/wpdb-rpc-probe/database_check.py": "86e9e6ddc38aa579013f7281ff5295e5a26f3a4907b1eebb70440b0fc9e83900",
+    "experiments/wpdb-rpc-probe/wire_check.py": "5293179ba3ee1b42bbe9b79186c08b0aeca2fb4048e04766ff83d32df31f532d",
+    "scripts/wordpress_reference.py": "b1ef6a84c6fd704913fa6dc1e87877f951ca808a10d48a5aab1882f25e969303",
+    "scripts/setup_mysql.py": "4b139d532a1c6f3cb9e1c6f0ad1a5677e589f21f8c326b2473b4ab58a0408e6a",
+    "scripts/setup_mariadb.py": "8beed162f951e8fb0306aaffce60a478d69a9e05af6ee1e3669ac4a8d7a55caa",
+    "scripts/pinned_zip_tool.py": "5986aad74d5ad1b6e33ea594ec55cb64024bfb4e90085d9274e5007f1610651f"
+  },
+  "wire_build_receipt_sha256": "3136e004f81656aadfe0bee1376a4d33d3f8588c6832af127913e750a02bc3d6",
+  "wire_binary": {
+    "path": "target/wpdb-rpc-wire-probe/debug/recastpress-wpdb-wire-probe.exe",
+    "bytes": 10620928,
+    "sha256": "18dec241dad065f48f4a5ce95e78871194c0afb2b62fc9e0cdc9210809524dd6"
+  },
+  "run": "target/wpdb-rpc-probe/database-runs/mariadb-disabled-cae7b50321d048b997c1f5fb4d2aa65b",
+  "database_tool": {
+    "version": "11.8.9",
+    "archive_bytes": 97016251,
+    "archive_sha256": "830c46727d9278eae212ae3eca44eeb9e71b2a68704e95f344a64fba7b1963f5",
+    "file_count": 624,
+    "full_file_inventory_sha256": "e42df2d8309e77fce239fc8c7476643ef9aec06a8a72279bf10651fa1266edb0",
+    "manifest_sha256": "ed78965916d0c581bf2e6ec5abaadc5995b12c37ba37e30f5eefcc31802aed53",
+    "server_sha256": "de2c4350e36bcdff6a18b614a21701a8a827509f44f51274411bb52a2849f9e5",
+    "client_sha256": "a093362874408aa721d0a29de26cce74deb35dce50f7302f3c65586ec7e14500",
+    "admin_sha256": "c2e25266ddbdf24a42d2eef38a3d0c74eef28dcbe5df0a08e747092b183f8fcc",
+    "signature": {
+      "verified": false,
+      "scope": "fixed SHA-256 archive pin only; no MariaDB signature claim"
+    }
+  },
+  "tls_fixture": {
+    "san_ip": "127.0.0.1",
+    "fresh_ca_and_leaf": true,
+    "chain_and_ip_verified": true,
+    "ca_sha256": "33e87de212dc6cf6a21aef6ccedbd1d736a3181d0c0910899f7e9c1d2900616f",
+    "server_cert_sha256": "da2a9fdf9160ac59f88c607e221a358cdffee0cc7cce10d5c9a79acb7ddb6c9a",
+    "openssl_sha256": "21c43808ddc48b9b2133ed4fe9f4f90d77305568ef3bb8291dd05d271e29a54b"
+  },
+  "database_pid": 2180,
+  "sql_server_version": "11.8.9-MariaDB",
+  "fixture_empty_before_probe": true,
+  "limited_dml_grants_verified": true,
+  "wire_result": {
+    "database_started_by_probe": false,
+    "ddl_executed_by_probe": false,
+    "fresh_disconnect_completed": true,
+    "fresh_disconnect_error": null,
+    "handshakes": [
+      {
+        "connection": "initial",
+        "connection_id": 9,
+        "found_rows": false,
+        "local_files": false,
+        "multi_results": true,
+        "multi_statements": false,
+        "raw_server_version_hex": "31312e382e392d4d617269614442",
+        "serialized_capabilities": 17736200,
+        "ssl_capability": false,
+        "three_forbidden_capabilities_off": true
+      },
+      {
+        "connection": "fresh",
+        "connection_id": 10,
+        "found_rows": false,
+        "local_files": false,
+        "multi_results": true,
+        "multi_statements": false,
+        "raw_server_version_hex": "31312e382e392d4d617269614442",
+        "serialized_capabilities": 17736200,
+        "ssl_capability": false,
+        "three_forbidden_capabilities_off": true
+      }
+    ],
+    "initial_disconnect_completed": true,
+    "initial_disconnect_error": null,
+    "native_wpdb_comparison_passed": false,
+    "observations": [
+      {
+        "affected_rows": "0",
+        "case": "initial_tls",
+        "columns": [
+          {
+            "character_set": 224,
+            "decimals": 0,
+            "declared_length": 256,
+            "flags": 4097,
+            "name_hex": "5661726961626c655f6e616d65",
+            "original_name_hex": "5641524941424c455f4e414d45",
+            "original_table_hex": "53455353494f4e5f535441545553",
+            "schema_hex": "696e666f726d6174696f6e5f736368656d61",
+            "table_hex": "53455353494f4e5f535441545553",
+            "type": 253
+          },
+          {
+            "character_set": 224,
+            "decimals": 0,
+            "declared_length": 16384,
+            "flags": 4097,
+            "name_hex": "56616c7565",
+            "original_name_hex": "5641524941424c455f56414c5545",
+            "original_table_hex": "53455353494f4e5f535441545553",
+            "schema_hex": "696e666f726d6174696f6e5f736368656d61",
+            "table_hex": "53455353494f4e5f535441545553",
+            "type": 253
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "53736c5f636970686572",
+            ""
+          ]
+        ],
+        "sql_hex": "53484f572053455353494f4e20535441545553204c494b45202753736c5f63697068657227",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "initial_connection_id",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 10,
+            "flags": 161,
+            "name_hex": "434f4e4e454354494f4e5f49442829",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 3
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "39"
+          ]
+        ],
+        "sql_hex": "53454c45435420434f4e4e454354494f4e5f49442829",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "fixture_empty",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 21,
+            "flags": 129,
+            "name_hex": "434f554e54282a29",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 8
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "30"
+          ]
+        ],
+        "sql_hex": "53454c45435420434f554e54282a292046524f4d2072705f776972655f66697874757265",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "set_latin1",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "534554204e414d4553206c6174696e31",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "non_utf8_sql_bytes",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 39,
+            "declared_length": 1,
+            "flags": 129,
+            "name_hex": "7261775f71756572795f62797465",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 253
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "ff"
+          ]
+        ],
+        "sql_hex": "53454c454354205f62696e61727927ff27204153207261775f71756572795f62797465",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "non_utf8_column_name",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 1,
+            "flags": 129,
+            "name_hex": "ff",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 3
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "37"
+          ]
+        ],
+        "sql_hex": "53454c45435420372041532060ff60",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "1",
+        "case": "insert",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": "1",
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "494e5345525420494e544f2072705f776972655f66697874757265286d61726b65722c7061796c6f61642c6465635f76616c75652c6269675f76616c7565292056414c554553282772702d77697265272c5827303066663431272c31323334353637383930313233343536373839302e313233343536373839302c313834343637343430373337303935353136313529",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "raw_ordered_rows",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 64,
+            "flags": 128,
+            "name_hex": "6475706c6963617465",
+            "original_name_hex": "7061796c6f6164",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 253
+          },
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 0,
+            "flags": 128,
+            "name_hex": "6475706c6963617465",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 6
+          },
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 0,
+            "flags": 161,
+            "name_hex": "656d7074795f76616c7565",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 253
+          },
+          {
+            "character_set": 63,
+            "decimals": 10,
+            "declared_length": 32,
+            "flags": 4097,
+            "name_hex": "6465635f76616c7565",
+            "original_name_hex": "6465635f76616c7565",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 246
+          },
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 20,
+            "flags": 4129,
+            "name_hex": "6269675f76616c7565",
+            "original_name_hex": "6269675f76616c7565",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 8
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "00ff41",
+            null,
+            "",
+            "31323334353637383930313233343536373839302e31323334353637383930",
+            "3138343436373434303733373039353531363135"
+          ]
+        ],
+        "sql_hex": "53454c454354207061796c6f6164204153206475706c69636174652c4e554c4c204153206475706c69636174652c58272720415320656d7074795f76616c75652c6465635f76616c75652c6269675f76616c75652046524f4d2072705f776972655f66697874757265205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "zero_rows_with_columns",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 64,
+            "flags": 128,
+            "name_hex": "6475706c6963617465",
+            "original_name_hex": "7061796c6f6164",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 253
+          },
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 0,
+            "flags": 128,
+            "name_hex": "6475706c6963617465",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 6
+          },
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 0,
+            "flags": 161,
+            "name_hex": "656d7074795f76616c7565",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 253
+          },
+          {
+            "character_set": 63,
+            "decimals": 10,
+            "declared_length": 32,
+            "flags": 4097,
+            "name_hex": "6465635f76616c7565",
+            "original_name_hex": "6465635f76616c7565",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 246
+          },
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 20,
+            "flags": 4129,
+            "name_hex": "6269675f76616c7565",
+            "original_name_hex": "6269675f76616c7565",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 8
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "53454c454354207061796c6f6164204153206475706c69636174652c4e554c4c204153206475706c69636174652c58272720415320656d7074795f76616c75652c6465635f76616c75652c6269675f76616c75652046524f4d2072705f776972655f6669787475726520574845524520313d30",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "same_value_update",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "5550444154452072705f776972655f6669787475726520534554207061796c6f61643d582730306666343127205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "1",
+        "case": "changed_update",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "5550444154452072705f776972655f6669787475726520534554207061796c6f61643d582730306666343227205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      },
+      {
+        "ascii_message_hex": "596f75206861766520616e206572726f7220696e20796f75722053514c2073796e7461783b20636865636b20746865206d616e75616c207468617420636f72726573706f6e647320746f20796f7572204d617269614442207365727665722076657273696f6e20666f72207468652072696768742073796e74617820746f20757365206e656172202753454c45432072705f66697865645f61736369695f6572726f7227206174206c696e652031",
+        "case": "ascii_syntax_error",
+        "code": 1064,
+        "message_is_ascii": true,
+        "raw_err_packet_preserved": false,
+        "server_rejected": true,
+        "sql_hex": "53454c45432072705f66697865645f61736369695f6572726f72",
+        "state": "42000"
+      },
+      {
+        "affected_rows": "0",
+        "case": "syntax_error_recovery",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 2,
+            "flags": 129,
+            "name_hex": "3137",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 3
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "3137"
+          ]
+        ],
+        "sql_hex": "53454c454354203137",
+        "warnings": 0
+      },
+      {
+        "ascii_message_hex": "596f75206861766520616e206572726f7220696e20796f75722053514c2073796e7461783b20636865636b20746865206d616e75616c207468617420636f72726573706f6e647320746f20796f7572204d617269614442207365727665722076657273696f6e20666f72207468652072696768742073796e74617820746f20757365206e656172202753454c454354203227206174206c696e652031",
+        "case": "multi_statement_rejection",
+        "code": 1064,
+        "message_is_ascii": true,
+        "raw_err_packet_preserved": false,
+        "server_rejected": true,
+        "sql_hex": "53454c45435420313b2053454c4543542032",
+        "state": "42000"
+      },
+      {
+        "affected_rows": "0",
+        "case": "multi_rejection_recovery",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 2,
+            "flags": 129,
+            "name_hex": "3233",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 3
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "3233"
+          ]
+        ],
+        "sql_hex": "53454c454354203233",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "begin_rollback",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "424547494e",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "1",
+        "case": "transaction_update",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "5550444154452072705f776972655f6669787475726520534554207061796c6f61643d582730306666343327205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "rollback",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "524f4c4c4241434b",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "rollback_read",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 64,
+            "flags": 128,
+            "name_hex": "7061796c6f6164",
+            "original_name_hex": "7061796c6f6164",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 253
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "00ff42"
+          ]
+        ],
+        "sql_hex": "53454c454354207061796c6f61642046524f4d2072705f776972655f66697874757265205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "session_marker",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "534554204072705f776972655f6d61726b65723d3931",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "begin_before_disconnect",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "424547494e",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "1",
+        "case": "uncommitted_before_disconnect",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "5550444154452072705f776972655f6669787475726520534554207061796c6f61643d582730306666343427205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "fresh_tls",
+        "columns": [
+          {
+            "character_set": 224,
+            "decimals": 0,
+            "declared_length": 256,
+            "flags": 4097,
+            "name_hex": "5661726961626c655f6e616d65",
+            "original_name_hex": "5641524941424c455f4e414d45",
+            "original_table_hex": "53455353494f4e5f535441545553",
+            "schema_hex": "696e666f726d6174696f6e5f736368656d61",
+            "table_hex": "53455353494f4e5f535441545553",
+            "type": 253
+          },
+          {
+            "character_set": 224,
+            "decimals": 0,
+            "declared_length": 16384,
+            "flags": 4097,
+            "name_hex": "56616c7565",
+            "original_name_hex": "5641524941424c455f56414c5545",
+            "original_table_hex": "53455353494f4e5f535441545553",
+            "schema_hex": "696e666f726d6174696f6e5f736368656d61",
+            "table_hex": "53455353494f4e5f535441545553",
+            "type": 253
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "53736c5f636970686572",
+            ""
+          ]
+        ],
+        "sql_hex": "53484f572053455353494f4e20535441545553204c494b45202753736c5f63697068657227",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "fresh_connection_id",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 10,
+            "flags": 161,
+            "name_hex": "434f4e4e454354494f4e5f49442829",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 3
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "3130"
+          ]
+        ],
+        "sql_hex": "53454c45435420434f4e4e454354494f4e5f49442829",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "fresh_session_variable",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 39,
+            "declared_length": 16777216,
+            "flags": 128,
+            "name_hex": "4072705f776972655f6d61726b6572",
+            "original_name_hex": "",
+            "original_table_hex": "",
+            "schema_hex": "",
+            "table_hex": "",
+            "type": 251
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            null
+          ]
+        ],
+        "sql_hex": "53454c454354204072705f776972655f6d61726b6572",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "bounded_lock_wait",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "5345542053455353494f4e20696e6e6f64625f6c6f636b5f776169745f74696d656f75743d32",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "fresh_acquires_old_row_lock",
+        "columns": [],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [],
+        "sql_hex": "5550444154452072705f776972655f6669787475726520534554207061796c6f61643d582730306666343227205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      },
+      {
+        "affected_rows": "0",
+        "case": "disconnect_rollback_read",
+        "columns": [
+          {
+            "character_set": 63,
+            "decimals": 0,
+            "declared_length": 64,
+            "flags": 128,
+            "name_hex": "7061796c6f6164",
+            "original_name_hex": "7061796c6f6164",
+            "original_table_hex": "72705f776972655f66697874757265",
+            "schema_hex": "72705f777064625f70726f6265",
+            "table_hex": "72705f776972655f66697874757265",
+            "type": 253
+          }
+        ],
+        "complete": true,
+        "last_insert_id": null,
+        "protocol": "COM_QUERY/TextProtocol",
+        "rows": [
+          [
+            "00ff42"
+          ]
+        ],
+        "sql_hex": "53454c454354207061796c6f61642046524f4d2072705f776972655f66697874757265205748455245206d61726b65723d2772702d7769726527",
+        "warnings": 0
+      }
+    ],
+    "outcome": "fixed_wire_cases_passed",
+    "passed": true,
+    "physical_session_only": true,
+    "product_driver_selected": false,
+    "raw_non_utf8_err_verified": false,
+    "schema": "recastpress.wpdb-wire-observation.v0.5",
+    "standard_wpdb_compatibility_verified": false,
+    "tls_profile": "disabled",
+    "whole_probe_deadline_seconds": 60
+  },
+  "wire_stdout_sha256": "1e4d940d5b4b74a7e05de7cc68b33db0ce959babb0ebc46915ce96bd67ad49f7",
+  "wire_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "wire_observations": {
+    "fixed_cases": 28,
+    "physical_connections": 2,
+    "three_forbidden_capabilities_off": true,
+    "actual_tls_profile_verified": true,
+    "raw_sql_and_result_bytes_verified": true,
+    "raw_column_metadata_and_order_verified": true,
+    "ascii_err_fixture_verified": true,
+    "fresh_session_variable_and_disconnect_rollback_verified": true,
+    "raw_non_utf8_err_verified": false,
+    "native_wpdb_comparison_passed": false
+  },
+  "database_cleanup": {
+    "pid": 2180,
+    "reaped": true,
+    "exit_code": 0,
+    "forced_tree_cleanup": false,
+    "tree_cleanup_command_exit_code": null,
+    "tree_cleanup_failure_class": null,
+    "direct_captured_kill_used": false,
+    "independent_descendant_inventory_verified": false
+  }
+}
